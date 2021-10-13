@@ -39,9 +39,9 @@ Coming Soon
 
 
 ## Casino Roulette
-- preview: (coming soon)
+- preview: https://streamable.com/85vjqc
 - Roulette
-(info coming soon)
+(w.i.p more info coming soon)
 
 ## Casino Ui
 (replaces draw3d & helper texts)
