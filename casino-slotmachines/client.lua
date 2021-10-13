@@ -487,34 +487,53 @@ Citizen.CreateThread(function()
 
 
 				if IsControlJustPressed(0, 38) then
-
-
-
-					QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-						if HasItem then
-							QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
-								if used then
-									QBCore.Functions.Notify('Seat is taken')
-				
-								else
-									ACTIVE_SLOT = v.index
-									SELECTED_CHAIR_ID = closestChairData.chairId
-									CURRENT_CHAIR_DATA = closestChairData
-									SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
-									RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
-									while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
-										Citizen.Wait(1)
+					if Config.CheckMembership then
+						QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+							if HasItem then
+								QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
+									if used then
+										QBCore.Functions.Notify('Seat is taken')
+							
+									else
+										ACTIVE_SLOT = v.index
+										SELECTED_CHAIR_ID = closestChairData.chairId
+										CURRENT_CHAIR_DATA = closestChairData
+										SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
+										RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
+										while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
+											Citizen.Wait(1)
+										end
+										local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
+										NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
+										NetworkStartSynchronisedScene(SITTING_SCENE)
+										startSlot(k, closestChairData.chairId)
 									end
-									local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
-									NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
-									NetworkStartSynchronisedScene(SITTING_SCENE)
-									startSlot(k, closestChairData.chairId)
+								end,v.index)
+							else
+								QBCore.Functions.Notify('You are not a '..Config.CasinoMembership..' of the casino', 'error', 3500)
+							end
+						end, Config.CasinoMembership)
+					else
+						QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
+							if used then
+								QBCore.Functions.Notify('Seat is taken')
+					
+							else
+								ACTIVE_SLOT = v.index
+								SELECTED_CHAIR_ID = closestChairData.chairId
+								CURRENT_CHAIR_DATA = closestChairData
+								SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
+								RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
+								while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
+									Citizen.Wait(1)
 								end
-							end,v.index)
-						else
-							QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
-						end
-					end, 'member')
+								local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
+								NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
+								NetworkStartSynchronisedScene(SITTING_SCENE)
+								startSlot(k, closestChairData.chairId)
+							end
+						end,v.index)
+					end
 				end
 			else
 				wait = 2000
