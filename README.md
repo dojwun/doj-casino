@@ -6,39 +6,34 @@ Edited Casino Pack
 
 
 ## Casino Entrance
+- Casino IPL: (casino accessible without the use of teleports)
 - preview: https://streamable.com/jem98k
-- Casino IPL
-(casino accessible without the use of teleports)
-
+- source: https://forum.cfx.re/t/cayo-perico-casino-dlc-ipl-loader/2099391
 
 ## Casino Luckywheel
+- Luckywheel: (peek to spin the luckywheel with $5000 a V.I.P membership)
 - preview: https://streamable.com/ucv48w
-- Luckywheel
-(peek to spin the luckywheel with $5000 a V.I.P membership)
-
-
-## Casino Slot Machines
-- preview: https://streamable.com/5xwkki
-- Slot Machines
-(play 44 slotmachines with a casino membership and a different bet each slot)
-
+- source: https://github.com/Sn0wBiT/esx_tpnrp_luckywheel
 
 ## Casino Inside Track
+- Inside Track: (bet on virtual racehorses with a casino membership and a $100 min bet)
 - preview: https://streamable.com/m5eykj
-- Inside Track
-(bet on virtual racehorses with a casino membership and a $100 min bet)
-
+- source: https://github.com/MRV6/mp_insidetrack
 
 ## Casino Blackjack
+- Blackjack: (play 14 blackjack tables with a casino membership and a $10 min bet)
 - preview: https://streamable.com/jpabhl
-- Blackjack
-(play 14 blackjack tables with a casino membership and a $10 min bet)
+- source: https://github.com/Xinerki/kgv-blackjack
 
+## Casino Slot Machines
+- Slot Machines: (play 44 slotmachines with a casino membership and a different bet each slot)
+- preview: https://streamable.com/5xwkki
+- source: https://forum.cfx.re/t/qb-casino-slots-machine-with-sounds/4766305 (leaked)
 
 ## Casino Roulette
+- Roulette: (w.i.p more info coming soon)
 - preview: https://streamable.com/85vjqc
-- Roulette
-(w.i.p more info coming soon)
+- source: https://forum.cfx.re/t/standalone-paid-aquiver-casino-roulette/2925508 (leaked)
 
 ## Casino Ui
 (replaces draw3d & helper texts)
