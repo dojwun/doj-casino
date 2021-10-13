@@ -1,5 +1,6 @@
 # [ qb-casino ]
 Casino includes
+- Casino IPL
 - Luckywheel
 - Slot Machines
 - Inside Track
