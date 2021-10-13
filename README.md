@@ -32,7 +32,7 @@ https://streamable.com/m5eykj
 
 ## Casino Blackjack
 preview:
-(coming soon)
+https://streamable.com/jpabhl
 
 ## Casino Roulette
 preview:
