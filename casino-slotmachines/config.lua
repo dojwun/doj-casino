@@ -3,7 +3,8 @@ Config = {}
 Config.ItemName = 'redchip'
 Config.PrintClient = false
 Config.Offset = true
-
+Config.CasinoMembership = "member" 
+Config.CheckMembership = false
 
 Config.Mult = { -- Multipliers based on GTA:ONLINE
 	['1'] = 25,	
