@@ -107,9 +107,9 @@ function enterCasino()
   
   if Config.SendWelcomeMail then
     TriggerServerEvent('qb-phone:server:sendNewMail', {
-      sender = "The Diamond Casino",
-      subject = "Welcome!",
-      message = "Welcome to The Diamond Casino, We are Open 24/7 & only accept Electronic Transactions",
+      sender = Config.WelcomeMailsender,
+      subject = Config.WelcomeMailsubject,
+      message = Config.WelcomeMailmessage,
       button = {}
     })
   end
