@@ -10,8 +10,8 @@
 
 ### Coming Soon
 - Chip Casino
-- Blackjack (coming soon)
-- Roulette (coming soon)
+- Blackjack
+- Roulette
 
 ## Casino Entrance
 preview:
