@@ -3,7 +3,7 @@ Config = {}
 Config.PlayCasinoAmbientNoise = true
 Config.SetShowCarOnDisplay = true
 Config.SendWelcomeMail = true
-
+Config.VehicleOnDisplay = `demon`
 
 Config.SetAnimatedWalls = true
 Config.AnimatedWallNormal = 'CASINO_DIA_PL'
