@@ -6,7 +6,7 @@ Config.WheelPos = {x = 949.71, y = 45.1, z = 70.9, h =328.0}	-- Where the wheel 
 Config.startingPrice = 5000
 Config.CasinoMembership = "vip" 
 Config.CheckMembership = true
-
+Config.VehiclePrize = 'demon'
 
 
 -- First it will pick a random 
