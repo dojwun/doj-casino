@@ -976,7 +976,8 @@ function ProcessTables()
 											end
 			
 											hideUi()
-											exports['progressBars']:drawBar(3700, 'Sitting...')
+											--exports['progressBars']:drawBar(3700, 'Sitting...')
+											QBCore.Functions.Notify("Sitting...", "primary", 3200)
 			
 											local ped = PlayerPedId()
 											local initPos = GetAnimInitialOffsetPosition("anim_casino_b@amb@casino@games@shared@player@", seatAnim, coords, rot, 0.01, 2)
