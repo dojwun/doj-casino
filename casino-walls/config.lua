@@ -2,7 +2,6 @@ Config = {}
 
 Config.PlayCasinoAmbientNoise = true
 Config.SetShowCarOnDisplay = true
-Config.SendWelcomeMail = true
 Config.VehicleOnDisplay = `demon`
 
 Config.SetAnimatedWalls = true
@@ -13,3 +12,8 @@ Config.AnimatedWallWin = 'CASINO_WIN_PL'
 -- CASINO_HLW_PL    - Falling Skulls
 -- CASINO_SNWFLK_PL - Falling Snowflakes
 -- CASINO_WIN_PL    - Falling Confetti
+
+Config.SendWelcomeMail = true
+Config.WelcomeMailsender = "The Diamond Casino"
+Config.WelcomeMailsubject ="Welcome!"
+Config.WelcomeMailmessage = "Welcome to The Diamond Casino, We are Open 24/7 & only accept Electronic Transactions"
