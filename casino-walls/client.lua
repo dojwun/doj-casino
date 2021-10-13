@@ -3,7 +3,6 @@ local videoWallRenderTarget = nil
 local showBigWin            = false
 local spinningObject = nil
 local spinningCar = nil
-local carOnShow = `demon`
 --
 -- Threads
 --
@@ -171,12 +170,12 @@ function drawCarForWins()
 	if DoesEntityExist(spinningCar) then
 	  DeleteEntity(spinningCar)
 	end
-	RequestModel(carOnShow)
-	while not HasModelLoaded(carOnShow) do
+	RequestModel(Config.VehicleOnDisplay)
+	while not HasModelLoaded(Config.VehicleOnDisplay) do
 		Citizen.Wait(0)
 	end
-	SetModelAsNoLongerNeeded(carOnShow)
-	spinningCar = CreateVehicle(carOnShow, 935.432, 42.5611, 72.14, 0.0, 0, 0)
+	SetModelAsNoLongerNeeded(Config.VehicleOnDisplay)
+	spinningCar = CreateVehicle(Config.VehicleOnDisplay, 935.432, 42.5611, 72.14, 0.0, 0, 0)
 	Wait(0)
 	SetVehicleDirtLevel(spinningCar, 0.0)
 	SetVehicleOnGroundProperly(spinningCar) 
