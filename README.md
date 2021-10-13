@@ -3,15 +3,14 @@
 ### included
 - Casino IPL
 - Luckywheel
+- Blackjack
 - Slot Machines
 - Inside Track
 - Casino Ui
 - Target/shared.lua info (at bottom)
 
-
 ### Coming Soon
 - Chip Casino
-- Blackjack
 - Roulette
 
 ## Casino Entrance
