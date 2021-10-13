@@ -97,9 +97,9 @@ AddEventHandler("luckywheel:client:startWheel", function()
 		if HasItem then
 			TriggerServerEvent("luckywheel:getwheel")
 		else
-			QBCore.Functions.Notify('You dont have the proper membership to spin', 'error', 3500)
+			QBCore.Functions.Notify('You dont have '..Config.CasinoMembership..' membership to spin', 'error', 3500)
 		end
-	end, 'vip')
+	end, Config.CasinoMembership)
 end)
 
 RegisterNetEvent("luckywheel:syncanim")
