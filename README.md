@@ -1,43 +1,50 @@
 # W.I.P [ qb-casino (bank) ] W.I.P
 
-### included
-- Casino IPL
-- Luckywheel
-- Blackjack
-- Slot Machines
-- Inside Track
-- Casino Ui
-- Target/shared.lua info (at bottom)
 
-### Coming Soon
+Coming Soon
 - qb-casino (chips)
 - Roulette
 
+
+
+
 ## Casino Entrance
-preview:
-https://streamable.com/jem98k
+- preview: https://streamable.com/jem98k
+- Casino IPL
+(casino accessible without the use of teleports)
+
 
 ## Casino Luckywheel
-preview:
-https://streamable.com/ucv48w
+- preview: https://streamable.com/ucv48w
+- Luckywheel
+(peek to spin the luckywheel with $5000 a V.I.P membership)
+
 
 ## Casino Slot Machines
-preview:
-https://streamable.com/5xwkki
+- preview: https://streamable.com/5xwkki
+- Slot Machines
+(play 44 slotmachines around the casino)
+
 
 ## Casino Inside Track
-preview:
-https://streamable.com/m5eykj
+- preview: https://streamable.com/m5eykj
+- Inside Track
+(bet on virtual racehorses)
+
 
 ## Casino Blackjack
-preview:
-https://streamable.com/jpabhl
+- preview: https://streamable.com/jpabhl
+- Blackjack
+(play 14 blackjack tables with a casino membership and a $10 min bet)
+
 
 ## Casino Roulette
-preview:
-(coming soon)
+- preview: (coming soon)
+- Roulette
+(info coming soon)
 
 ## Casino Ui
+(replaces draw3d & helper texts)
 - nh-context preview:
 
 ![General](https://i.imgur.com/hDbTfbt.png)
@@ -45,7 +52,6 @@ preview:
 - textUi preview:
 
 ![General](https://i.imgur.com/ywWq9sT.png)
-
 
 - casinoUi preview:
 
