@@ -1,12 +1,17 @@
-# [ qb-casino ]
-Casino includes
+# W.I.P [ qb-casino ] W.I.P
+
+### included
 - Casino IPL
 - Luckywheel
 - Slot Machines
 - Inside Track
+- Bank only
+- Casino Ui
+
+### Coming Soon
+- Chip Casino
 - Blackjack (coming soon)
 - Roulette (coming soon)
-
 
 ## Casino Entrance
 preview:
@@ -24,6 +29,13 @@ https://streamable.com/5xwkki
 preview:
 https://streamable.com/m5eykj
 
+## Casino Blackjack
+preview:
+(coming soon)
+
+## Casino Roulette
+preview:
+(coming soon)
 
 ## Casino Ui
 - nh-context preview:
