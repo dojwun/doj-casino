@@ -7,7 +7,8 @@
 - Inside Track
 - Bank only
 - Casino Ui
-- Target info (at bottom)
+- Target/shared.lua info (at bottom)
+
 
 ### Coming Soon
 - Chip Casino
@@ -51,6 +52,35 @@ preview:
 - casinoUi preview:
 
 ![General](https://i.imgur.com/9fPvYyv.png)
+
+## shared.lua info
+```
+["member"]= {
+    ["name"] = "member",
+    ["label"] = "Casino Membership",
+    ["weight"] = 500,
+    ["type"] = "item",
+    ["image"] = "member.png",
+    ["unique"] = false,
+    ["useable"] = false,
+    ["shouldClose"] = false,
+    ["combinable"] = nil,
+    ["description"] = "Diamond Casino Member Card"
+},
+
+["vip"]= {
+    ["name"] = "vip",
+    ["label"] = "V.I.P Membership",
+    ["weight"] = 500,
+    ["type"] = "item",
+    ["image"] = "vip.png",
+    ["unique"] = false,
+    ["useable"] = false,
+    ["shouldClose"] = false,
+    ["combinable"] = nil,
+    ["description"] = "Diamond Casino V.I.P Card"
+},
+```
 
 ## qb-target info
 ```
