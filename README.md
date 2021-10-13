@@ -1,11 +1,10 @@
-# W.I.P [ qb-casino ] W.I.P
+# W.I.P [ qb-casino (bank) ] W.I.P
 
 ### included
 - Casino IPL
 - Luckywheel
 - Slot Machines
 - Inside Track
-- Bank only
 - Casino Ui
 - Target/shared.lua info (at bottom)
 
