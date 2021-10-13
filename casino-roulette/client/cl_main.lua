@@ -814,7 +814,8 @@ end)
 RegisterNetEvent('client_callback:rulett:taskSitDown')
 AddEventHandler('client_callback:rulett:taskSitDown',
     function(rulettIndex, chairData)
-        exports['progressBars']:drawBar(4000, 'Sitting...')
+        --exports['progressBars']:drawBar(4000, 'Sitting...')
+	QBCore.Functions.Notify("Sitting...", "primary", 3200)
 
         SELECTED_CHAIR_ID = chairData.chairId
         CURRENT_CHAIR_DATA = chairData
