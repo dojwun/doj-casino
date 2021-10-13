@@ -36,16 +36,17 @@ Edited Casino Pack
 - source: https://forum.cfx.re/t/standalone-paid-aquiver-casino-roulette/2925508 (leaked)
 
 ## Casino Ui
-(replaces draw3d & helper texts)
+- replaces draw3d & helper texts
+
 - nh-context preview:
+- source: https://github.com/nerohiro/nh-context
 
 ![General](https://i.imgur.com/hDbTfbt.png)
 
-- textUi preview:
-
+- textUi & casinoUi preview:
+- source: https://github.com/dsheedes/cd_drawtextui
+ 
 ![General](https://i.imgur.com/ywWq9sT.png)
-
-- casinoUi preview:
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
