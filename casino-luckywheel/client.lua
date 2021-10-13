@@ -93,13 +93,17 @@ end)
 
 RegisterNetEvent("luckywheel:client:startWheel")
 AddEventHandler("luckywheel:client:startWheel", function()
-	QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-		if HasItem then
-			TriggerServerEvent("luckywheel:getwheel")
-		else
-			QBCore.Functions.Notify('You dont have '..Config.CasinoMembership..' membership to spin', 'error', 3500)
-		end
-	end, Config.CasinoMembership)
+	if Config.CheckMembership then
+		QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+			if HasItem then
+				TriggerServerEvent("luckywheel:getwheel")
+			else
+				QBCore.Functions.Notify('You dont have '..Config.CasinoMembership..' membership to spin', 'error', 3500)
+			end
+		end, Config.CasinoMembership)
+	else
+		TriggerServerEvent("luckywheel:getwheel")
+	end
 end)
 
 RegisterNetEvent("luckywheel:syncanim")
