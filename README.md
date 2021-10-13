@@ -1,8 +1,7 @@
 # W.I.P [ qb-casino (bank) ] W.I.P
 
 
-Coming Soon
-- qb-casino (chips)
+Edited Casino Pack 
 
 
 
