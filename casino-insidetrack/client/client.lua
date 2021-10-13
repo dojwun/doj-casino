@@ -65,13 +65,17 @@ end)
 
 RegisterNetEvent('QBCore:client:openInsideTrack')
 AddEventHandler('QBCore:client:openInsideTrack', function()
-    QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-		if HasItem then
-            OpenInsideTrack()
-		else
-			QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
-		end
-	end, 'member')
+	if Config.CheckMembership then
+		QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+			if HasItem then
+                OpenInsideTrack()
+			else
+				QBCore.Functions.Notify('You are not a '..Config.CasinoMembership..' of the casino', 'error', 3500)
+			end
+		end, Config.CasinoMembership)
+	else
+        OpenInsideTrack()
+	end
 end)
 
 local function LeaveInsideTrack()
