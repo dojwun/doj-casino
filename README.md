@@ -10,7 +10,7 @@
 - Target/shared.lua info (at bottom)
 
 ### Coming Soon
-- Chip Casino
+- qb-casino (chips)
 - Roulette
 
 ## Casino Entrance
