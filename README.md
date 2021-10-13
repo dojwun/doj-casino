@@ -20,13 +20,13 @@ Edited Casino Pack
 ## Casino Slot Machines
 - preview: https://streamable.com/5xwkki
 - Slot Machines
-(play 44 slotmachines around the casino)
+(play 44 slotmachines with a casino membership and a different bet each slot)
 
 
 ## Casino Inside Track
 - preview: https://streamable.com/m5eykj
 - Inside Track
-(bet on virtual racehorses)
+(bet on virtual racehorses with a casino membership and a $100 min bet)
 
 
 ## Casino Blackjack
