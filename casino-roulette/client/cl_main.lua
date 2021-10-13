@@ -791,7 +791,13 @@ Citizen.CreateThread(function()
                             
 
                             if IsControlJustPressed(0, 38) then
-                                TriggerServerEvent('server_remote:rulett:taskSitDown', k, closestChairData)
+                                QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+                                    if HasItem then
+                                        TriggerServerEvent('server_remote:rulett:taskSitDown', k, closestChairData)
+                                	else
+							            QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
+						            end
+					            end, 'member')
                             end
                             
                             break
