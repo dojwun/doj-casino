@@ -51,7 +51,7 @@ preview:
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
-## shared.lua info
+## qb-core/shared.lua info
 ```
 ["member"]= {
     ["name"] = "member",
