@@ -3,8 +3,6 @@
 
 Coming Soon
 - qb-casino (chips)
-- Roulette
-
 
 
 
