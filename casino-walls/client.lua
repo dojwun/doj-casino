@@ -53,21 +53,17 @@ function startCasinoThreads()
         end
     end)
 end
--- WALLS
--- CASINO_DIA_PL    - Falling Diamonds
--- CASINO_HLW_PL    - Falling Skulls
--- CASINO_SNWFLK_PL - Falling Snowflakes
--- CASINO_WIN_PL    - Falling Confetti
+
 
 function setVideoWallTvChannel()
-    SetTvChannelPlaylist(0, 'CASINO_DIA_PL', true)
+    SetTvChannelPlaylist(0, Config.AnimatedWallNormal, true)
     SetTvAudioFrontend(true)
     SetTvVolume(-100.0)
     SetTvChannel(0)
 end
 
 function setVideoWallTvChannelWin()
-    SetTvChannelPlaylist(0, 'CASINO_WIN_PL', true)
+    SetTvChannelPlaylist(0, Config.AnimatedWallWin, true)
     SetTvAudioFrontend(true)
     SetTvVolume(-100.0)
     SetTvChannel(-1)
@@ -79,10 +75,16 @@ end
 --
 
 AddEventHandler("chCasinoWall:enteredCasino", function()
-    inCasino = true
+  inCasino = true
+  if Config.SetAnimatedWalls then
     startCasinoThreads()
-    playSomeBackgroundAudioBaby()
+  end
+  if Config.SetShowCarOnDisplay then
     spinMeRightRoundBaby()
+  end
+  if Config.PlayCasinoAmbientNoise then
+    playSomeBackgroundAudioBaby()      
+  end
 end)
 
 AddEventHandler("chCasinoWall:exitedCasino", function()
@@ -104,12 +106,14 @@ function enterCasino()
   TriggerEvent("chCasinoWall:enteredCasino") 
   print("Entered Casino area")
   
-  TriggerServerEvent('qb-phone:server:sendNewMail', {
-		sender = "The Diamond Casino",
-		subject = "Welcome!",
-		message = "Welcome to The Diamond Casino, We are Open 24/7 & only accept Electronic Transactions",
-		button = {}
-	})
+  if Config.SendWelcomeMail then
+    TriggerServerEvent('qb-phone:server:sendNewMail', {
+      sender = "The Diamond Casino",
+      subject = "Welcome!",
+      message = "Welcome to The Diamond Casino, We are Open 24/7 & only accept Electronic Transactions",
+      button = {}
+    })
+  end
 end
 
 function exitCasino()
