@@ -28,7 +28,7 @@ currentBetAmount 		= 0
 Citizen.CreateThread(function()
 	while true do
 		if LocalPlayer.state['isLoggedIn'] then
-			local playerCoords = GetEntityCoords(GetPlayerPed(-1))
+			local playerCoords = GetEntityCoords(PlayerPedId())
 			closetoSlots = false
 			for k, v in pairs(Config.Slots) do
 				if #(playerCoords - Config.Slots[k].pos) < 20.0 then
@@ -243,7 +243,7 @@ createSlots = function(index, data)
 			exports['casinoUi']:HideCasinoUi('hide') 
 
 			Citizen.Wait(3000)
-			ClearPedTasks(GetPlayerPed(-1))
+			ClearPedTasks(PlayerPedId())
 			TriggerServerEvent('casino:slots:notUsing', self.index)
 		end
 	end
