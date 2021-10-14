@@ -27,14 +27,17 @@ currentBetAmount 		= 0
 
 Citizen.CreateThread(function()
 	while true do
-		local playerCoords = GetEntityCoords(GetPlayerPed(-1))
-		closetoSlots = false
-		for k, v in pairs(Config.Slots) do
-			if #(playerCoords - Config.Slots[k].pos) < 20.0 then
-				closetoSlots = true
+		if LocalPlayer.state['isLoggedIn'] then
+			local playerCoords = GetEntityCoords(GetPlayerPed(-1))
+			closetoSlots = false
+			for k, v in pairs(Config.Slots) do
+				if #(playerCoords - Config.Slots[k].pos) < 20.0 then
+					closetoSlots = true
+				end
 			end
+			Wait(1000)
 		end
-		Wait(1000)
+		Wait(5)
 	end
 end)
 
@@ -472,11 +475,10 @@ end
 Citizen.CreateThread(function()
 	local alreadyEnteredZone = false
 	while true do
-		local sleep = 5
 		local inZone = false
 		local InRange = false
 		local PlayerPed = PlayerPedId()
-        local playerpos = GetEntityCoords(PlayerPed)
+		local playerpos = GetEntityCoords(PlayerPed)
 		for k, v in pairs(Slots) do
 			local objcoords = GetEntityCoords(v.tableObject)
 			local dist = Vdist(playerpos, objcoords)
@@ -556,8 +558,8 @@ Citizen.CreateThread(function()
 			end
 		end
 		if not InRange then
-            Citizen.Wait(1000)
-        end
-		Citizen.Wait(sleep)
+			Citizen.Wait(1000)
+		end
+		Citizen.Wait(5)
 	end
 end)
