@@ -433,126 +433,12 @@ AddEventHandler('casino:slots:startSpin',function(index, tickRate)
 end) 
 
 
-RegisterNetEvent("doj:casino:leaveslot")
-AddEventHandler("doj:casino:leaveslot", function()
-	if Slots[ACTIVE_SLOT] then
-		Slots[ACTIVE_SLOT].startPlaying(false)
-		DeleteSlots2(Spins)
-	end
-end)
-
-RegisterNetEvent("doj:casino:startspin")
-AddEventHandler("doj:casino:startspin", function(index, data)
-    -- if Slots[index] then
-    --     TriggerServerEvent('casino:taskStartSlots', index, data)
-    -- end
-end)
-
-RegisterNetEvent("doj:casino:changecamera")
-AddEventHandler("doj:casino:changecamera", function()
-	-- changeKameraMode()
-	TriggerEvent("casino:context:slotmachines")
-end)
-
-
 -- AddEventHandler('esx:onPlayerDeath', function()
 -- 	if Slots[ACTIVE_SLOT] then
 -- 		Slots[ACTIVE_SLOT].startPlaying(false)
 -- 		DeleteSlots2(Spins)
 -- 	end
 -- end)
-
-
-
-Citizen.CreateThread(function()
-	while true do
-		local sleep = 5
-		local inZone = false
-		local PlayerPed = PlayerPedId()
-        local playerpos = GetEntityCoords(PlayerPed)
-
-		for k, v in pairs(Slots) do
-			local objcoords = GetEntityCoords(v.tableObject)
-			local dist = Vdist(playerpos, objcoords)
-
-			if dist < 2.0 then
-				wait = 5
-				inZone  = true
-				text = '<b>Diamond Casino Slots</b> </p>Press [E] to sit down</p>'..v.data.SlotName..'</br>$'..v.data.bet
-
-				local closestChairData = getClosestChairData(v.tableObject)
-				if closestChairData == nil then
-					break
-				end
-
-
-				if IsControlJustPressed(0, 38) then
-					if Config.CheckMembership then
-						QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-							if HasItem then
-								QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
-									if used then
-										QBCore.Functions.Notify('Seat is taken')
-							
-									else
-										ACTIVE_SLOT = v.index
-										SELECTED_CHAIR_ID = closestChairData.chairId
-										CURRENT_CHAIR_DATA = closestChairData
-										SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
-										RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
-										while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
-											Citizen.Wait(1)
-										end
-										local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
-										NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
-										NetworkStartSynchronisedScene(SITTING_SCENE)
-										startSlot(k, closestChairData.chairId)
-									end
-								end,v.index)
-							else
-								QBCore.Functions.Notify('You are not a '..Config.CasinoMembership..' of the casino', 'error', 3500)
-							end
-						end, Config.CasinoMembership)
-					else
-						QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
-							if used then
-								QBCore.Functions.Notify('Seat is taken')
-					
-							else
-								ACTIVE_SLOT = v.index
-								SELECTED_CHAIR_ID = closestChairData.chairId
-								CURRENT_CHAIR_DATA = closestChairData
-								SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
-								RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
-								while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
-									Citizen.Wait(1)
-								end
-								local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
-								NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
-								NetworkStartSynchronisedScene(SITTING_SCENE)
-								startSlot(k, closestChairData.chairId)
-							end
-						end,v.index)
-					end
-				end
-			else
-				wait = 2000
-			end
-			if inZone and not alreadyEnteredZone then
-				alreadyEnteredZone = true
-				exports['textUi']:DrawTextUi('show', text) 
-			end
-			if not inZone and alreadyEnteredZone then
-				alreadyEnteredZone = false
-				exports['textUi']:HideTextUi('hide')
-			end
-
-		end
-		Citizen.Wait(sleep)
-	end
-end)
-
-
 
 function changeBetAmount(amount)
     currentBetAmount = amount
@@ -582,43 +468,96 @@ function getClosestChairData(tableObject)
     end
 end
 
-RegisterNetEvent('casino:context:slotmachines', function() 
-    print("slotmachines casino menu") 
 
-    TriggerEvent('nh-context:sendMenu', {
-        {
-            id = 1,
-            header = "Start Spin",
-			txt = "",
-            params = {
-                event = "doj:casino:startspin",
-                args = {
-                    
-                }
-            }
-        },
-        {
-            id = 2,
-            header = "Change View", 
-            txt = "",
-            params = {
-                event = "doj:casino:changecamera",
-                args = {
-                    
-                }
-            }
-        },
-        {
-            id = 3,
-			header = "Exit",
-            txt = "",
-            params = {
-                event = "doj:casino:leaveslot",
-                args = {
-                    
-                }
-            }
-        },
-    })
+Citizen.CreateThread(function()
+	local alreadyEnteredZone = false
+	while true do
+		local sleep = 5
+		local inZone = false
+		local InRange = false
+		local PlayerPed = PlayerPedId()
+        local playerpos = GetEntityCoords(PlayerPed)
+		for k, v in pairs(Slots) do
+			local objcoords = GetEntityCoords(v.tableObject)
+			local dist = Vdist(playerpos, objcoords)
+			if dist < 2.9 then
+				InRange = true
+				if dist < 2.1 then
+					local closestChairData = getClosestChairData(v.tableObject)
+					if closestChairData == nil then
+						break
+					end
+					if Config.DrawMarker then
+						DrawMarker(20,closestChairData.position + vector3(0.0, 0.0, 1.0),0.0,0.0,0.0,180.0,0.0,0.0,0.2,0.2,0.2,30, 144, 255, 155,false,true,2,true,nil,nil,false)
+					end
+					wait = 5
+					inZone  = true
+					text = '<b>Diamond Casino Slots</b> </p>Press [E] to sit down</p>'..v.data.SlotName..'</br>$'..v.data.bet
+					if IsControlJustPressed(0, 38) then
+						if Config.CheckMembership then
+							QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+								if HasItem then
+									QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
+										if used then
+											QBCore.Functions.Notify('Seat is taken')
+								
+										else
+											ACTIVE_SLOT = v.index
+											SELECTED_CHAIR_ID = closestChairData.chairId
+											CURRENT_CHAIR_DATA = closestChairData
+											SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
+											RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
+											while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
+												Citizen.Wait(1)
+											end
+											local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
+											NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
+											NetworkStartSynchronisedScene(SITTING_SCENE)
+											startSlot(k, closestChairData.chairId)
+										end
+									end,v.index)
+								else
+									QBCore.Functions.Notify('You are not a '..Config.CasinoMembership..' of the casino', 'error', 3500)
+								end
+							end, Config.CasinoMembership)
+						else
+							QBCore.Functions.TriggerCallback('casino:slots:isSeatUsed',function(used)
+								if used then
+									QBCore.Functions.Notify('Seat is taken')
+						
+								else
+									ACTIVE_SLOT = v.index
+									SELECTED_CHAIR_ID = closestChairData.chairId
+									CURRENT_CHAIR_DATA = closestChairData
+									SITTING_SCENE = NetworkCreateSynchronisedScene(closestChairData.position, closestChairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
+									RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
+									while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
+										Citizen.Wait(1)
+									end
+									local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
+									NetworkAddPedToSynchronisedScene(PlayerPedId(),SITTING_SCENE,'anim_casino_b@amb@casino@games@shared@player@',randomSit,2.0,-2.0,13,16,2.0,0)
+									NetworkStartSynchronisedScene(SITTING_SCENE)
+									startSlot(k, closestChairData.chairId)
+								end
+							end,v.index)
+						end
+					end
+				else
+					wait = 2000
+				end
+				if inZone and not alreadyEnteredZone then
+					alreadyEnteredZone = true
+					exports['textUi']:DrawTextUi('show', text) 
+				end
+				if not inZone and alreadyEnteredZone then
+					alreadyEnteredZone = false
+					exports['textUi']:HideTextUi('hide')
+				end
+			end
+		end
+		if not InRange then
+            Citizen.Wait(1000)
+        end
+		Citizen.Wait(sleep)
+	end
 end)
-
