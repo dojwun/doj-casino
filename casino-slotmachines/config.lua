@@ -5,6 +5,7 @@ Config.PrintClient = false
 Config.Offset = true
 Config.CasinoMembership = "member" 
 Config.CheckMembership = true
+Config.DrawMarker = true
 
 Config.Mult = { -- Multipliers based on GTA:ONLINE
 	['1'] = 25,	
