@@ -38,15 +38,16 @@ Edited Casino Pack
 ## Casino Ui
 - replaces draw3d & helper texts
 
-- nh-context preview:
-- source: https://github.com/nerohiro/nh-context
+- nh-context: https://github.com/dojwun/nh-context
 
 ![General](https://i.imgur.com/hDbTfbt.png)
 
-- textUi & casinoUi preview:
-- source: https://github.com/dsheedes/cd_drawtextui
- 
+- textUi: https://github.com/dojwun/textUi
+
 ![General](https://i.imgur.com/ywWq9sT.png)
+
+
+- casinoUi: https://github.com/dojwun/casinoUi
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
