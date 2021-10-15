@@ -49,6 +49,26 @@ Edited Casino Pack for QBus
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
+
+- qb-inventory/client/main.lua
+```
+RegisterNetEvent('qb-casino:client:openCasinoMembersips')
+AddEventHandler('qb-casino:client:openCasinoMembersips', function()
+    local ShopItems = {}
+    ShopItems.label = "Diamond Casino Memberships"
+    ShopItems.items = Config.CasinoMemberships
+    ShopItems.slots = #Config.CasinoMemberships
+    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_", ShopItems)
+end)
+```
+- qb-inventory/config.lua
+```
+Config.CasinoMemberships = {
+    [1] = { name = "member", price = 500, amount = 5, info = {}, type = "item", slot = 1 },
+    [2] = { name = "vip",    price = 750, amount = 5, info = {}, type = "item", slot = 2 }
+}
+```
+
 - qb-core/shared.lua info
 ```
 ["member"]= {
@@ -77,7 +97,6 @@ Edited Casino Pack for QBus
     ["description"] = "Diamond Casino V.I.P Card"
 },
 ```
-
 - qb-target info
 ```
 -- Lucky wheel
