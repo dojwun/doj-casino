@@ -1,7 +1,7 @@
 # W.I.P [ qb-casino (bank) ] W.I.P
 
 
-Edited Casino Pack 
+Edited Casino Pack for QBus
 
 
 
@@ -35,9 +35,7 @@ Edited Casino Pack
 - preview: https://streamable.com/85vjqc
 - source: https://forum.cfx.re/t/standalone-paid-aquiver-casino-roulette/2925508 (leaked)
 
-## Casino Ui
-- replaces draw3d & helper texts
-
+## Required to work properly
 - nh-context: https://github.com/dojwun/nh-context
 
 ![General](https://i.imgur.com/hDbTfbt.png)
@@ -51,7 +49,7 @@ Edited Casino Pack
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
-## qb-core/shared.lua info
+- qb-core/shared.lua info
 ```
 ["member"]= {
     ["name"] = "member",
@@ -80,7 +78,7 @@ Edited Casino Pack
 },
 ```
 
-## qb-target info
+- qb-target info
 ```
 -- Lucky wheel
 exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
