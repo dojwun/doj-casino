@@ -472,7 +472,7 @@ end
 function hideUiOnStart()
 	exports['textUi']:HideTextUi('hide')
 	exports['casinoUi']:HideCasinoUi('hide') 
-	TriggerEvent("nh-context:closeMenu")
+	exports['qb-menu']:closeMenu() 
 end
 
 RegisterNetEvent("BLACKJACK:BetReceived")
