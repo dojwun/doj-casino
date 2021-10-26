@@ -1,14 +1,10 @@
 RegisterNetEvent('casino:context:hit&stand', function() 
-    print("hit casino menu") 
-
-    TriggerEvent('nh-context:sendMenu', {
+    exports['qb-menu']:openMenu({
         {
-            id = 1,
             header = "Diamond Casino Blackjack",
-            txt = ""
+            isMenuHeader = true,
         },
         {
-            id = 2,
             header = "Hit", 
             txt = "Draw another card",
             params = {
@@ -19,7 +15,6 @@ RegisterNetEvent('casino:context:hit&stand', function()
             }
         },
         {
-            id = 3,
             header = "Stand", 
             txt = "Be a pussy",
             params = {
@@ -33,16 +28,12 @@ RegisterNetEvent('casino:context:hit&stand', function()
 end)
 
 RegisterNetEvent('casino:context:hit&doubledown', function() 
-    print("hit & doubledown casino menu") 
-
-    TriggerEvent('nh-context:sendMenu', {
+    exports['qb-menu']:openMenu({
         {
-            id = 1,
             header = "Diamond Casino Blackjack",
-            txt = ""
+            isMenuHeader = true,
         },
         {
-            id = 2,
             header = "Hit", 
             txt = "Draw another card",
             params = {
@@ -53,7 +44,6 @@ RegisterNetEvent('casino:context:hit&doubledown', function()
             }
         },
         {
-            id = 3,
             header = "Stand", 
             txt = "Be a pussy",
             params = {
@@ -64,7 +54,6 @@ RegisterNetEvent('casino:context:hit&doubledown', function()
             }
         },
         {
-            id = 4,
             header = "Double Down", 
             txt = "Double your initial bet",
             params = {
@@ -78,15 +67,12 @@ RegisterNetEvent('casino:context:hit&doubledown', function()
 end)
 
 RegisterNetEvent('casino:context:hit&split', function()
-    print("hit & split casino menu") 
-    TriggerEvent('nh-context:sendMenu', {
+    exports['qb-menu']:openMenu({
         {
-            id = 1,
             header = "Diamond Casino Blackjack",
-            txt = ""
+            isMenuHeader = true,
         },
         {
-            id = 2,
             header = "Hit", 
             txt = "Draw another card",
             params = {
@@ -97,7 +83,6 @@ RegisterNetEvent('casino:context:hit&split', function()
             }
         },
         {
-            id = 3,
             header = "Stand", 
             txt = "Be a pussy",
             params = {
@@ -108,7 +93,6 @@ RegisterNetEvent('casino:context:hit&split', function()
             }
         },
         {
-            id = 4,
             header = "Split", 
             txt = "Split",
             params = {
