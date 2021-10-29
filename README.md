@@ -33,7 +33,7 @@ Edited Casino Pack for QBus
 ## Casino Roulette
 - Roulette: (w.i.p more info coming soon)
 - preview: https://streamable.com/85vjqc
-- source: https://forum.cfx.re/t/standalone-paid-aquiver-casino-roulette/2925508 (leaked)
+- source: https://forum.cfx.re/t/standalone-paid-aquiver-casino-roulette/2925508
 
 ## Required to work properly
 - nh-context: https://github.com/dojwun/nh-context
