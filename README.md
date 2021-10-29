@@ -25,8 +25,10 @@ Edited Casino Pack for QBus
 - preview: https://streamable.com/jpabhl
 - source: https://github.com/Xinerki/kgv-blackjack
 
-## Casino Slot Machines
-DMCAD LOL
+## Casino Slot Machines *(contact if interested)*
+- Slot Machines: -REMOVED
+- preview: https://streamable.com/5xwkki -REMOVED
+- source: https://forum.cfx.re/t/qb-casino-slots-machine-with-sounds/4766305 -REMOVED
 
 ## Casino Roulette
 - Roulette: (w.i.p more info coming soon)
