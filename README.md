@@ -26,9 +26,7 @@ Edited Casino Pack for QBus
 - source: https://github.com/Xinerki/kgv-blackjack
 
 ## Casino Slot Machines
-- Slot Machines: (play 44 slotmachines with a casino membership and a different bet each slot)
-- preview: https://streamable.com/5xwkki
-- source: https://forum.cfx.re/t/qb-casino-slots-machine-with-sounds/4766305 (leaked)
+DMCAD LOL
 
 ## Casino Roulette
 - Roulette: (w.i.p more info coming soon)
