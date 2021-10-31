@@ -37,7 +37,7 @@ Edited Casino Pack for QBus
 
 
 ## Casino Slot Machines *(contact if interested)*
-- Slot Machines: -REMOVED
+- Slot Machines: (play 44 slotmachines with a casino membership and a different bet each slot) -REMOVED
 
 **[preview](https://streamable.com/5xwkki)** -REMOVED
 
