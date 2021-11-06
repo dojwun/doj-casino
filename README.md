@@ -36,7 +36,7 @@ Edited Casino Pack for QBus
 **[source](https://github.com/Xinerki/kgv-blackjack)**
 
 
-## Casino Slot Machines *(contact if interested)*
+## Casino Slot Machines *(contact if interested)* </dojwun>#2103
 - Slot Machines: (play 44 slotmachines with a casino membership and a different bet each slot) -REMOVED
 
 **[preview](https://streamable.com/5xwkki)** -REMOVED
