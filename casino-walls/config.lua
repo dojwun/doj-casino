@@ -23,10 +23,3 @@ Config.CasinoMemberships = {
     [2] = { name = "vip",    price = 750, amount = 5, info = {}, type = "item", slot = 2 }
 }
 
-Config.CasinoChips = {
-    [1] = { name = "whitechip", price = 1,   amount = 999, info = {}, type = "item", slot = 1 },
-    [2] = { name = "redchip",   price = 5,   amount = 999, info = {}, type = "item", slot = 2 },
-    [3] = { name = "bluechip",  price = 10,  amount = 999, info = {}, type = "item", slot = 3 },
-    [4] = { name = "blackchip", price = 50,  amount = 999, info = {}, type = "item", slot = 4 },
-    [5] = { name = "goldchip",  price = 100, amount = 999, info = {}, type = "item", slot = 5 }
-}
