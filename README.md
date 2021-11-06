@@ -65,26 +65,6 @@ Edited Casino Pack for QBus
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
-
-- qb-inventory/client/main.lua
-```
-RegisterNetEvent('qb-casino:client:openCasinoMembersips')
-AddEventHandler('qb-casino:client:openCasinoMembersips', function()
-    local ShopItems = {}
-    ShopItems.label = "Diamond Casino Memberships"
-    ShopItems.items = Config.CasinoMemberships
-    ShopItems.slots = #Config.CasinoMemberships
-    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_", ShopItems)
-end)
-```
-- qb-inventory/config.lua
-```
-Config.CasinoMemberships = {
-    [1] = { name = "member", price = 500, amount = 5, info = {}, type = "item", slot = 1 },
-    [2] = { name = "vip",    price = 750, amount = 5, info = {}, type = "item", slot = 2 }
-}
-```
-
 - qb-core/shared.lua info
 ```
 ["member"]= {
@@ -112,64 +92,6 @@ Config.CasinoMemberships = {
     ["combinable"] = nil,
     ["description"] = "Diamond Casino V.I.P Card"
 },
-```
-- qb-target info
-```
--- Lucky wheel
-exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
-    name="LuckyWheel",
-    heading=160,
-    debugPoly=false,
-    useZ=true,
-    }, {
-        options = {
-            {
-                event = "luckywheel:client:startWheel",
-                icon = "fas fa-sync-alt",
-                label = "Try Your Luck",
-            },
-        },
-    distance = 2.0 
-})
-
--- Horse Bets
-exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
-    name="Betting",
-    heading=160,
-    debugPoly=false,
-    useZ=true,
-}, {
-    options = {
-        {
-            event = "QBCore:client:openInsideTrack",
-            icon = "fas fa-coins",
-            label = "Start Betting",
-        },
-    },
-    distance = 3.0 
-})
-
--- Casino Shop
-exports['qb-target']:AddTargetModel(`U_F_M_CasinoCash_01`, {
-	options = {
-        { 
-            event = "doj:casinoChipMenu", --NotUsed
-            icon = "fas fa-exchange-alt",
-            label = "Exchange Casino Chips", 
-        },
-        {
-            event = "qb-casino:client:openCasinoChips", --NotUsed
-            icon = "fas fa-coins",
-            label = "Purchase Casino Chips", 
-        },
-        {
-            event = "qb-casino:client:openCasinoMembersips", 
-            icon = "fas fa-id-card",
-            label = "Purchase Casino Memberships", 
-        },
-	},
-	distance = 3.0 
-})
 ```
 
 
