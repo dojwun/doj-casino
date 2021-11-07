@@ -1,4 +1,4 @@
-#[ qb-casino (bank) ]
+# [ qb-casino (bank) ]
 
 Edited Casino Pack for QBus
 
