@@ -1,5 +1,4 @@
-# W.I.P [ qb-casino (bank) ] W.I.P
-
+#[ qb-casino (bank) ]
 
 Edited Casino Pack for QBus
 
