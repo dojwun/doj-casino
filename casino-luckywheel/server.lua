@@ -1,4 +1,7 @@
 
+local QBCore = exports['qb-core']:GetCoreObject()
+
+
 isRoll = false
 math.randomseed(os.time())
 
