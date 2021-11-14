@@ -137,3 +137,241 @@ function Utils.GetRandomHorseName()
     
     return randomName
 end
+
+-- int param :
+-- 0 = main
+-- 1 = choose a horse
+-- 2 = choose a horse (2)
+-- 3 = select a bet
+-- 4 = select a bet (2)
+-- 5 = race screen (frozen)
+-- 6 = photo finish (frozen)
+-- 7 = results
+-- 8 = same as main but a bit different
+-- 9 = rules
+function Utils:ShowMainScreen()
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(0)
+    EndScaleformMovieMethod()
+
+    BeginScaleformMovieMethod(Utils.Scaleform, 'SET_MAIN_EVENT_IN_PROGRESS')
+    ScaleformMovieMethodAddParamBool(true)
+    EndScaleformMovieMethod()
+
+    BeginScaleformMovieMethod(Utils.Scaleform, 'CLEAR_ALL')
+    EndScaleformMovieMethod()
+end
+
+---@param cooldown int
+---(in seconds).
+function Utils:SetMainScreenCooldown(cooldown)
+    BeginScaleformMovieMethod(self.Scaleform, 'SET_COUNTDOWN')
+    ScaleformMovieMethodAddParamInt(cooldown)
+    EndScaleformMovieMethod()
+end
+
+function Utils:SetNotAvailable()
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_ERROR')
+
+    BeginTextCommandScaleformString('IT_ERROR_TITLE')
+    EndTextCommandScaleformString()
+
+    BeginTextCommandScaleformString('IT_ERROR_MSG')
+    EndTextCommandScaleformString()
+
+    EndScaleformMovieMethod()
+end
+
+local function IsPositionAvailable(position)
+    for i = 1, #Utils.HorsesPositions do
+        if (Utils.HorsesPositions[i] == position) then
+            return false
+        end
+    end
+
+    return true
+end
+
+local function GenerateHorsesOrder()
+    while (#Utils.HorsesPositions < 6) do
+        Wait(0)
+
+        for i = 1, 6 do
+            local randomPos = math.random(6)
+
+            if IsPositionAvailable(randomPos) then
+                table.insert(Utils.HorsesPositions, randomPos)
+            end
+        end
+    end
+end
+
+function Utils:StartRace()
+    GenerateHorsesOrder()
+
+    self.CurrentWinner = self.HorsesPositions[1]
+
+    BeginScaleformMovieMethod(self.Scaleform, 'START_RACE')
+    ScaleformMovieMethodAddParamFloat(15000.0) -- Race duration (in MS)
+    ScaleformMovieMethodAddParamInt(4)
+
+    -- Add each horses by their index (win order)
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[1])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[2])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[3])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[4])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[5])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[6])
+
+    ScaleformMovieMethodAddParamFloat(0.0) -- Unk
+    ScaleformMovieMethodAddParamBool(false)
+    EndScaleformMovieMethod()
+end
+
+function Utils:IsRaceFinished()
+    BeginScaleformMovieMethod(Utils.Scaleform, 'GET_RACE_IS_COMPLETE')
+
+    local raceReturnValue = EndScaleformMovieMethodReturnValue()
+
+    while not IsScaleformMovieMethodReturnValueReady(raceReturnValue) do
+        Wait(0)
+    end
+
+    return GetScaleformMovieMethodReturnValueBool(raceReturnValue)
+end
+
+function Utils:ShowResults()
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(7)
+    EndScaleformMovieMethod()
+end
+
+function Utils:ShowRules()
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(9)
+    EndScaleformMovieMethod()
+end
+
+function Utils:ShowHorseSelection()
+    self.ChooseHorseVisible = true
+
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(1)
+    EndScaleformMovieMethod()
+end
+
+function Utils:AddHorses()
+    for i = 1, 6 do
+        local name = self.GetRandomHorseName()
+
+        BeginScaleformMovieMethod(self.Scaleform, 'SET_HORSE')
+        ScaleformMovieMethodAddParamInt(i) -- Horse index
+
+        -- Horse name
+        BeginTextCommandScaleformString(name)
+        EndTextCommandScaleformString()
+
+        ScaleformMovieMethodAddParamPlayerNameString('Cool Horse')
+
+        -- Horse style
+        ScaleformMovieMethodAddParamInt(self.HorseStyles[i][1])
+        ScaleformMovieMethodAddParamInt(self.HorseStyles[i][2])
+        ScaleformMovieMethodAddParamInt(self.HorseStyles[i][3])
+        ScaleformMovieMethodAddParamInt(self.HorseStyles[i][4])
+        EndScaleformMovieMethod()
+    end
+end
+
+local function IsPositionAvailable(position)
+    for i = 1, #Utils.HorsesPositions do
+        if (Utils.HorsesPositions[i] == position) then
+            return false
+        end
+    end
+
+    return true
+end
+
+local function GenerateHorsesOrder()
+    while (#Utils.HorsesPositions < 6) do
+        Wait(0)
+
+        for i = 1, 6 do
+            local randomPos = math.random(6)
+
+            if IsPositionAvailable(randomPos) then
+                table.insert(Utils.HorsesPositions, randomPos)
+            end
+        end
+    end
+end
+
+function Utils:StartRace()
+    GenerateHorsesOrder()
+
+    self.CurrentWinner = self.HorsesPositions[1]
+
+    BeginScaleformMovieMethod(self.Scaleform, 'START_RACE')
+    ScaleformMovieMethodAddParamFloat(15000.0) -- Race duration (in MS)
+    ScaleformMovieMethodAddParamInt(4)
+
+    -- Add each horses by their index (win order)
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[1])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[2])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[3])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[4])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[5])
+    ScaleformMovieMethodAddParamInt(self.HorsesPositions[6])
+
+    ScaleformMovieMethodAddParamFloat(0.0) -- Unk
+    ScaleformMovieMethodAddParamBool(false)
+    EndScaleformMovieMethod()
+end
+
+function Utils:IsRaceFinished()
+    BeginScaleformMovieMethod(Utils.Scaleform, 'GET_RACE_IS_COMPLETE')
+
+    local raceReturnValue = EndScaleformMovieMethodReturnValue()
+
+    while not IsScaleformMovieMethodReturnValueReady(raceReturnValue) do
+        Wait(0)
+    end
+
+    return GetScaleformMovieMethodReturnValueBool(raceReturnValue)
+end
+
+function Utils:ShowResults()
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(7)
+    EndScaleformMovieMethod()
+end
+
+function Utils:ShowRules()
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(9)
+    EndScaleformMovieMethod()
+end
+
+function Utils:ShowBetScreen(horse)
+    self:UpdateBetValues(horse, self.CurrentBet, self.PlayerBalance, self.CurrentGain)
+
+    BeginScaleformMovieMethod(self.Scaleform, 'SHOW_SCREEN')
+    ScaleformMovieMethodAddParamInt(3)
+    EndScaleformMovieMethod()
+
+    BeginScaleformMovieMethod(self.Scaleform, 'SET_BETTING_ENABLED')
+    ScaleformMovieMethodAddParamBool(true)
+    EndScaleformMovieMethod()
+
+    self.BetVisible = true
+end
+
+function Utils:UpdateBetValues(horse, bet, balance, gain)
+    BeginScaleformMovieMethod(self.Scaleform, 'SET_BETTING_VALUES')
+    ScaleformMovieMethodAddParamInt(horse) -- Horse index
+
+    ScaleformMovieMethodAddParamInt(bet) -- Bet
+    ScaleformMovieMethodAddParamInt(balance) -- Current balance
+    ScaleformMovieMethodAddParamInt(gain) -- Gain
+    EndScaleformMovieMethod()
+end
