@@ -1,5 +1,4 @@
-
-
+local QBCore = exports['qb-core']:GetCoreObject()
 
 QBCore.Functions.CreateCallback("insidetrack:server:getbalance", function(source, cb)
     local src = source 
