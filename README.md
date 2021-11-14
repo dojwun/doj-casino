@@ -1,7 +1,17 @@
-# [ qb-casino (bank) ]
+# doj-casino 
 
-Edited Casino Pack for QBus
+Edited Casino Pack for QBus Framework
 
+# Updated 11/14/21
+- Casino now uses Casino Chips
+# Images
+![casino_redchip](https://i.imgur.com/JBjBg0n.png)
+![casino_whitechip](https://i.imgur.com/1nWyXiI.png)
+![casino_bluechip](https://i.imgur.com/pOi0vc5.png)
+![casino_blackchip](https://i.imgur.com/9z2b6ga.png)
+![casino_goldchip](https://i.imgur.com/7NPjx6H.png)
+![casino_member](https://i.imgur.com/SOxFphs.png)
+![casino_vip](https://i.imgur.com/nBvSini.png)
 
 
 ## Casino Entrance
@@ -28,7 +38,7 @@ Edited Casino Pack for QBus
 **[source](https://github.com/MRV6/mp_insidetrack)**
 
 ## Casino Blackjack
-- Blackjack: (play 14 blackjack tables with a casino membership and a $10 min bet)
+- Blackjack: (play 14 blackjack tables with a casino membership and a 10 min chip bet)
 
 **[preview](https://streamable.com/jpabhl)**
 
@@ -44,7 +54,7 @@ Edited Casino Pack for QBus
 
 
 ## Casino Roulette
-- Roulette: (w.i.p more info coming soon)
+- Roulette: (now works but locations need to be adjusted)
 
 **[preview](https://streamable.com/85vjqc)**
 
@@ -64,33 +74,18 @@ Edited Casino Pack for QBus
 
 ![General](https://i.imgur.com/9fPvYyv.png)
 
+
 - qb-core/shared.lua info
 ```
-["member"]= {
-    ["name"] = "member",
-    ["label"] = "Casino Membership",
-    ["weight"] = 500,
-    ["type"] = "item",
-    ["image"] = "member.png",
-    ["unique"] = false,
-    ["useable"] = false,
-    ["shouldClose"] = false,
-    ["combinable"] = nil,
-    ["description"] = "Diamond Casino Member Card"
-},
+	["casino_redchip"] 				 = {["name"] = "casino_redchip", 			 ["label"] = "Casino Chip", 			["weight"] = 0, 		["type"] = "item", 		["image"] = "casino_redchip.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Inside Track Chip"}, 
+	["casino_whitechip"] 			 = {["name"] = "casino_whitechip", 			 ["label"] = "Casino Chip", 			["weight"] = 0, 		["type"] = "item", 		["image"] = "casino_whitechip.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Slot Machine Chip"},
+	["casino_bluechip"] 			 = {["name"] = "casino_bluechip", 			 ["label"] = "Casino Chip", 			["weight"] = 0, 		["type"] = "item", 		["image"] = "casino_bluechip.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Roulette Chip"},
+	["casino_blackchip"] 			 = {["name"] = "casino_blackchip", 			 ["label"] = "Casino Chip", 			["weight"] = 0, 		["type"] = "item", 		["image"] = "casino_blackchip.png", 			["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Blackjack Chip"},
+	["casino_goldchip"] 			 = {["name"] = "casino_goldchip", 			 ["label"] = "Casino Chip", 			["weight"] = 0, 		["type"] = "item", 		["image"] = "casino_goldchip.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Chip"},
+	["casino_member"] 				 = {["name"] = "casino_member", 			 ["label"] = "Casino Membership", 		["weight"] = 500, 		["type"] = "item", 		["image"] = "casino_member.png", 				["unique"] = true, 		["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Member Card"},
+	["casino_vip"] 					 = {["name"] = "casino_vip", 			 	 ["label"] = "V.I.P Membership", 		["weight"] = 500, 		["type"] = "item", 		["image"] = "casino_vip.png", 				    ["unique"] = true, 		["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino V.I.P Card"},
 
-["vip"]= {
-    ["name"] = "vip",
-    ["label"] = "V.I.P Membership",
-    ["weight"] = 500,
-    ["type"] = "item",
-    ["image"] = "vip.png",
-    ["unique"] = false,
-    ["useable"] = false,
-    ["shouldClose"] = false,
-    ["combinable"] = nil,
-    ["description"] = "Diamond Casino V.I.P Card"
-},
+
 ``` 
 
 
