@@ -2,33 +2,64 @@ local aktivRulettek = {}
 
 
 function getPlayerChips(source)
-	local Player = QBCore.Functions.GetPlayer(source)
-	local bankAmount = Player.PlayerData.money.bank
-	
-    if bankAmount ~= nil then
-        return bankAmount
+    local Player = QBCore.Functions.GetPlayer(source)
+    local Chips = Player.Functions.GetItemByName("casino_bluechip")
+    local minAmount = 100
+    if Chips ~= nil then 
+        if Chips.amount >= minAmount then
+            return Chips.amount 
+        else
+
+            return TriggerClientEvent('QBCore:Notify', source, 'You dont have enough blue chips', 'error')
+        end
     else
-        return bankAmount or 0 
+
+        return TriggerClientEvent('QBCore:Notify', source, 'You dont have any blue chips', 'error')
     end
 end
 
 function giveChips(source, amount)
+    local src = source 
     local Player = QBCore.Functions.GetPlayer(source)
     if Player ~= nil then
-        Player.Functions.AddMoney("bank", tonumber(amount), "roulette-won")
+        if Player.Functions.AddItem('casino_bluechip', amount, nil, {["quality"] = 100}) then
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["casino_bluechip"], "add", amount)
+            TriggerClientEvent('QBCore:Notify', src, "You Won "..amount.." blue casino chips!")
+        else
+            TriggerClientEvent('QBCore:Notify', src, 'You have to much in your pockets', 'error')
+        end 
     end
 end 
 
 function removeChips(source, amount)
     local Player = QBCore.Functions.GetPlayer(source)
     if Player ~= nil then
-        Player.Functions.RemoveMoney("bank", tonumber(amount), "roulette-bet")
+        Player.Functions.RemoveItem("casino_bluechip", amount)
+        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_bluechip'], "remove", amount)
     end
 end
 
 function r_showNotification(source, msg) 
     TriggerClientEvent('QBCore:Notify', source, msg, "primary")
-end
+end 
+
+local ItemList = {
+    ["casino_bluechip"] = 1
+}
+QBCore.Functions.CreateCallback('BLACKJACK:server:blueChipsAmount', function(source, cb)
+    local retval = 0
+    local Player = QBCore.Functions.GetPlayer(source)
+    if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
+        for k, v in pairs(Player.PlayerData.items) do 
+            if Player.PlayerData.items[k] ~= nil then 
+                if ItemList[Player.PlayerData.items[k].name] ~= nil then 
+                    retval = retval + (ItemList[Player.PlayerData.items[k].name] * Player.PlayerData.items[k].amount)
+                end
+            end
+        end
+    end
+    cb(retval)
+end)
 --//////////////////////////--//////////////////////////--//////////////////////////
 
 function isPlayerExist(source)
@@ -251,7 +282,7 @@ function CheckWinners(bets, WinningBetIndex)
         local chairId = getPlayerTableSeat(targetSrc)
         if chairId ~= nil then
             TriggerClientEvent('client:rulett:playLossAnim', targetSrc, chairId)
-
+            TriggerClientEvent('QBCore:Notify', targetSrc, 'You Lost... Better luck next time', "error")
         end
     end
 
@@ -268,33 +299,31 @@ function giveWinningChips(source, amount, szorzo)
     if amount > 0 then
         giveChips(source, amount)
     end
-    r_showNotification(source, 'You have won $'..amount)
-
 end
 
 RegisterNetEvent('casino:taskBetRulett')
 AddEventHandler(
     'casino:taskBetRulett',
     function(rulettIndex, betId, betAmount)
-        local source = source
+        local src = source
 
         if aktivRulettek[rulettIndex] ~= nil then
             if aktivRulettek[rulettIndex].statusz then
-                return TriggerClientEvent('QBCore:Notify', source, 'The game started, you can not bet at the moment.', "error")
+                return TriggerClientEvent('QBCore:Notify', src, 'The game started, you can not bet at the moment.', "error")
             end
 
-            local bankAmount = getPlayerChips(source)
-            if bankAmount >= betAmount then 
-                removeChips(source, betAmount)
-                -- TriggerClientEvent('casino:nui:updateChips', source, getPlayerChips(source)) 
-                r_showNotification(source, '$'..betAmount..' bet on number '..betId)
+            local chipsAmount = getPlayerChips(src)
+            
+            if chipsAmount >= betAmount then 
+                removeChips(src, betAmount)
+                r_showNotification(src, ''..betAmount..' chips bet on ['..betId..']')
 
-                Config.DebugMsg(string.format('player %s betted %s chips on betId: %s', GetPlayerName(source), betAmount, betId))
+                Config.DebugMsg(string.format('player %s betted %s chips on betId: %s', GetPlayerName(src), betAmount, betId))
 
                 local exist = false
                 for i = 1, #aktivRulettek[rulettIndex].bets, 1 do
                     local d = aktivRulettek[rulettIndex].bets[i]
-                    if d.betId == betId and d.playerSrc == source then
+                    if d.betId == betId and d.playerSrc == src then
                         exist = true
                         aktivRulettek[rulettIndex].bets[i].betAmount = aktivRulettek[rulettIndex].bets[i].betAmount + betAmount
                     end
@@ -305,23 +334,23 @@ AddEventHandler(
                         aktivRulettek[rulettIndex].bets,
                         {
                             betId = betId,
-                            playerSrc = source,
+                            playerSrc = src,
                             betAmount = betAmount
                         }
                     )
                 end
                 TriggerClientEvent('client:rulett:updateTableBets', -1, rulettIndex, aktivRulettek[rulettIndex].bets)
-                local chairId = getPlayerTableSeat(source)
+                local chairId = getPlayerTableSeat(src)
                 if chairId ~= nil then
                     Config.DebugMsg(string.format('%s chair betanim play', chairId))
-                    TriggerClientEvent('client:rulett:playBetAnim', source, chairId)
+                    TriggerClientEvent('client:rulett:playBetAnim', src, chairId)
                 end
             else
-                TriggerClientEvent('QBCore:Notify', source, 'You do not have enough chips to place bet.', "error")
+                TriggerClientEvent('QBCore:Notify', src, 'You do not have enough chips to place bet.', "error")
 
             end
         else 
-            TriggerClientEvent('QBCore:Notify', source, 'error', 'An error occurred on a non-existent roulette table server side?')
+            TriggerClientEvent('QBCore:Notify', src, 'error', 'An error occurred on a non-existent roulette table server side?')
         end
     end
 )
