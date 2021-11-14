@@ -1,4 +1,7 @@
 
+local QBCore = exports['qb-core']:GetCoreObject()
+
+
 local cooldown = 60
 local tick = 0
 local checkRaceStatus = false
