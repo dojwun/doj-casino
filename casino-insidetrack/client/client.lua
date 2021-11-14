@@ -13,9 +13,11 @@ local function OpenInsideTrack()
             SetPauseMenuActive(false)
         end
     end)
+
     QBCore.Functions.TriggerCallback("insidetrack:server:getbalance", function(balance)
         Utils.PlayerBalance = balance
     end)
+
     if insideTrackActive then
         return
     end
@@ -38,83 +40,72 @@ local function OpenInsideTrack()
     Utils:HandleControls()
 end
 
-
-
-
-RegisterNetEvent('QBCore:client:closeBetsNotEnough')
-AddEventHandler('QBCore:client:closeBetsNotEnough', function()
+function closeHorseBets()
     insideTrackActive = false
     SetPlayerControl(PlayerId(), true, 0)
+    DisplayHud(true)
+    SetPauseMenuActive(true)
     SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
     Utils.Scaleform = -1
     StopSound(0)
-    QBCore.Functions.Notify("Bets Closed! You need atleast 100 White Casino Chips...", "error", 3500)
+end
+
+local function LeaveInsideTrack()
+    insideTrackActive = false
+    DisplayHud(true)
+    SetPauseMenuActive(true)
+    SetPlayerControl(PlayerId(), true, 0)
+    SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
+    Utils.Scaleform = -1
+end
+
+RegisterNetEvent('QBCore:client:closeBetsNotEnough')
+AddEventHandler('QBCore:client:closeBetsNotEnough', function()
+    closeHorseBets()
+    QBCore.Functions.Notify("Bets Closed! You dont have enough White Casino Chips...", "error", 3500)
 end)
 
 RegisterNetEvent('QBCore:client:closeBetsZeroChips')
 AddEventHandler('QBCore:client:closeBetsZeroChips', function()
-    insideTrackActive = false
-    SetPlayerControl(PlayerId(), true, 0)
-    SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
-    Utils.Scaleform = -1
-    StopSound(0)
-    QBCore.Functions.Notify("Bets Closed! You Dont Have Any White Casino Chips...", "error", 3500)
+    closeHorseBets()
+    QBCore.Functions.Notify("Bets Closed! You dont have any White Casino Chips...", "error", 3500)
 end)
 
 
 
 RegisterNetEvent('QBCore:client:openInsideTrack')
 AddEventHandler('QBCore:client:openInsideTrack', function()
-	if Config.CheckMembership then
-		QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-			if HasItem then
-                OpenInsideTrack()
-			else
-				QBCore.Functions.Notify('You are not a '..Config.CasinoMembership..' of the casino', 'error', 3500)
-			end
-		end, Config.CasinoMembership)
-	else
-        OpenInsideTrack()
-	end
+    QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+        if HasItem then
+            OpenInsideTrack()
+        else
+            QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
+        end
+    end, "casino_member")
 end)
 
-local function LeaveInsideTrack()
-    insideTrackActive = false
-    DisplayHud(true)
-    SetPauseMenuActive(true)
 
-    SetPlayerControl(PlayerId(), true, 0)
-    SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
-    Utils.Scaleform = -1
-end
 
 function Utils:DrawInsideTrack()
     Citizen.CreateThread(function()
         while insideTrackActive do
             Wait(0)
-
             local xMouse, yMouse = GetDisabledControlNormal(2, 239), GetDisabledControlNormal(2, 240)
-
             -- Fake cooldown
             tick = (tick + 10)
-
             if (tick == 1000) then
                 if (cooldown == 1) then
                     cooldown = 60
                 end
-                
                 cooldown = (cooldown - 1)
                 tick = 0
-
                 Utils:SetMainScreenCooldown(cooldown)
             end
-            
             -- Mouse control
             BeginScaleformMovieMethod(Utils.Scaleform, 'SET_MOUSE_INPUT')
             ScaleformMovieMethodAddParamFloat(xMouse)
             ScaleformMovieMethodAddParamFloat(yMouse)
             EndScaleformMovieMethod()
-
             -- Draw
             DrawScaleformMovieFullscreen(Utils.Scaleform, 255, 255, 255, 255)
         end
@@ -204,28 +195,20 @@ function Utils:HandleControls()
                 -- Check race
                 while checkRaceStatus do
                     Wait(0)
-
                     local raceFinished = Utils:IsRaceFinished()
-
                     if (raceFinished) then
                         StopSound(0)
-
                         if (Utils.CurrentHorse == Utils.CurrentWinner) then
                             TriggerServerEvent("insidetrack:server:winnings", Utils.CurrentGain)
                         end
-                            
                         QBCore.Functions.TriggerCallback("insidetrack:server:getbalance", function(balance)
                             Utils.PlayerBalance = balance
                         end)
-						
                         Utils:UpdateBetValues(Utils.CurrentHorse, Utils.CurrentBet, Utils.PlayerBalance, Utils.CurrentGain)
-                
                         Utils:ShowResults()
-
                         Utils.CurrentHorse = -1
                         Utils.CurrentWinner = -1
                         Utils.HorsesPositions = {}
-
                         checkRaceStatus = false
                     end
                 end
@@ -234,37 +217,3 @@ function Utils:HandleControls()
     end)
 end
 
-
-
-local insideMarker = false
-Citizen.CreateThread(function()
-    local alreadyEnteredZone = false
-    local text = '<b>Diamond Casino Inside Track</b></p>(Cash)"'
-    while true do
-        wait = 5
-        local ped = PlayerPedId()
-        local inZone = false
-        local coords = GetEntityCoords(ped)
-        local dist = #(insideTrackLocation - coords)
-
-        if dist <= 7.0 then
-            if dist <= 6.0 and not insideTrackActive then
-                insideMarker = true
-                wait = 5
-                inZone  = true
-            end
-        else
-            wait = 1000
-        end
-        if inZone and not alreadyEnteredZone then
-            alreadyEnteredZone = true
-            TriggerEvent('cd_drawtextui:ShowUI', 'show', text)
-        end
-
-        if not inZone and alreadyEnteredZone then
-            alreadyEnteredZone = false
-            TriggerEvent('cd_drawtextui:HideUI')
-        end
-        Citizen.Wait(wait)
-    end
-end) 
