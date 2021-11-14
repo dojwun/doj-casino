@@ -1,13 +1,6 @@
 
-
-
-
-
 isRoll = false
 math.randomseed(os.time())
-
-
-
 
 RegisterServerEvent('luckywheel:getwheel')
 AddEventHandler('luckywheel:getwheel', function()
@@ -22,11 +15,6 @@ AddEventHandler('luckywheel:getwheel', function()
         return TriggerClientEvent('QBCore:Notify', source, "You have enough in the bank to spin", "error")
     end
 end)
-
-
-
-
-
 
 RegisterServerEvent('luckywheel:startwheel')
 AddEventHandler('luckywheel:startwheel', function(xPlayer, source)
