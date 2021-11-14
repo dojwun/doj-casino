@@ -6,10 +6,6 @@ description 'Rexhack Gaming : Inside-Track'
 
 version '1.0.1'
 
-shared_scripts { 
-	'@qb-core/import.lua',
-}
-
 
 client_scripts {
     'client/utils.lua',
