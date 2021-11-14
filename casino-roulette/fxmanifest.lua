@@ -2,9 +2,6 @@ version '1.0.2'
 author 'freamee'
 decription 'Aquiver rulett'
 
-shared_scripts { 
-	'@qb-core/import.lua'
-}
 
 client_scripts {
     'config.lua',
