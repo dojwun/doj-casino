@@ -1,3 +1,6 @@
+
+local QBCore = exports['qb-core']:GetCoreObject()
+
 SITTING_SCENE = nil
 CURRENT_CHAIR_DATA = nil
 SELECTED_CHAIR_ID = nil
