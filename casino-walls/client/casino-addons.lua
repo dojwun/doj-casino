@@ -1,4 +1,7 @@
 
+local QBCore = exports['qb-core']:GetCoreObject()
+
+
 RegisterNetEvent('doj:casinoChipMenu', function()
     TriggerEvent('drawtextui:HideUI')
     exports['qb-menu']:openMenu({
