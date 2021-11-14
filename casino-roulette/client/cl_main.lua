@@ -19,7 +19,7 @@ createRulettAsztal = function(index, data)
 
     RequestModel(GetHashKey('vw_prop_casino_roulette_01'))
     while not HasModelLoaded(GetHashKey('vw_prop_casino_roulette_01')) do
-        Citizen.Wait(1)
+        Wait(1)
     end
 
     self.tableObject = CreateObject(GetHashKey('vw_prop_casino_roulette_01'), data.position, false)
@@ -27,7 +27,7 @@ createRulettAsztal = function(index, data)
 
     RequestModel(GetHashKey('S_F_Y_Casino_01'))
     while not HasModelLoaded(GetHashKey('S_F_Y_Casino_01')) do
-        Citizen.Wait(1)
+        Wait(1)
     end
 
     local pedOffset = GetObjectOffsetFromCoords(data.position.x, data.position.y, data.position.z, data.rot, 0.0, 0.7, 1.0)
@@ -88,9 +88,9 @@ createRulettAsztal = function(index, data)
 
             playRulettIdle()
 
-            Citizen.CreateThread(function()
+            CreateThread(function()
                 while selectedRulett ~= nil do
-                    Citizen.Wait(1000)
+                    Wait(1000)
                     if idleTimer ~= nil then
                         idleTimer = idleTimer - 1
                         if idleTimer < 1 then
@@ -102,9 +102,9 @@ createRulettAsztal = function(index, data)
                 end
             end)
 
-            Citizen.CreateThread(function()
+            CreateThread(function()
                 while selectedRulett ~= nil do
-                    Citizen.Wait(1)
+                    Wait(1)
                     if self.betObjects then
                         for i = 1, #self.betObjects, 1 do
                             local bet = self.betObjects[i]
@@ -119,14 +119,14 @@ createRulettAsztal = function(index, data)
                 end
             end)
 
-            Citizen.CreateThread(function()
+            CreateThread(function()
                 while selectedRulett ~= nil do
-                    Citizen.Wait(125)
+                    Wait(125)
 
                     if IsDisabledControlPressed(0, 172) then
                         currentBetAmount = currentBetAmount + 10
                         changeBetAmount(currentBetAmount)
-                        QBCore.Functions.Notify('+$'..currentBetAmount.." bet [raised]",'success')
+                        QBCore.Functions.Notify('+'..currentBetAmount.." bet [raised]",'success')
 
                     elseif IsDisabledControlPressed(0, 173) then
                         if currentBetAmount > 0 then
@@ -136,16 +136,16 @@ createRulettAsztal = function(index, data)
                                 currentBetAmount = 0
                             end
                             changeBetAmount(currentBetAmount)
-                            QBCore.Functions.Notify('-$'..currentBetAmount.." bet [lowered]",'primary')
+                            QBCore.Functions.Notify('-'..currentBetAmount.." bet [lowered]",'primary')
 
                         end
                     end
                 end
             end)
 
-            Citizen.CreateThread(function()
+            CreateThread(function()
                 while selectedRulett ~= nil do
-                    Citizen.Wait(0)
+                    Wait(0)
                     DisableAllControlActions(0)
                     if IsDisabledControlJustPressed(0, 202) then
                         self.enableCamera(false)
@@ -153,31 +153,27 @@ createRulettAsztal = function(index, data)
                     if IsDisabledControlJustPressed(0, 38) then
                         self.changeKameraMode()
                     end
-                    if IsDisabledControlJustPressed(0, 22) then --Custom Bet [space]
-                        local tmpInput = getGenericTextInput('How many chips you would like to bet?')
-                        if tonumber(tmpInput) then
-                            tmpInput = tonumber(tmpInput)
-                            if tmpInput > 0 then
-                                changeBetAmount(tmpInput)
-                                QBCore.Functions.Notify('Custom Bet $'..currentBetAmount,'success')
 
+                    if Config.allowCustomBet then
+                        if IsDisabledControlJustPressed(0, 22) then --Custom Bet [space]
+                            local tmpInput = getGenericTextInput('How many chips you would like to bet?')
+                            if tonumber(tmpInput) then
+                                tmpInput = tonumber(tmpInput)
+                                if tmpInput > 0 then
+                                    changeBetAmount(tmpInput)
+                                    QBCore.Functions.Notify('Custom Bet: '..currentBetAmount..' chips','success')
+                                end
                             end
                         end
+                    else
+
                     end
                 end
             end)
 
-            Citizen.Wait(1500)
+            Wait(1500)
         else
             TriggerServerEvent('casino:rulett:notUsing', selectedRulett)
-
-            -- SendNUIMessage(
-            --     {
-            --         action = 'showRulettNui',
-            --         state = false
-            --     }
-            -- )
-
             if DoesCamExist(self.rulettCam) then
                 DestroyCam(self.rulettCam, false)
             end
@@ -192,7 +188,7 @@ createRulettAsztal = function(index, data)
             local endingDict = 'anim_casino_b@amb@casino@games@shared@player@'
             RequestAnimDict(endingDict)
             while not HasAnimDictLoaded(endingDict) do
-                Citizen.Wait(1)
+                Wait(1)
             end
 
             local whichAnim = nil
@@ -209,7 +205,7 @@ createRulettAsztal = function(index, data)
             TaskPlayAnim(PlayerPedId(), endingDict, whichAnim, 1.0, 1.0, 2500, 0)
             SetPlayerControl(PlayerId(), 0, 0)
             hideUi()
-            Citizen.Wait(3600)
+            Wait(3600)
             SetPlayerControl(PlayerId(), 1, 0)
         end
     end
@@ -219,7 +215,7 @@ createRulettAsztal = function(index, data)
             if self.cameraMode == 1 then
                 DoScreenFadeOut(200)
                 while not IsScreenFadedOut() do
-                    Citizen.Wait(1)
+                    Wait(1)
                 end
                 self.cameraMode = 2
                 local camOffset = GetOffsetFromEntityInWorldCoords(self.tableObject, -1.45, -0.15, 1.45)
@@ -231,7 +227,7 @@ createRulettAsztal = function(index, data)
             elseif self.cameraMode == 2 then
                 DoScreenFadeOut(200)
                 while not IsScreenFadedOut() do
-                    Citizen.Wait(1)
+                    Wait(1)
                 end
                 self.cameraMode = 3
                 local camOffset = GetOffsetFromEntityInWorldCoords(self.tableObject, 1.45, -0.15, 2.15)
@@ -243,7 +239,7 @@ createRulettAsztal = function(index, data)
             elseif self.cameraMode == 3 then
                 DoScreenFadeOut(200)
                 while not IsScreenFadedOut() do
-                    Citizen.Wait(1)
+                    Wait(1)
                 end
                 self.cameraMode = 4
                 local camOffset = GetWorldPositionOfEntityBone(self.tableObject, GetEntityBoneIndexByName(self.tableObject, 'Roulette_Wheel'))
@@ -256,7 +252,7 @@ createRulettAsztal = function(index, data)
             elseif self.cameraMode == 4 then
                 DoScreenFadeOut(200)
                 while not IsScreenFadedOut() do
-                    Citizen.Wait(1)
+                    Wait(1)
                 end
                 self.cameraMode = 1
                 local rot = vector3(270.0, -90.0, self.data.rot + 270.0)
@@ -497,7 +493,7 @@ createRulettAsztal = function(index, data)
                 if betModelObject ~= nil then
                     RequestModel(betModelObject)
                     while not HasModelLoaded(betModelObject) do
-                        Citizen.Wait(0)
+                        Wait(0)
                     end
 
                     local obj = CreateObject(betModelObject, t.objectPos.x, t.objectPos.y, t.objectPos.z + (existBetId[bets[i].betId] * 0.0081), false)
@@ -529,7 +525,7 @@ createRulettAsztal = function(index, data)
             if t ~= nil then
                 RequestModel(GetHashKey(t.hoverObject))
                 while not HasModelLoaded(GetHashKey(t.hoverObject)) do
-                    Citizen.Wait(1)
+                    Wait(1)
                 end
 
                 local obj = CreateObject(GetHashKey(t.hoverObject), t.hoverPos, false)
@@ -546,10 +542,10 @@ createRulettAsztal = function(index, data)
         Config.DebugMsg('Bet rendering turned: %s', enabledBetRender)
 
         if state then
-            Citizen.CreateThread(
+            CreateThread(
                 function()
                     while enabledBetRender do
-                        Citizen.Wait(8)
+                        Wait(8)
 
                         if aimingAtBet ~= -1 and lastAimedBet ~= aimingAtBet then
                             Config.DebugMsg('aimed at different bet.')
@@ -569,10 +565,10 @@ createRulettAsztal = function(index, data)
                 end
             )
 
-            Citizen.CreateThread(
+            CreateThread(
                 function()
                     while enabledBetRender do
-                        Citizen.Wait(0)
+                        Wait(0)
 
                         ShowCursorThisFrame()
 
@@ -605,7 +601,7 @@ createRulettAsztal = function(index, data)
                                                 end
                                             end
                                         else
-                                            QBCore.Functions.Notify('Invalid bet amount.','error')
+                                            QBCore.Functions.Notify('Bet needs to be raised','error')
                                         end
                                     end
                                 end
@@ -629,7 +625,7 @@ createRulettAsztal = function(index, data)
             self.speakPed('MINIGAME_DEALER_CLOSED_BETS')
             TaskPlayAnim(self.ped, 'anim_casino_b@amb@casino@games@roulette@dealer_female', 'no_more_bets', 3.0, 3.0, -1, 0, 0, true, true, true)
 
-            Citizen.Wait(1500)
+            Wait(1500)
 
             if DoesEntityExist(self.ballObject) then
                 DeleteObject(self.ballObject)
@@ -639,7 +635,7 @@ createRulettAsztal = function(index, data)
 
             RequestModel(GetHashKey('vw_prop_roulette_ball'))
             while not HasModelLoaded(GetHashKey('vw_prop_roulette_ball')) do
-                Citizen.Wait(1)
+                Wait(1)
             end
 
             local ballOffset = GetWorldPositionOfEntityBone(self.tableObject, GetEntityBoneIndexByName(self.tableObject, 'Roulette_Wheel'))
@@ -649,10 +645,10 @@ createRulettAsztal = function(index, data)
             local LIB = 'anim_casino_b@amb@casino@games@roulette@table'
             RequestAnimDict(LIB)
             while not HasAnimDictLoaded(LIB) do
-                Citizen.Wait(1)
+                Wait(1)
             end
 
-            Citizen.Wait(3000)
+            Wait(3000)
 
             self.ballObject = CreateObject(GetHashKey('vw_prop_roulette_ball'), ballOffset, false)
             SetEntityHeading(self.ballObject, self.data.rot)
@@ -672,16 +668,16 @@ createRulettAsztal = function(index, data)
                 PlayEntityAnim(self.ballObject, string.format('exit_%s_ball', tickRate), LIB, 1000.0, false, true, false, 0, 136704)
                 PlayEntityAnim(self.tableObject, string.format('exit_%s_wheel', tickRate), LIB, 1000.0, false, true, false, 0, 136704)
 
-                Citizen.Wait(11e3)
+                Wait(11e3)
 
                 if DoesEntityExist(self.tableObject) and DoesEntityExist(self.ped) then
                     TaskPlayAnim(self.ped, 'anim_casino_b@amb@casino@games@roulette@dealer_female', 'clear_chips_zone1', 3.0, 3.0, -1, 0, 0, true, true, true)
-                    Citizen.Wait(1500)
+                    Wait(1500)
                     TaskPlayAnim(self.ped, 'anim_casino_b@amb@casino@games@roulette@dealer_female', 'clear_chips_zone2', 3.0, 3.0, -1, 0, 0, true, true, true)
-                    Citizen.Wait(1500)
+                    Wait(1500)
                     TaskPlayAnim(self.ped, 'anim_casino_b@amb@casino@games@roulette@dealer_female', 'clear_chips_zone3', 3.0, 3.0, -1, 0, 0, true, true, true)
 
-                    Citizen.Wait(2000)
+                    Wait(2000)
                     if DoesEntityExist(self.tableObject) and DoesEntityExist(self.ped) then
                         TaskPlayAnim(self.ped, 'anim_casino_b@amb@casino@games@roulette@dealer_female', 'idle', 3.0, 3.0, -1, 0, 0, true, true, true)
                     end
@@ -708,15 +704,10 @@ end
 
 function changeBetAmount(amount)
     currentBetAmount = amount
-    -- SendNUIMessage(
-    --     {
-    --         action = 'setBetAmount',
-    --         amount = amount
-    --     }
-    -- )
-
     PlaySoundFrontend(-1, 'DLC_VW_BET_HIGHLIGHT', 'dlc_vw_table_games_frontend_sounds', true)
 end
+
+
 
 function getGenericTextInput(type)
     if type == nil then
@@ -737,7 +728,7 @@ function getGenericTextInput(type)
     return false
 end
 
-Citizen.CreateThread(
+CreateThread(
     function()
         while true do
             local playerCoords = GetEntityCoords(GetPlayerPed(-1))
@@ -752,10 +743,10 @@ Citizen.CreateThread(
     end
 )
 
-Citizen.CreateThread(
+CreateThread(
     function()
         while not closetoRulett do
-            Citizen.Wait(0)
+            Wait(0)
         end
 
         for rulettIndex, data in pairs(Config.RulettTables) do
@@ -770,7 +761,7 @@ Citizen.CreateThread(
     end
 )
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         local sleep = 5
         local playerpos = GetEntityCoords(PlayerPedId())
@@ -799,7 +790,6 @@ Citizen.CreateThread(function()
 						            end
 					            end, 'member')
                             end
-                            
                             break
                         end
                         hideUi()
@@ -807,22 +797,22 @@ Citizen.CreateThread(function()
                 end
             end
         end
-        Citizen.Wait(sleep)		
+        Wait(sleep)		
     end
 end)
 
 RegisterNetEvent('client_callback:rulett:taskSitDown')
 AddEventHandler('client_callback:rulett:taskSitDown',
     function(rulettIndex, chairData)
-        --exports['progressBars']:drawBar(4000, 'Sitting...')
-	QBCore.Functions.Notify("Sitting...", "primary", 3200)
+        -- exports['progressBars']:drawBar(4000, 'Sitting...')
+        QBCore.Functions.Notify("Sitting...", "primary", 3200)
 
         SELECTED_CHAIR_ID = chairData.chairId
         CURRENT_CHAIR_DATA = chairData
         SITTING_SCENE = NetworkCreateSynchronisedScene(chairData.position, chairData.rotation, 2, 1, 0, 1065353216, 0, 1065353216)
         RequestAnimDict('anim_casino_b@amb@casino@games@shared@player@')
         while not HasAnimDictLoaded('anim_casino_b@amb@casino@games@shared@player@') do
-            Citizen.Wait(1)
+            Wait(1)
         end
 
         local randomSit = ({'sit_enter_left', 'sit_enter_right'})[math.random(1, 2)]
@@ -830,7 +820,7 @@ AddEventHandler('client_callback:rulett:taskSitDown',
         NetworkStartSynchronisedScene(SITTING_SCENE)
         SetPlayerControl(PlayerId(), 0, 0)
         startRulett(rulettIndex, chairData.chairId)
-        Citizen.Wait(4000)
+        Wait(4000)
         SetPlayerControl(PlayerId(), 1, 0)
     end
 )
@@ -844,7 +834,7 @@ end
 RegisterNetEvent('client:casino:openRulett')
 AddEventHandler('client:casino:openRulett',function(rulettIndex)
     if Rulettek[rulettIndex] ~= nil then
-        Citizen.Wait(4000)
+        Wait(4000)
         Rulettek[rulettIndex].enableCamera(true)
     end
 end)
@@ -891,43 +881,24 @@ AddEventHandler(
 )
 
 function casinoNuiUpdateGame(rulettIndex, ido, statusz)
-    if selectedRulett == rulettIndex then
-        
-        if not statusz then
-            -- SendNUIMessage(
-            --     {
-            --         action = 'setGameInfo',
-            --         header = 'The game is starting soon..',
-            --         szoveg = string.format('%s %s', ido, ' seconds.')
-            --     }
-            -- )
-            QBCore.Functions.GetPlayerData(function(PlayerData)
-				bankAmount = PlayerData.money["bank"]
-			end)
-			exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>"..ido.." Seconds Left</p>Current Bet: $"..currentBetAmount.."</p>Balance: $"..bankAmount)
-            exports['textUi']:DrawTextUi('show', "Adjust Bet: <strong>↑/↓</strong></p>LEFT CLICK: Bet number</p>SPACEBAR: Custom Amount</p>E: Change camera</p>ESC: Exit")
-        else
-            exports['textUi']:DrawTextUi('show', "The game is starting..")
-            exports['casinoUi']:HideCasinoUi('hide') 
-            Citizen.Wait(3500)
-            exports['textUi']:HideTextUi('hide')
-
+    QBCore.Functions.TriggerCallback('BLACKJACK:server:blueChipsAmount', function(result)
+        retval = result
+        if selectedRulett == rulettIndex then
+            if not statusz then
+                exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>"..ido.." Seconds Left</p>Current Bet: "..currentBetAmount.." chips</p>Availble chips: "..retval)
+                if Config.allowCustomBet then
+                    exports['textUi']:DrawTextUi('show', "Adjust Bet: <strong>↑/↓</strong></p>LEFT CLICK: Bet number</p>SPACEBAR: Custom Amount</p>E: Change camera</p>ESC: Exit")
+                else
+                    exports['textUi']:DrawTextUi('show', "Adjust Bet: <strong>↑/↓</strong></p>LEFT CLICK: Bet number</p>E: Change camera</p>ESC: Exit")
+                end
+            else
+                exports['textUi']:DrawTextUi('show', "The game is starting..") 
+                hideUi()
+            end
         end
-    end
+    end)
 end
 
--- RegisterNetEvent('casino:nui:updateChips') 
--- AddEventHandler(
---     'casino:nui:updateChips',
---     function(amount)
---         SendNUIMessage(
---             {
---                 action = 'setCurrentChips',
---                 amount = amount
---             }
---         )
---     end
--- )
 
 function getClosestChairData(tableObject)
     local localPlayer = PlayerPedId()
@@ -1008,7 +979,7 @@ AddEventHandler(
 
         RequestAnimDict(L)
         while not HasAnimDictLoaded(L) do
-            Citizen.Wait(1)
+            Wait(1)
         end
 
         if CURRENT_CHAIR_DATA ~= nil then
@@ -1062,7 +1033,7 @@ AddEventHandler(
 
         RequestAnimDict(L)
         while not HasAnimDictLoaded(L) do
-            Citizen.Wait(1)
+            Wait(1)
         end
 
         if CURRENT_CHAIR_DATA ~= nil then
@@ -1075,61 +1046,55 @@ AddEventHandler(
     end
 )
 
-RegisterNetEvent('client:rulett:playLossAnim')
-AddEventHandler(
-    'client:rulett:playLossAnim',
-    function(chairId)
-        QBCore.Functions.Notify('You Lost... Better luck net time', 'error', 3500)
+RegisterNetEvent('client:rulett:playLossAnim',function(chairId)
+    local rot = CURRENT_CHAIR_DATA.rotation
 
-        local rot = CURRENT_CHAIR_DATA.rotation
-
-        if chairId == 4 then
-            rot = rot + vector3(0.0, 0.0, 90.0)
-        elseif chairId == 3 then
-            rot = rot + vector3(0.0, 0.0, -180.0)
-        elseif chairId == 2 then
-            rot = rot + vector3(0.0, 0.0, -90.0)
-        elseif chairId == 1 then
-            chairId = 1
-            rot = rot + vector3(0.0, 0.0, -90.0)
-        end
-
-        local sex = 0
-        local L = string.format('anim_casino_b@amb@casino@games@roulette@ped_male@seat_%s@regular@0%sa@reacts@v01', chairId, chairId)
-
-        if GetEntityModel(PlayerPedId()) == GetHashKey('mp_f_freemode_01') then
-            sex = 1
-        end
-
-        if sex == 1 then
-            local L = string.format('anim_casino_b@amb@casino@games@roulette@ped_female@seat_%s@regular@0%sa@reacts@v01', chairId, chairId)
-        end
-
-        RequestAnimDict(L)
-        while not HasAnimDictLoaded(L) do
-            Citizen.Wait(1)
-        end
-
-        if CURRENT_CHAIR_DATA ~= nil then
-            local currentScene = NetworkCreateSynchronisedScene(CURRENT_CHAIR_DATA.position, rot, 2, 1, 0, 1065353216, 0, 1065353216)
-            NetworkAddPedToSynchronisedScene(
-                PlayerPedId(),
-                currentScene,
-                L,
-                ({'reaction_bad_var01', 'reaction_bad_var02', 'reaction_terrible'})[math.random(1, 3)],
-                4.0,
-                -2.0,
-                13,
-                16,
-                1148846080,
-                0
-            )
-            NetworkStartSynchronisedScene(currentScene)
-
-            idleTimer = 8
-        end
+    if chairId == 4 then
+        rot = rot + vector3(0.0, 0.0, 90.0)
+    elseif chairId == 3 then
+        rot = rot + vector3(0.0, 0.0, -180.0)
+    elseif chairId == 2 then
+        rot = rot + vector3(0.0, 0.0, -90.0)
+    elseif chairId == 1 then
+        chairId = 1
+        rot = rot + vector3(0.0, 0.0, -90.0)
     end
-)
+
+    local sex = 0
+    local L = string.format('anim_casino_b@amb@casino@games@roulette@ped_male@seat_%s@regular@0%sa@reacts@v01', chairId, chairId)
+
+    if GetEntityModel(PlayerPedId()) == GetHashKey('mp_f_freemode_01') then
+        sex = 1
+    end
+
+    if sex == 1 then
+        local L = string.format('anim_casino_b@amb@casino@games@roulette@ped_female@seat_%s@regular@0%sa@reacts@v01', chairId, chairId)
+    end
+
+    RequestAnimDict(L)
+    while not HasAnimDictLoaded(L) do
+        Wait(1)
+    end
+
+    if CURRENT_CHAIR_DATA ~= nil then
+        local currentScene = NetworkCreateSynchronisedScene(CURRENT_CHAIR_DATA.position, rot, 2, 1, 0, 1065353216, 0, 1065353216)
+        NetworkAddPedToSynchronisedScene(
+            PlayerPedId(),
+            currentScene,
+            L,
+            ({'reaction_bad_var01', 'reaction_bad_var02', 'reaction_terrible'})[math.random(1, 3)],
+            4.0,
+            -2.0,
+            13,
+            16,
+            1148846080,
+            0
+        )
+        NetworkStartSynchronisedScene(currentScene)
+
+        idleTimer = 8
+    end
+end)
 
 function playImpartial()
     local rot = CURRENT_CHAIR_DATA.rotation
@@ -1158,7 +1123,7 @@ function playImpartial()
 
     RequestAnimDict(L)
     while not HasAnimDictLoaded(L) do
-        Citizen.Wait(1)
+        Wait(1)
     end
 
     if CURRENT_CHAIR_DATA ~= nil then
@@ -1208,7 +1173,7 @@ function playRulettIdle()
 
     RequestAnimDict(L)
     while not HasAnimDictLoaded(L) do
-        Citizen.Wait(1)
+        Wait(1)
     end
 
     if CURRENT_CHAIR_DATA ~= nil then
