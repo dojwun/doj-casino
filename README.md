@@ -31,7 +31,7 @@ Edited Casino Pack for QBus Framework
 
 
 ## Casino Inside Track
-- Inside Track: (bet on virtual racehorses with a casino membership and a $100 min bet)
+- Inside Track: (bet on virtual racehorses with a casino membership and a 100 min chip bet)
  
 **[preview](https://streamable.com/m5eyk)**
 
