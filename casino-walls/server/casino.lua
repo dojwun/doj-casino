@@ -1,4 +1,7 @@
 
+local QBCore = exports['qb-core']:GetCoreObject()
+
+
 local ItemList = {
     ["casino_whitechip"] = 1,
 }
