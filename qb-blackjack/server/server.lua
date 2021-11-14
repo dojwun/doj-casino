@@ -158,37 +158,29 @@ end
 RegisterServerEvent("BLACKJACK:SetPlayerBet")
 AddEventHandler('BLACKJACK:SetPlayerBet', SetPlayerBet)
 
--- function CheckPlayerBet(i, bet)
--- 	local Player = QBCore.Functions.GetPlayer(source)
--- 	local ItemList = {
--- 		["blackchip"] = 1,
--- 	}
-	
--- 	local playerChips = Player.Functions.GetItemByName("blackchip")
-
--- 	local canBet = false
-
---     if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
---         for k, v in pairs(Player.PlayerData.items) do 
---             if Player.PlayerData.items[k] ~= nil then 
--- 				if ItemList[Player.PlayerData.items[k].name] ~= nil then 
--- 					if playerChips.amount >= bet then 
--- 					canBet = true
--- 					end
---                 end
---             end
---         end
--- 	end
--- 	TriggerClientEvent("BLACKJACK:BetReceived", source, canBet)
--- end
-
 function CheckPlayerBet(i, bet)
 	local Player = QBCore.Functions.GetPlayer(source)
+	local ItemList = {
+		["casino_blackchip"] = 1,
+	}
+
+	DebugPrint("TABLE "..i..": CHECKING "..GetPlayerName(source):upper().."'s CHIPS")
+
+	local playerChips = Player.Functions.GetItemByName("casino_blackchip")
+
 	local canBet = false
-	
-	if Player.PlayerData.money.bank >= bet then
-		canBet = true
-    end
+
+    if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then
+        for k, v in pairs(Player.PlayerData.items) do
+            if Player.PlayerData.items[k] ~= nil then
+				if ItemList[Player.PlayerData.items[k].name] ~= nil then
+					if playerChips.amount >= bet then
+						canBet = true
+					end
+                end
+            end
+        end
+	end
 
 	TriggerClientEvent("BLACKJACK:BetReceived", source, canBet)
 end
@@ -945,28 +937,59 @@ exports("SetTakeChipsCallback", SetTakeChipsCallback)
 exports("SetGiveChipsCallback", SetGiveChipsCallback)
 
 
+local ItemList = {
+    ["casino_blackchip"] = 1
+}
+QBCore.Functions.CreateCallback('BLACKJACK:server:blackChipsAmount', function(source, cb)
+    local retval = 0
+    local Player = QBCore.Functions.GetPlayer(source)
+    if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
+        for k, v in pairs(Player.PlayerData.items) do 
+            if Player.PlayerData.items[k] ~= nil then 
+                if ItemList[Player.PlayerData.items[k].name] ~= nil then 
+                    retval = retval + (ItemList[Player.PlayerData.items[k].name] * Player.PlayerData.items[k].amount)
+                end
+            end
+        end 
+    end
+    cb(retval)
+end)
+
 -- =====================SetExports
 function SetExports()
 	exports["qb-blackjack"]:SetGetChipsCallback(function(source)
-		local Player = QBCore.Functions.GetPlayer(source)
-		local bankBalance = Player.PlayerData.money["bank"]
+		local src = source 
+		local Player = QBCore.Functions.GetPlayer(src)
+		local Chips = Player.Functions.GetItemByName("casino_blackchip")
+		local minAmount = 100
+		if Chips ~= nil then 
+			if Chips.amount >= minAmount then
+				Chips = Chips 
+			else
+				return TriggerClientEvent('QBCore:Notify', src, 'You dont have enough black chips', 'error')
+			end
+		else
+			return TriggerClientEvent('QBCore:Notify', src, 'You dont have any black chips', 'error')
+		end
     end) 
 	
     exports["qb-blackjack"]:SetTakeChipsCallback(function(source, amount)
 		local Player = QBCore.Functions.GetPlayer(source)
-		local bankBalance = Player.PlayerData.money["bank"]
-		local MinAmount = 10
-		if bankBalance >= MinAmount then
-			Player.Functions.RemoveMoney("bank", tonumber(amount), "blackjack-bet")
-		else
-			return TriggerClientEvent("BLACKJACK:client:stop", source)
-		end
+        if Player ~= nil then
+            Player.Functions.RemoveItem("casino_blackchip", amount)
+            TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_blackchip'], "remove", amount)
+        end
     end) 
 
     exports["qb-blackjack"]:SetGiveChipsCallback(function(source, amount)
         local Player = QBCore.Functions.GetPlayer(source)
         if Player ~= nil then
-			Player.Functions.AddMoney("bank", tonumber(amount), "blackjack-won")
+			if Player.Functions.AddItem('casino_blackchip', amount, nil, {["quality"] = 100}) then
+				TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["casino_blackchip"], "add", amount)
+				TriggerClientEvent('QBCore:Notify', src, "You Won "..amount.." black casino chips!")
+			else
+				TriggerClientEvent('QBCore:Notify', src, 'You have to much in your pockets', 'error')
+			end
         end
     end)
 end
@@ -979,3 +1002,4 @@ AddEventHandler("onResourceStart", function(resourceName)
 end)
 
 SetExports()
+
