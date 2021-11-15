@@ -26,15 +26,13 @@ Config.blueChipPrice    = 10
 Config.blackChipPrice   = 50
 Config.goldChipPrice    = 100
 
-Config.CasinoMemberships = {
-    [1] = { name = "casino_member", price = 500, amount = 5, info = {}, type = "item", slot = 1 },
-    [2] = { name = "casino_vip",    price = 750, amount = 5, info = {}, type = "item", slot = 2 }
-}
 
-Config.CasinoChips = {
-    [1] = { name = "casino_whitechip", price = 1,   amount = 999, info = {}, type = "item", slot = 1 },
-    [2] = { name = "casino_redchip",   price = 5,   amount = 999, info = {}, type = "item", slot = 2 },
-    [3] = { name = "casino_bluechip",  price = 10,  amount = 999, info = {}, type = "item", slot = 3 },
-    [4] = { name = "casino_blackchip", price = 50,  amount = 999, info = {}, type = "item", slot = 4 },
-    [5] = { name = "casino_goldchip",  price = 100, amount = 999, info = {}, type = "item", slot = 5 }
-}
+Config.CasinoShop = {
+    [1] = { name = "casino_whitechip",  price = 1,   amount = 999, info = {}, type = "item", slot = 1 },
+    [2] = { name = "casino_redchip",    price = 5,   amount = 999, info = {}, type = "item", slot = 2 },
+    [3] = { name = "casino_bluechip",   price = 10,  amount = 999, info = {}, type = "item", slot = 3 },
+    [4] = { name = "casino_blackchip",  price = 50,  amount = 999, info = {}, type = "item", slot = 4 },
+    [5] = { name = "casino_goldchip",   price = 100, amount = 999, info = {}, type = "item", slot = 5 },
+    [6] = { name = "casino_member",     price = 500, amount = 199, info = {}, type = "item", slot = 6 },
+    [7] = { name = "casino_vip",        price = 750, amount = 199, info = {}, type = "item", slot = 7 }
+}   
