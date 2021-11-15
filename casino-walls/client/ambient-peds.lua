@@ -406,7 +406,7 @@ function CasinoPeds()
     SetEntityInvincible(ped, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
     TaskStartScenarioInPlace(ped, "WORLD_HUMAN_SMOKING", 0, true)
------------------------------------------------------------------------------------------------------------
+
     model = GetHashKey("a_m_y_bevhills_01")
     RequestModel(model)
     while not HasModelLoaded(model) do
@@ -586,5 +586,173 @@ function CasinoPeds()
     SetEntityInvincible(ped, true)
     SetBlockingOfNonTemporaryEvents(ped, true)
     TaskStartScenarioInPlace(ped, "WORLD_HUMAN_PARTYING", 0, true)
+
+    model = GetHashKey("a_m_m_prolhost_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 945.779, 22.762, 70.279, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 44.244)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_CHAIR", 0, true)
+
+    model = GetHashKey("a_f_y_scdressy_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 945.09, 21.745, 70.279, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 51.433)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_DECKCHAIR_DRINK", 0, true)
+
+    model = GetHashKey("a_f_y_bevhills_04")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 940.96, 18.807, 70.305, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 17.935)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_DECKCHAIR_DRINK", 0, true)
+
+    model = GetHashKey("a_m_m_stlat_02")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 941.913, 19.163, 70.288, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 18.65)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_CHAIR_FOOD", 0, true)
+
+    model = GetHashKey("a_f_y_scdressy_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 932.517, 18.882, 70.313, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 7.469)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_CHAIR_UPRIGHT", 0, true)
+
+    model = GetHashKey("a_f_y_bevhills_04")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 933.335, 19.048, 70.33, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 357.385)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_BENCH_DRINK_BEER", 0, true)
+
+    model = GetHashKey("a_m_m_malibu_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 934.378, 19.097, 70.339, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 357.293)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_DECKCHAIR_DRINK", 0, true)
+
+    model = GetHashKey("a_f_y_bevhills_04")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model ,  937.486, 29.38, 70.537, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 202.034)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_BENCH_DRINK_BEER", 0, true)
+
+    model = GetHashKey("a_m_m_malibu_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 938.916, 29.585, 70.534, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 179.067)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_SEAT_BENCH_DRINK_BEER", 0, true)
+
+    model = GetHashKey("ig_taostranslator")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 935.392, 27.821, 70.834, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 326.627)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "WORLD_HUMAN_PARTYING", 0, true)
+
+    model = GetHashKey("a_f_y_genhot_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 935.98, 28.242, 70.834, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped,233.585)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "PROP_HUMAN_STAND_IMPATIENT", 0, true)
+
+    model = GetHashKey("a_f_y_genhot_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 962.431, 51.656, 69.833, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 29.831)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "WORLD_HUMAN_SMOKING", 0, true)
+
+    model = GetHashKey("a_f_y_genhot_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 951.392, 36.326, 70.838, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 101.098)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "WORLD_HUMAN_PARTYING", 0, true)
+
+    model = GetHashKey("a_f_y_genhot_01")
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(1)
+    end
+    ped = CreatePed(0, model , 950.274, 37.131, 70.838, true)
+    FreezeEntityPosition(ped, true)
+    SetEntityHeading(ped, 201.608)
+    SetEntityInvincible(ped, true)
+    SetBlockingOfNonTemporaryEvents(ped, true)
+    TaskStartScenarioInPlace(ped, "WORLD_HUMAN_SMOKING", 0, true)
 end
 
