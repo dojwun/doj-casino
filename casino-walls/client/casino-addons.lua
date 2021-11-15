@@ -98,7 +98,7 @@ exports['qb-target']:AddTargetModel(`U_F_M_CasinoCash_01`, {
         { 
             event = "doj:casinoMainMenu",
             icon = "fas fa-circle",
-            label = "Speak Casino Employee", 
+            label = "Speak with Casino Employee", 
         },
 	},
 	distance = 3.0 
