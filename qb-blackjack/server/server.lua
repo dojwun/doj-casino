@@ -983,6 +983,7 @@ function SetExports()
     end) 
 
     exports["qb-blackjack"]:SetGiveChipsCallback(function(source, amount)
+	local src = source 
         local Player = QBCore.Functions.GetPlayer(source)
         if Player ~= nil then
 			if Player.Functions.AddItem('casino_blackchip', amount, nil, {["quality"] = 100}) then
