@@ -1,6 +1,4 @@
-
 local QBCore = exports['qb-core']:GetCoreObject()
-
 
 RegisterNetEvent('doj:casinoChipMenu', function()
     TriggerEvent('drawtextui:HideUI')
@@ -51,10 +49,10 @@ RegisterNetEvent('doj:casinoChipMenu', function()
             }
         },
         {
-            header = "Cancel",
+            header = "< Return",
 			txt = "",
 			params = {
-                event = ""
+                event = "doj:casinoMainMenu"
             }
         },
     })
@@ -94,43 +92,54 @@ exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.
     distance = 3.0 
 })
 
--- Casino Shop
+-- Casino Shop 
 exports['qb-target']:AddTargetModel(`U_F_M_CasinoCash_01`, {
 	options = {
         { 
-            event = "doj:casinoChipMenu",
-            icon = "fas fa-exchange-alt",
-            label = "Exchange Casino Chips", 
-        },
-        {
-            event = "qb-casino:client:openCasinoChips",
-            icon = "fas fa-coins",
-            label = "Purchase Casino Chips", 
-        },
-        {
-            event = "qb-casino:client:openCasinoMembersips", 
-            icon = "fas fa-id-card",
-            label = "Purchase Casino Memberships", 
+            event = "doj:casinoMainMenu",
+            icon = "fas fa-circle",
+            label = "Speak Casino Employee", 
         },
 	},
 	distance = 3.0 
 })
 
-RegisterNetEvent('qb-casino:client:openCasinoMembersips')
-AddEventHandler('qb-casino:client:openCasinoMembersips', function()
+RegisterNetEvent('qb-casino:client:openCasinoShop', function()
     local ShopItems = {}
-    ShopItems.label = "Diamond Casino Memberships"
-    ShopItems.items = Config.CasinoMemberships
-    ShopItems.slots = #Config.CasinoMemberships
+    ShopItems.label = "Diamond Casino Shop"
+    ShopItems.items = Config.CasinoShop
+    ShopItems.slots = #Config.CasinoShop 
     TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_", ShopItems)
 end)
 
-RegisterNetEvent('qb-casino:client:openCasinoChips')
-AddEventHandler('qb-casino:client:openCasinoChips', function()
-    local ShopItems = {} 
-    ShopItems.label = "Diamond Casino Chips"
-    ShopItems.items = Config.CasinoChips
-    ShopItems.slots = #Config.CasinoChips
-    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_", ShopItems)
+
+RegisterNetEvent('doj:casinoMainMenu', function()
+    exports['qb-menu']:openMenu({
+        {
+            header = "Diamond Casino",
+            isMenuHeader = true,
+        },
+        {
+            header = "Chip Exchange", 
+            txt = "See current prices",
+            params = {
+                event = "doj:casinoChipMenu",
+            }
+        },
+        {
+            header = "Browse Shop", 
+            txt = "See what we have to offer",
+            params = {
+                event = "qb-casino:client:openCasinoShop",
+            }
+        },
+        {
+            header = "Cancel",
+			txt = "",
+			params = {
+                event = ""
+            }
+        },
+    })
 end)
 
