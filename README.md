@@ -37,7 +37,8 @@ Edited Casino Pack for QBus Framework
 
 **[source](https://github.com/MRV6/mp_insidetrack)**
 
-## Casino Blackjack
+## Casino Blackjack 
+- [Bugged with multiple people, re-work coming soon]
 - Blackjack: (play 14 blackjack tables with a casino membership and a 10 min chip bet)
 
 **[preview](https://streamable.com/jpabhl)**
