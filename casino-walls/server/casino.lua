@@ -1,6 +1,4 @@
-
 local QBCore = exports['qb-core']:GetCoreObject()
-
 
 local ItemList = {
     ["casino_whitechip"] = 1,
@@ -20,6 +18,7 @@ AddEventHandler("qb-casino:server:WhiteSell", function()
                     Player.Functions.AddMoney(Config.payment, price, "sold-casino-chips")
                     TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_whitechip'], "remove", Player.PlayerData.items[k].amount)
                     TriggerClientEvent('QBCore:Notify', src, "You sold "..Player.PlayerData.items[k].amount.." White chips for $"..price)
+                    TriggerClientEvent("doj:casinoChipMenu", src)
                 end
             end
         end
@@ -47,6 +46,7 @@ AddEventHandler("qb-casino:server:RedSell", function()
                     Player.Functions.AddMoney(Config.payment, price, "sold-casino-chips")
                     TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_redchip'], "remove", Player.PlayerData.items[k].amount)
                     TriggerClientEvent('QBCore:Notify', src, "You sold "..Player.PlayerData.items[k].amount.." Red chips for $"..price)
+                    TriggerClientEvent("doj:casinoChipMenu", src)
                 end
             end
         end
@@ -74,6 +74,7 @@ AddEventHandler("qb-casino:server:BlueSell", function()
                     Player.Functions.AddMoney(Config.payment, price, "sold-casino-chips")
                     TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_bluechip'], "remove", Player.PlayerData.items[k].amount)
                     TriggerClientEvent('QBCore:Notify', src, "You sold "..Player.PlayerData.items[k].amount.." Blue chips for $"..price)
+                    TriggerClientEvent("doj:casinoChipMenu", src)
                 end
             end
         end
@@ -101,6 +102,7 @@ AddEventHandler("qb-casino:server:BlackSell", function()
                     Player.Functions.AddMoney(Config.payment, price, "sold-casino-chips")
                     TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_blackchip'], "remove", Player.PlayerData.items[k].amount)
                     TriggerClientEvent('QBCore:Notify', src, "You sold "..Player.PlayerData.items[k].amount.." Black chips for $"..price)
+                    TriggerClientEvent("doj:casinoChipMenu", src)
                 end
             end
         end
@@ -128,6 +130,7 @@ AddEventHandler("qb-casino:server:GoldSell", function()
                     Player.Functions.AddMoney(Config.payment, price, "sold-casino-chips")
                     TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove", Player.PlayerData.items[k].amount)
                     TriggerClientEvent('QBCore:Notify', src, "You sold "..Player.PlayerData.items[k].amount.." Gold chips for $"..price)
+                    TriggerClientEvent("doj:casinoChipMenu", src)
                 end
             end
         end
