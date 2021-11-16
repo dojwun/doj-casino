@@ -791,7 +791,7 @@ CreateThread(function()
                                 	else
 							            QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
 						            end
-					            end, 'member')
+					            end, 'casino_member')
                             end
                             break
                         end
