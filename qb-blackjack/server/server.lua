@@ -1,4 +1,3 @@
-
 local QBCore = exports['qb-core']:GetCoreObject()
 
 -- ===========================================
@@ -191,7 +190,6 @@ AddEventHandler("BLACKJACK:CheckPlayerBet", CheckPlayerBet)
 
 function SortPlayers(pTable)
     local temp
-
     for i=1,#pTable-1 do
         for j=i+1,#pTable do
             if pTable[i].seat < pTable[j].seat then
@@ -201,7 +199,6 @@ function SortPlayers(pTable)
             end
         end
     end
-
     return pTable
 end
 
@@ -695,26 +692,21 @@ function StartTableThread(i)
 								PlayDealerAnim(index, "anim_casino_b@amb@casino@games@blackjack@dealer", "female_turn_card")
 								TriggerClientEvent("BLACKJACK:DealerTurnOverCard", -1, index)
 								dealerVisibleHand = dealerHand
-
 								Wait(2000)
 								PlayDealerSpeech(index, "MINIGAME_BJACK_DEALER_"..handValue(dealerHand))
 								TriggerClientEvent("BLACKJACK:UpdateDealerHand", -1, index, handValue(dealerVisibleHand))
-
 							end
 								
 							if handValue(dealerHand) < 17 and ArePlayersStillIn(currentPlayers) then
 								repeat
 									local card = takeCard(deck)
 									table.insert(dealerHand, card)
-									
-									TriggerClientEvent("BLACKJACK:GiveCard", -1, index, 0, #dealerHand, card, #dealerHand == 1)
-									
+									TriggerClientEvent("BLACKJACK:GiveCard", -1, index, 0, #dealerHand, card, #dealerHand == 1)					
 									PlayDealerAnim(index, "anim_casino_b@amb@casino@games@blackjack@dealer", "female_deal_card_self_second_card")
 									DebugPrint("TABLE "..index..": DEALT DEALER "..card)
 									Wait(2000)
 									PlayDealerSpeech(index, "MINIGAME_BJACK_DEALER_"..handValue(dealerHand))
 									TriggerClientEvent("BLACKJACK:UpdateDealerHand", -1, index, handValue(dealerVisibleHand))
-
 								until handValue(dealerHand) >= 17
 							end
 						end
@@ -938,6 +930,8 @@ exports("SetTakeChipsCallback", SetTakeChipsCallback)
 exports("SetGiveChipsCallback", SetGiveChipsCallback)
 
 
+-- ==================================================================================== Added
+
 local ItemList = {
     ["casino_blackchip"] = 1
 }
@@ -956,13 +950,12 @@ QBCore.Functions.CreateCallback('BLACKJACK:server:blackChipsAmount', function(so
     cb(retval)
 end)
 
--- =====================SetExports
 function SetExports()
 	exports["qb-blackjack"]:SetGetChipsCallback(function(source)
 		local src = source 
 		local Player = QBCore.Functions.GetPlayer(src)
 		local Chips = Player.Functions.GetItemByName("casino_blackchip")
-		local minAmount = 100
+		local minAmount = 10
 		if Chips ~= nil then 
 			if Chips.amount >= minAmount then
 				Chips = Chips 
@@ -983,7 +976,7 @@ function SetExports()
     end) 
 
     exports["qb-blackjack"]:SetGiveChipsCallback(function(source, amount)
-	local src = source 
+		local src = source 
         local Player = QBCore.Functions.GetPlayer(source)
         if Player ~= nil then
 			if Player.Functions.AddItem('casino_blackchip', amount, nil, {["quality"] = 100}) then
@@ -1004,4 +997,5 @@ AddEventHandler("onResourceStart", function(resourceName)
 end)
 
 SetExports()
+
 
