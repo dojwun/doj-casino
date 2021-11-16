@@ -1,12 +1,10 @@
 
 local QBCore = exports['qb-core']:GetCoreObject()
 
-
 isRoll = false
 math.randomseed(os.time())
 
-RegisterServerEvent('luckywheel:getwheel')
-AddEventHandler('luckywheel:getwheel', function()
+RegisterNetEvent('luckywheel:getwheel', function()
     local Player = QBCore.Functions.GetPlayer(source)
     local bankBalance = Player.PlayerData.money["bank"]
     local MinAmount = Config.startingPrice
@@ -19,8 +17,7 @@ AddEventHandler('luckywheel:getwheel', function()
     end
 end)
 
-RegisterServerEvent('luckywheel:startwheel')
-AddEventHandler('luckywheel:startwheel', function(xPlayer, source)
+RegisterNetEvent('luckywheel:startwheel', function(xPlayer, source)
     local _source = source
     if not isRoll then
         if xPlayer ~= nil then
@@ -41,8 +38,7 @@ AddEventHandler('luckywheel:startwheel', function(xPlayer, source)
 	end
 end)
 
-RegisterServerEvent('luckywheel:give')
-AddEventHandler('luckywheel:give', function(source, price)
+RegisterNetEvent('luckywheel:give', function(source, price)
 	local Player = QBCore.Functions.GetPlayer(source)
 	isRoll = false
 	if price.type == 'car' then
@@ -72,7 +68,34 @@ AddEventHandler('luckywheel:give', function(source, price)
 	TriggerClientEvent("luckywheel:rollFinished", -1)
 end)
 
-RegisterServerEvent('luckywheel:stoproll')
-AddEventHandler('luckywheel:stoproll', function()
+RegisterNetEvent('luckywheel:stoproll', function()
 	isRoll = false
 end)
+
+RegisterNetEvent('luckywheel:server:setVehicleOwner', function()
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
+	local cid = Player.PlayerData.citizenid
+	local vehicle = Config.VehiclePrize
+	local plate = GeneratePlate()
+	exports.oxmysql:insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
+		Player.PlayerData.license,
+		cid,
+		vehicle,
+		GetHashKey(vehicle),
+		'{}',
+		plate,
+		0
+	})
+end)
+
+
+function GeneratePlate()
+    local plate = QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(2)
+    local result = exports.oxmysql:scalarSync('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
+    if result then
+        return GeneratePlate()
+    else
+        return plate:upper()
+    end
+end
