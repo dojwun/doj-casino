@@ -1,7 +1,6 @@
 
 local QBCore = exports['qb-core']:GetCoreObject()
 
-
 local car, h
 local _wheel, _base, _lights1, _lights2, _arrow1, _arrow2 = nil, nil, nil, nil, nil, nil
 
@@ -77,8 +76,7 @@ CreateThread(function()
 	end
 end)
 
-RegisterNetEvent("luckywheel:client:startWheel")
-AddEventHandler("luckywheel:client:startWheel", function()
+RegisterNetEvent("luckywheel:client:startWheel", function()
 	QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
 		if HasItem then
 			TriggerServerEvent("luckywheel:getwheel")
@@ -88,25 +86,20 @@ AddEventHandler("luckywheel:client:startWheel", function()
 	end, "casino_vip")
 end)
 
-RegisterNetEvent("luckywheel:syncanim")
-AddEventHandler("luckywheel:syncanim", function()
+RegisterNetEvent("luckywheel:syncanim", function()
 	doRoll(0)
 end)
 
-RegisterNetEvent("luckywheel:startroll")
-AddEventHandler("luckywheel:startroll", function(s, index, p)
+RegisterNetEvent("luckywheel:startroll", function(s, index, p)
 	Wait(1000)
 	SetEntityVisible(_lights1, false, 0)
 	SetEntityVisible(_lights2, true, 0)
 	win = (index - 1) * 18 + 0.0
 	local j = 360
-	
 	if s == GetPlayerServerId(PlayerId()) then
 		PlaySoundFromEntity(-1, "Spin_Start", _wheel, 'dlc_vw_casino_lucky_wheel_sounds', 1, 1)
 	end
-	
 	for i=1,1100,1 do
-		
 		SetEntityRotation(_wheel, h.x, j+0.0, h.z, 0, false)
 		if i < 50 then
 			j = j - 1.5
@@ -146,7 +139,6 @@ AddEventHandler("luckywheel:startroll", function(s, index, p)
 	SetEntityVisible(_arrow1, false, 0)
 	SetEntityVisible(_arrow2, true, 0)
 	local t = true
-	
 	if s == GetPlayerServerId(PlayerId()) then
 		if p.sound == 'car' then
 			PlaySoundFromEntity(-1, "Win_Car", _wheel, 'dlc_vw_casino_lucky_wheel_sounds', 1, 1)
@@ -162,7 +154,6 @@ AddEventHandler("luckywheel:startroll", function(s, index, p)
 			PlaySoundFromEntity(-1, "Win", _wheel, 'dlc_vw_casino_lucky_wheel_sounds', 1, 1)
 		end
 	end
-	
 	for i=1,15,1 do
 		Wait(200)
 		SetEntityVisible(_lights1, t, 0)
@@ -184,8 +175,7 @@ AddEventHandler("luckywheel:startroll", function(s, index, p)
 	TriggerServerEvent('luckywheel:stoproll')
 end)
 
-RegisterNetEvent("luckywheel:rollFinished")
-AddEventHandler("luckywheel:rollFinished", function() 
+RegisterNetEvent("luckywheel:rollFinished", function() 
     _isRolling = false
 end)
 
@@ -242,25 +232,24 @@ function doRoll(index)
             TaskStartScenarioInPlace(playerPed, "WORLD_HUMAN_STRIP_WATCH_STAND", 0, true)
 			Wait(4800)
 			ClearPedTasks(playerPed)
-
         end)
-
     end
 end
 
-RegisterNetEvent("dojLuckywheel:winCar")
-AddEventHandler("dojLuckywheel:winCar", function() 
+RegisterNetEvent("dojLuckywheel:winCar", function() 
     local coords = { ['x'] = 933.29, ['y'] = -2.82, ['z'] = 78.76, ['h'] = 144.6 }
 	QBCore.Functions.SpawnVehicle(Config.VehiclePrize, function(veh)
-		SetVehicleNumberPlateText(veh, "DIAMOND"..tostring(math.random(1000, 9999)))
+		TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
+		TriggerServerEvent('luckywheel:server:setVehicleOwner')
 		exports['LegacyFuel']:SetFuel(veh, 100.0)
 		SetEntityHeading(veh, coords.h)
 		TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-		TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
-		SetVehicleEngineOn(veh, true, true)
+		SetVehicleEngineOn(veh, true, true) 
 		QBCore.Functions.Notify("YOU WON THE SHOW CAR! Dodge Challenger SRT Demon!", "primary", 3500)
 	end, coords, true)            
 end)
+
+
 
 
 
