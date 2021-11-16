@@ -8,20 +8,16 @@ RegisterNetEvent('casino:context:hit&stand', function()
             header = "Hit", 
             txt = "Draw another card",
             params = {
-                event = "BLACKJACK:client:hit",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 1
             }
         },
         {
             header = "Stand", 
             txt = "Be a pussy",
             params = {
-                event = "BLACKJACK:client:stand",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 2
             }
         },
     })
@@ -37,30 +33,24 @@ RegisterNetEvent('casino:context:hit&doubledown', function()
             header = "Hit", 
             txt = "Draw another card",
             params = {
-                event = "BLACKJACK:client:hit",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 1
             }
         },
         {
             header = "Stand", 
             txt = "Be a pussy",
             params = {
-                event = "BLACKJACK:client:stand",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 2
             }
         },
         {
             header = "Double Down", 
             txt = "Double your initial bet",
             params = {
-                event = "BLACKJACK:client:double",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 3
             }
         },
     })
@@ -76,30 +66,24 @@ RegisterNetEvent('casino:context:hit&split', function()
             header = "Hit", 
             txt = "Draw another card",
             params = {
-                event = "BLACKJACK:client:hit",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 1
             }
         },
         {
             header = "Stand", 
             txt = "Be a pussy",
             params = {
-                event = "BLACKJACK:client:stand",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 2
             }
         },
         {
             header = "Split", 
             txt = "Split",
             params = {
-                event = "BLACKJACK:client:split",
-                args = {
-                    
-                }
+                event = "doj:client:blackjackMenu",
+                args = 4
             }
         },
     })
