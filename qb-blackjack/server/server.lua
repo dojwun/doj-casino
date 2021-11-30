@@ -163,13 +163,8 @@ function CheckPlayerBet(i, bet)
 	local ItemList = {
 		["casino_blackchip"] = 1,
 	}
-
-	DebugPrint("TABLE "..i..": CHECKING "..GetPlayerName(source):upper().."'s CHIPS")
-
 	local playerChips = Player.Functions.GetItemByName("casino_blackchip")
-
 	local canBet = false
-
     if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then
         for k, v in pairs(Player.PlayerData.items) do
             if Player.PlayerData.items[k] ~= nil then
@@ -181,7 +176,6 @@ function CheckPlayerBet(i, bet)
             end
         end
 	end
-
 	TriggerClientEvent("BLACKJACK:BetReceived", source, canBet)
 end
 
