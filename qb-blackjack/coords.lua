@@ -32,11 +32,11 @@ tables = { -- Spawns Ped Only -- Setup Currently For This https://forum.cfx.re/t
 		highStakes = false
 	},
 	{
-		coords = vector4(1004.09, 53.11, 68.45, 55.30), --Table NOT WORKING
+		coords = vector4(1004.09, 53.11, 68.45, 55.30), --Table 3
 		highStakes = false
 	},
 	{
-		coords = vector4(1002.36, 60.52, 68.45, 142.53), --Table NOT WORKING
+		coords = vector4(1002.36, 60.52, 68.45, 142.53), --Table 4
 		highStakes = false
 	},
 	{
@@ -48,35 +48,35 @@ tables = { -- Spawns Ped Only -- Setup Currently For This https://forum.cfx.re/t
 		highStakes = false
 	},
 	{
-		coords = vector4(985.95, 60.56, 69.25, 187.91), --Table NOT WORKING
+		coords = vector4(985.95, 60.56, 69.25, 187.91), --Table 7
 		highStakes = true
 	},
 	{
-		coords = vector4(982.50, 62.85, 69.25, 101.44), --Table NOT WORKING
+		coords = vector4(982.50, 62.85, 69.25, 101.44), --Table 8
 		highStakes = true
 	},
 	{
-		coords = vector4(984.97, 66.64, 69.25, 3.39), --Table NOT WORKING
+		coords = vector4(984.97, 66.64, 69.25, 3.39), --Table 9
 		highStakes = true
 	},
 	{
-		coords = vector4(988.45, 64.38, 69.25, 278.52), --Table NOT WORKING
+		coords = vector4(988.45, 64.38, 69.25, 278.52), --Table 10
 		highStakes = true
 	},
 	{
-		coords = vector4(989.05, 45.69, 69.25, 22.31), --Table NOT WORKING
+		coords = vector4(989.05, 45.69, 69.25, 22.31), --Table 11
 		highStakes = true
 	},
 	{
-		coords = vector4(987.30, 42.19, 69.25, 102.30), --Table NOT WORKING
+		coords = vector4(987.30, 42.19, 69.25, 102.30), --Table 12
 		highStakes = true
 	},
 	{
-		coords = vector4(991.56, 40.10, 69.25, 200.84), --Table NOT WORKING
+		coords = vector4(991.56, 40.10, 69.25, 200.84), --Table 13
 		highStakes = true
 	},
-	{
-		coords = vector4(993.20, 43.70, 69.25, 279.25), --Table NOT WORKING
+	{ 
+		coords = vector4(993.20, 43.70, 69.25, 279.25), --Table 14
 		highStakes = true
 	},
 }
