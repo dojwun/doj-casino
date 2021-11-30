@@ -58,23 +58,6 @@ RegisterNetEvent('doj:casinoChipMenu', function()
     })
 end)
 
--- Lucky wheel
-exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
-    name="LuckyWheel",
-    heading=160,
-    debugPoly=false,
-    useZ=true,
-    }, {
-        options = {
-            {
-                event = "luckywheel:client:startWheel",
-                icon = "fas fa-sync-alt",
-                label = "Try Your Luck",
-            },
-        },
-    distance = 2.0 
-})
-
 -- Horse Bets
 exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
     name="Betting",
