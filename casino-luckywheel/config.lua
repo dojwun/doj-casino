@@ -4,6 +4,7 @@ Config	= {}
 Config.WheelPos = {x = 949.71, y = 45.1, z = 70.9, h =328.0}	-- Where the wheel prop will spawn OR where wheel prop is
 Config.startingPrice = 5000
 Config.VehiclePrize = 'demon'
+Config.LuckyWheelPrompt = 'press' -- 'press' or 'peek' ['press' = press e to start] ['peek' = uses qb-target to start wheel]
 
 
 -- First it will pick a random 
