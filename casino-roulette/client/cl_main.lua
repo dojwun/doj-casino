@@ -114,7 +114,7 @@ createRulettAsztal = function(index, data)
                             if DoesEntityExist(bet.obj) then
                                 local coords = GetEntityCoords(bet.obj)
                                 if bet.playerSrc == GetPlayerServerId(PlayerId()) then
-                                    Utils.Draw3DText(coords, string.format('~w~%s', bet.betAmount), 0.10, 0)
+                                    Draw3DText(coords, string.format('~w~%s', bet.betAmount), 0.10, 0)
                                 end
                             end
                         end
@@ -467,7 +467,7 @@ createRulettAsztal = function(index, data)
     end
 
     self.speakPed = function(speakName)
-        PlayAmbientSpeech1(self.ped, speakName, 'SPEECH_PARAMS_FORCE_NORMAL_CLEAR', 1)
+        PlayPedAmbientSpeechNative(self.ped, speakName, 'SPEECH_PARAMS_FORCE_NORMAL_CLEAR', 1)
     end
 
     self.createBetObjects = function(bets)
@@ -700,6 +700,38 @@ createRulettAsztal = function(index, data)
     Rulettek[self.index] = self
 end
 
+function Draw3DText(coords, text, size, font)
+    coords = vector3(coords.x, coords.y, coords.z)
+
+    local camCoords = GetGameplayCamCoords()
+    local distance = #(coords - camCoords)
+
+    if not size then
+        size = 1
+    end
+    if not font then
+        font = 0
+    end
+
+    local scale = (size / distance) * 2
+    local fov = (1 / GetGameplayCamFov()) * 100
+    scale = scale * fov
+
+    SetTextScale(0.0 * scale, 0.55 * scale)
+    SetTextFont(font)
+    SetTextColour(255, 255, 255, 255)
+    SetTextDropshadow(0, 0, 0, 0, 255)
+    SetTextDropShadow()
+    SetTextOutline()
+    SetTextCentre(true)
+
+    SetDrawOrigin(coords, 0)
+    BeginTextCommandDisplayText('STRING')
+    AddTextComponentSubstringPlayerName(text)
+    EndTextCommandDisplayText(0.0, 0.0)
+    ClearDrawOrigin()
+end
+
 function hideUi()
 	exports['textUi']:HideTextUi('hide')
 	exports['casinoUi']:HideCasinoUi('hide') 
@@ -709,7 +741,6 @@ function changeBetAmount(amount)
     currentBetAmount = amount
     PlaySoundFrontend(-1, 'DLC_VW_BET_HIGHLIGHT', 'dlc_vw_table_games_frontend_sounds', true)
 end
-
 
 
 function getGenericTextInput(type)
@@ -782,8 +813,6 @@ CreateThread(function()
                             if closestChairData == nil then
                                 break
                             end
-                            
-
                             if IsControlJustPressed(0, 38) then
                                 QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
                                     if HasItem then
