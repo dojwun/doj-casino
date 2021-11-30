@@ -899,7 +899,7 @@ function ProcessTables()
 						end
 
 
-						if #(pCoords - coords) <= 2.8 and not IsSeatOccupied(coords, 0.5) and canSit then
+						if #(pCoords - coords) < 1.5 and not IsSeatOccupied(coords, 0.5) and canSit then
 							wait = 5
 							inZone  = true
 
@@ -911,8 +911,8 @@ function ProcessTables()
 						
 						
 							if IsControlJustPressed(1, 51) then
-								QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-									if HasItem then
+								-- QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
+								-- 	if HasItem then
 										if satDownCallback ~= nil then
 											satDownCallback()
 										end			
@@ -1021,10 +1021,10 @@ function ProcessTables()
 												end
 											end
 										end
-									else
-										QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
-									end
-								end, 'casino_member')
+								-- 	else
+								-- 		QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
+								-- 	end
+								-- end, 'casino_member')
 							end
 						end
 					end
