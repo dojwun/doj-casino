@@ -1,3 +1,4 @@
+
 local QBCore = exports['qb-core']:GetCoreObject()
 
 QBCore.Functions.CreateCallback("insidetrack:server:getbalance", function(source, cb)
@@ -24,7 +25,7 @@ RegisterServerEvent("insidetrack:server:placebet", function(bet)
         if Chips.amount >= bet then
             Player.Functions.RemoveItem("casino_redchip", bet)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['casino_redchip'], "remove", bet)
-            TriggerClientEvent('QBCore:Notify', src, "You placed a "..bet.." white casino chips bet")
+            TriggerClientEvent('QBCore:Notify', src, "You placed a "..bet.." red casino chips bet")
         else
             return TriggerClientEvent('QBCore:client:closeBetsNotEnough', src)
         end
@@ -39,7 +40,7 @@ RegisterServerEvent("insidetrack:server:winnings", function(amount)
     if Player ~= nil then
         if Player.Functions.AddItem('casino_redchip', amount, nil, {["quality"] = 100}) then
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["casino_redchip"], "add", amount)
-            TriggerClientEvent('QBCore:Notify', src, "You Won "..amount.." white casino chips!")
+            TriggerClientEvent('QBCore:Notify', src, "You Won "..amount.." red casino chips!")
         else
             TriggerClientEvent('QBCore:Notify', src, 'You have to much in your pockets', 'error')
         end
