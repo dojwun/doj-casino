@@ -7,7 +7,7 @@ local aktivRulettek = {}
 function getPlayerChips(source)
     local Player = QBCore.Functions.GetPlayer(source)
     local Chips = Player.Functions.GetItemByName("casino_bluechip")
-    local minAmount = 100
+    local minAmount = 10
     if Chips ~= nil then 
         if Chips.amount >= minAmount then
             return Chips.amount 
@@ -317,7 +317,7 @@ AddEventHandler(
 
             local chipsAmount = getPlayerChips(src)
             
-            if chipsAmount >= betAmount then 
+            if chipsAmount == betAmount then 
                 removeChips(src, betAmount)
                 r_showNotification(src, ''..betAmount..' chips bet on ['..betId..']')
 
