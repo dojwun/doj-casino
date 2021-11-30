@@ -58,23 +58,6 @@ RegisterNetEvent('doj:casinoChipMenu', function()
     })
 end)
 
--- Horse Bets
-exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
-    name="Betting",
-    heading=160,
-    debugPoly=false,
-    useZ=true,
-}, {
-    options = {
-        {
-            event = "QBCore:client:openInsideTrack",
-            icon = "fas fa-coins",
-            label = "Start Betting",
-        },
-    },
-    distance = 3.0 
-})
-
 -- Casino Shop 
 exports['qb-target']:AddTargetModel(`U_F_M_CasinoCash_01`, {
 	options = {
