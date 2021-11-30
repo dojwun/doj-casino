@@ -1,3 +1,4 @@
+
 local inCasino              = false
 local videoWallRenderTarget = nil
 local showBigWin            = false
@@ -10,15 +11,15 @@ local spinningCar = nil
 function startCasinoThreads()
     RequestStreamedTextureDict('Prop_Screen_Vinewood')
     while not HasStreamedTextureDictLoaded('Prop_Screen_Vinewood') do
-        Citizen.Wait(100)
+        Wait(100)
     end
     RegisterNamedRendertarget('casinoscreen_01')
     LinkNamedRendertarget(`vw_vwint01_video_overlay`)
     videoWallRenderTarget = GetNamedRendertargetRenderId('casinoscreen_01')
-    Citizen.CreateThread(function()
+    CreateThread(function() 
         local lastUpdatedTvChannel = 0
         while true do
-            Citizen.Wait(0)
+            Wait(0)
 
             if not inCasino then
                 ReleaseNamedRendertarget('casinoscreen_01')
@@ -84,16 +85,15 @@ AddEventHandler("chCasinoWall:enteredCasino", function()
 end)
 
 AddEventHandler("chCasinoWall:exitedCasino", function()
-    inCasino = false
+  inCasino = false
 end)
 
 RegisterNetEvent('chCasinoWall:bigWin')
 AddEventHandler('chCasinoWall:bigWin', function()
-    if not inCasino then
-        return
-    end
-
-    showBigWin = true
+  if not inCasino then
+    return
+  end
+  showBigWin = true
 end)
 
 
@@ -139,7 +139,7 @@ CreateThread(function()
 end)
 
 function spinMeRightRoundBaby()
-	Citizen.CreateThread(function()
+	CreateThread(function()
 	    while inCasino do
 		if not spinningObject or spinningObject == 0 or not DoesEntityExist(spinningObject) then
 		  spinningObject = GetClosestObjectOfType(935.432, 42.5611, 72.14, 10.0, -1561087446, 0, 0, 0)
@@ -169,7 +169,7 @@ function drawCarForWins()
 	end
 	RequestModel(Config.VehicleOnDisplay)
 	while not HasModelLoaded(Config.VehicleOnDisplay) do
-		Citizen.Wait(0)
+		Wait(0)
 	end
 	SetModelAsNoLongerNeeded(Config.VehicleOnDisplay)
 	spinningCar = CreateVehicle(Config.VehicleOnDisplay, 935.432, 42.5611, 72.14, 0.0, 0, 0)
@@ -181,19 +181,19 @@ function drawCarForWins()
 end
 
 function playSomeBackgroundAudioBaby()
-	Citizen.CreateThread(function()
+	CreateThread(function()
 	  local function audioBanks()
 		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_GENERAL", false, -1) do
-		  Citizen.Wait(0)
+		  Wait(0)
 		end
 		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_01", false, -1) do
-		  Citizen.Wait(0)
+		  Wait(0)
 		end
 		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_02", false, -1) do
-		  Citizen.Wait(0)
+		  Wait(0)
 		end
 		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_03", false, -1) do
-		  Citizen.Wait(0)
+		  Wait(0)
 		end
 	  end
 	  audioBanks()
@@ -204,7 +204,7 @@ function playSomeBackgroundAudioBaby()
 		if IsStreamPlaying() and not IsAudioSceneActive("DLC_VW_Casino_General") then
 		  StartAudioScene("DLC_VW_Casino_General")
 		end
-		Citizen.Wait(1000)
+		Wait(1000)
 	  end
 	  if IsStreamPlaying() then
 		StopStream()
@@ -214,4 +214,5 @@ function playSomeBackgroundAudioBaby()
 	  end
 	end)
 end
+
 
