@@ -2,8 +2,12 @@
 
 Edited Casino Pack for QBus Framework
 
-# Updated 11/14/21
+# Updated 11/30/21
+- seat switching in qb-blackjack fixed (misplaced callback caused whole mess up...)
+
+#### Updated 11/14/21
 - Casino now uses Casino Chips
+
 # Images
 ![casino_redchip](https://i.imgur.com/JBjBg0n.png)
 ![casino_whitechip](https://i.imgur.com/1nWyXiI.png)
