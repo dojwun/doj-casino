@@ -61,11 +61,35 @@ CreateThread(function()
         if distance < 2.9 and not _isRolling then
             if distance < 2.8 and not _isRolling then
                 inZone  = true
-				text = "<b>Diamond Casino Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
+				if Config.LuckyWheelPrompt == 'press' then 
+					text = "<b>Diamond Casino Lucky Wheel</b></p>Press [E] to spin for $"..Config.startingPrice
+					if IsControlJustPressed(0, 38) then -- E
+						exports['textUi']:DrawTextUi('hide')
+						Citizen.Wait(200)
+						TriggerEvent('luckywheel:client:startWheel') 
+					end
+				elseif Config.LuckyWheelPrompt == 'peek' then
+					text = "<b>Diamond Casino Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
+					exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
+						name="LuckyWheel",
+						heading=160,
+						debugPoly=false,
+						useZ=true,
+						}, {
+							options = {
+								{
+									event = "luckywheel:client:startWheel",
+									icon = "fas fa-sync-alt",
+									label = "Try Your Luck",
+								},
+							},
+						distance = 2.0 
+					})
+				end
             end
             if inZone and not alreadyEnteredZone then
                 alreadyEnteredZone = true
-                exports['textUi']:DrawTextUi('show', text) 
+                exports['textUi']:DrawTextUi('show', text)  
             end
             if not inZone and alreadyEnteredZone then
                 alreadyEnteredZone = false
