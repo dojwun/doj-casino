@@ -1,13 +1,67 @@
 
 local QBCore = exports['qb-core']:GetCoreObject()
 
-
 local cooldown = 60
 local tick = 0
 local checkRaceStatus = false
 local insideTrackActive = false
 local gameOpen = false
 local insideTrackLocation = vector3(955.619, 70.179, 70.433)
+
+local insideMarker = false
+Citizen.CreateThread(function()
+    local alreadyEnteredZone = false
+    while true do
+        wait = 5
+        local ped = PlayerPedId()
+        local inZone = false
+        local coords = GetEntityCoords(ped)
+        local dist = #(insideTrackLocation - coords)
+        if dist <= 7.0 then
+            if dist <= 6.0 and not insideTrackActive then
+                insideMarker = true
+                wait = 5
+                inZone  = true
+                if Config.HorseBetPrompt == 'press' then 
+                    text = '<b>Diamond Casino Inside Track</b></p>Press [E] to start betting'
+					if IsControlJustPressed(0, 38) then -- E
+						Citizen.Wait(200)
+						TriggerEvent('QBCore:client:openInsideTrack') 
+					end
+				elseif Config.HorseBetPrompt == 'peek' then
+                    text = '<b>Diamond Casino Inside Track</b>'
+                    exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
+                        name="Betting",
+                        heading=160,
+                        debugPoly=false,
+                        useZ=true,
+                    }, {
+                        options = {
+                            {
+                                event = "QBCore:client:openInsideTrack", 
+                                icon = "fas fa-coins",
+                                label = "Start Betting",
+                            },
+                        },
+                        distance = 3.0 
+                    })
+				end
+            end
+        else
+            wait = 1000
+        end
+        if inZone and not alreadyEnteredZone then
+            alreadyEnteredZone = true
+            exports['textUi']:DrawTextUi('show', text)
+        end
+
+        if not inZone and alreadyEnteredZone then
+            alreadyEnteredZone = false
+            exports['textUi']:HideTextUi('hide')
+        end
+        Citizen.Wait(wait)
+    end
+end)
 
 local function OpenInsideTrack()
     Citizen.CreateThread(function() -- Disable pause when while in-blackjack
@@ -86,7 +140,6 @@ AddEventHandler('QBCore:client:openInsideTrack', function()
         end
     end, "casino_member")
 end)
-
 
 
 function Utils:DrawInsideTrack()
