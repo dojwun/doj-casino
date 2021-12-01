@@ -3,6 +3,8 @@ Config = {}
 Config.PlayCasinoAmbientNoise = true
 Config.SetShowCarOnDisplay = true
 Config.VehicleOnDisplay = `demon`
+Config.CasinoEmployeePrompt  = 'peek' -- 'press' or 'peek' ['press' = press e to start] ['peek' = uses qb-target interact with employee]
+
 
 Config.SetAnimatedWalls = true
 Config.AnimatedWallNormal = 'CASINO_DIA_PL'
