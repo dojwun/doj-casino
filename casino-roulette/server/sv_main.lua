@@ -317,7 +317,7 @@ AddEventHandler(
 
             local chipsAmount = getPlayerChips(src)
             
-            if chipsAmount == betAmount then 
+            if chipsAmount >= betAmount then 
                 removeChips(src, betAmount)
                 r_showNotification(src, ''..betAmount..' chips bet on ['..betId..']')
 
