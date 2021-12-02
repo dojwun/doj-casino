@@ -5,7 +5,7 @@ local aktivRulettek = {}
 
 
 function getPlayerChips(source)
-    local Player = QBCore.Functions.GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(source)
     local Chips = Player.Functions.GetItemByName("casino_bluechip")
     if Chips ~= nil then 
         if Chips.amount >= 10 then
