@@ -5,20 +5,13 @@ local aktivRulettek = {}
 
 
 function getPlayerChips(source)
-    local Player = QBCore.Functions.GetPlayer(source)
+    local Player = QBCore.Functions.GetPlayer(src)
     local Chips = Player.Functions.GetItemByName("casino_bluechip")
-    local minAmount = 10
     if Chips ~= nil then 
-        if Chips.amount >= minAmount then
+        if Chips.amount >= 10 then
             return Chips.amount 
-        else
-
-            return TriggerClientEvent('QBCore:Notify', source, 'You dont have enough blue chips', 'error')
-        end
-    else
-
-        return TriggerClientEvent('QBCore:Notify', source, 'You dont have any blue chips', 'error')
-    end
+        else end
+    else end
 end
 
 function giveChips(source, amount)
@@ -42,9 +35,6 @@ function removeChips(source, amount)
     end
 end
 
-function r_showNotification(source, msg) 
-    TriggerClientEvent('QBCore:Notify', source, msg, "primary")
-end 
 
 local ItemList = {
     ["casino_bluechip"] = 1
@@ -73,61 +63,47 @@ function isPlayerExist(source)
     end
 end
 
-RegisterNetEvent('server_remote:rulett:taskSitDown')
-AddEventHandler(
-    'server_remote:rulett:taskSitDown',
-    function(rulettIndex, chairData)
-        local source = source
-        local chairId = chairData.chairId
+RegisterNetEvent('server_remote:rulett:taskSitDown',function(rulettIndex, chairData)
+    local source = source
+    local chairId = chairData.chairId
 
-        if aktivRulettek[rulettIndex] ~= nil then
-            if aktivRulettek[rulettIndex].chairsUsed[chairId] ~= nil then
-                return  r_showNotification(source, 'This chair is occupied.','error')
-
-            else
-                TriggerClientEvent('client_callback:rulett:taskSitDown', source, rulettIndex, chairData)
-            end
+    if aktivRulettek[rulettIndex] ~= nil then
+        if aktivRulettek[rulettIndex].chairsUsed[chairId] ~= nil then
+            return TriggerClientEvent('QBCore:Notify', source, 'This chair is occupied.','error')
         else
             TriggerClientEvent('client_callback:rulett:taskSitDown', source, rulettIndex, chairData)
         end
+    else
+        TriggerClientEvent('client_callback:rulett:taskSitDown', source, rulettIndex, chairData)
     end
-)
+end)
 
-RegisterNetEvent('casino:taskStartRoulette')
-AddEventHandler(
-    'casino:taskStartRoulette',
-    function(rulettIndex, chairId)
-        local source = source
+RegisterNetEvent('casino:taskStartRoulette',function(rulettIndex, chairId)
+    local source = source
+    if aktivRulettek[rulettIndex] == nil then
+        aktivRulettek[rulettIndex] = {
+            statusz = false,
+            ido = Config.RouletteStart,
+            bets = {},
+            chairsUsed = {}
+        }
 
-        if aktivRulettek[rulettIndex] == nil then
-            aktivRulettek[rulettIndex] = {
-                statusz = false,
-                ido = Config.RouletteStart,
-                bets = {},
-                chairsUsed = {}
-            }
-
-            Config.DebugMsg(string.format('created rulett on serverside. table: %s', rulettIndex))
-        end
-
-        if aktivRulettek[rulettIndex].chairsUsed[chairId] == nil then
-            aktivRulettek[rulettIndex].chairsUsed[chairId] = source
-            TriggerClientEvent('client:casino:openRulett', source, rulettIndex)
-            -- TriggerClientEvent('casino:nui:updateChips', source, getPlayerChips(source))
-        else
-            r_showNotification(source, 'This chair is occupied.','error')
-        end
+        Config.DebugMsg(string.format('created rulett on serverside. table: %s', rulettIndex))
     end
-)
+    if aktivRulettek[rulettIndex].chairsUsed[chairId] == nil then
+        aktivRulettek[rulettIndex].chairsUsed[chairId] = source
+        TriggerClientEvent('client:casino:openRulett', source, rulettIndex)
+    else
+        TriggerClientEvent('QBCore:Notify', source, 'This chair is occupied.','error')
+    end
+end)
 
 function countTablePlayers(rulettIndex)
     local count = 0
-
     if aktivRulettek[rulettIndex] ~= nil then
         for chairId, _ in pairs(aktivRulettek[rulettIndex].chairsUsed) do
             count = count + 1
         end
-
         return count
     else
         return count
@@ -135,33 +111,27 @@ function countTablePlayers(rulettIndex)
 end
 
 RegisterNetEvent('casino:rulett:notUsing')
-AddEventHandler(
-    'casino:rulett:notUsing',
-    function(rulettIndex)
-        local source = source
-        if aktivRulettek[rulettIndex] ~= nil then
-            for chairId, src in pairs(aktivRulettek[rulettIndex].chairsUsed) do
-                if src == source then
-                    aktivRulettek[rulettIndex].chairsUsed[chairId] = nil
-                end
+AddEventHandler('casino:rulett:notUsing',function(rulettIndex)
+    local source = source
+    if aktivRulettek[rulettIndex] ~= nil then
+        for chairId, src in pairs(aktivRulettek[rulettIndex].chairsUsed) do
+            if src == source then
+                aktivRulettek[rulettIndex].chairsUsed[chairId] = nil
             end
         end
     end
-)
+end)
 
-AddEventHandler(
-    'playerDropped',
-    function(reason)
-        local source = source
-        for rulettIndex, v in pairs(aktivRulettek) do
-            for chairId, src in pairs(v.chairsUsed) do
-                if src == source then
-                    aktivRulettek[rulettIndex].chairsUsed[chairId] = nil
-                end
+AddEventHandler('playerDropped',function(reason)
+    local source = source
+    for rulettIndex, v in pairs(aktivRulettek) do
+        for chairId, src in pairs(v.chairsUsed) do
+            if src == source then
+                aktivRulettek[rulettIndex].chairsUsed[chairId] = nil
             end
         end
     end
-)
+end)
 
 Citizen.CreateThread(
     function()
@@ -304,22 +274,18 @@ function giveWinningChips(source, amount, szorzo)
     end
 end
 
-RegisterNetEvent('casino:taskBetRulett')
-AddEventHandler(
-    'casino:taskBetRulett',
-    function(rulettIndex, betId, betAmount)
-        local src = source
-
-        if aktivRulettek[rulettIndex] ~= nil then
-            if aktivRulettek[rulettIndex].statusz then
-                return TriggerClientEvent('QBCore:Notify', src, 'The game started, you can not bet at the moment.', "error")
-            end
-
-            local chipsAmount = getPlayerChips(src)
-            
+RegisterNetEvent('casino:taskBetRulett',function(rulettIndex, betId, betAmount)
+    local src = source
+    if aktivRulettek[rulettIndex] ~= nil then
+        if aktivRulettek[rulettIndex].statusz then
+            return TriggerClientEvent('QBCore:Notify', src, 'The game started, you can not bet at the moment.', "error")
+        end
+        local chipsAmount = getPlayerChips(src)
+        if chipsAmount ~= nil then
             if chipsAmount >= betAmount then 
                 removeChips(src, betAmount)
-                r_showNotification(src, ''..betAmount..' chips bet on ['..betId..']')
+                TriggerClientEvent('QBCore:Notify', src, betAmount..' chips bet on ['..betId..']')
+
 
                 Config.DebugMsg(string.format('player %s betted %s chips on betId: %s', GetPlayerName(src), betAmount, betId))
 
@@ -331,7 +297,6 @@ AddEventHandler(
                         aktivRulettek[rulettIndex].bets[i].betAmount = aktivRulettek[rulettIndex].bets[i].betAmount + betAmount
                     end
                 end
-
                 if not exist then
                     table.insert(
                         aktivRulettek[rulettIndex].bets,
@@ -349,14 +314,15 @@ AddEventHandler(
                     TriggerClientEvent('client:rulett:playBetAnim', src, chairId)
                 end
             else
-                TriggerClientEvent('QBCore:Notify', src, 'You do not have enough chips to place bet.', "error")
-
+                TriggerClientEvent('QBCore:Notify', src, 'You do not have enough blue chips to place bet.', "error")
             end
-        else 
-            TriggerClientEvent('QBCore:Notify', src, 'error', 'An error occurred on a non-existent roulette table server side?')
+        else
+            TriggerClientEvent('QBCore:Notify', src, 'You dont have any blue chips', 'error')
         end
+    else 
+        TriggerClientEvent('QBCore:Notify', src, 'error', 'An error occurred on a non-existent roulette table server side?')
     end
-)
+end)
 
 function getPlayerTableSeat(source)
     for rulettIndex, v in pairs(aktivRulettek) do
