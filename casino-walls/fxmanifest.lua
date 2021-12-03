@@ -8,6 +8,8 @@ shared_scripts {
 
 
 client_scripts{
+	'@PolyZone/client.lua',
+    	'@PolyZone/CircleZone.lua',
 	'client/*.lua'
 } 
 
