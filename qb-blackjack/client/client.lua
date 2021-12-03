@@ -1037,60 +1037,6 @@ function ProcessTables()
 	end
 end
 
-function DrawText3Ds(x, y, z, text)
-	SetTextScale(0.35, 0.35)
-	SetTextFont(4)
-	SetTextProportional(1)
-	SetTextColour(255, 255, 255, 215)
-	SetTextEntry("STRING")
-	SetTextCentre(true)
-	AddTextComponentString(text)
-	SetDrawOrigin(x,y,z, 0)
-	DrawText(0.0, 0.0)
-	local factor = (string.len(text)) / 370
-	DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
-	ClearDrawOrigin()
-end
-
-CreateThread(function()
-	while true do 
-		sleep = 1000
-		local ped = PlayerPedId()
-		local pos = GetEntityCoords(ped)
-
-		local tploc_enter = elevator_entrance_location
-		local tploc_exit = elevator_roof_location
-		local dist = #(pos - vector3(tploc_enter.x, tploc_enter.y, tploc_enter.z))
-		if dist < 10 then
-			sleep = 7
-			DrawMarker(2, tploc_enter.x, tploc_enter.y, tploc_enter.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.2, 0.1, 255, 255, 255, 155, 0, 0, 0, 1, 0, 0, 0)
-			if dist < 1 then
-				DrawText3Ds(tploc_enter.x, tploc_enter.y, tploc_enter.z + 0.15, '~g~E~w~ - Use the elevator')
-				if IsControlJustPressed(1, 51) then
-					SetEntityCoords(ped, tploc_exit.x, tploc_exit.y, tploc_exit.z - 0.8)
-					SetEntityHeading(ped, tploc_exit.a)
-				end
-			end
-		end
-
-		local tploc_enter = elevator_roof_location
-		local tploc_exit = elevator_entrance_location
-		local dist = #(pos - vector3(tploc_enter.x, tploc_enter.y, tploc_enter.z))
-		if dist < 10 then
-			sleep = 7
-			DrawMarker(2, tploc_enter.x, tploc_enter.y, tploc_enter.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.2, 0.1, 255, 255, 255, 155, 0, 0, 0, 1, 0, 0, 0)
-			if dist < 1 then
-				DrawText3Ds(tploc_enter.x, tploc_enter.y, tploc_enter.z + 0.15, '~g~E~w~ - Use the elevator')
-				if IsControlJustPressed(1, 51) then
-					SetEntityCoords(ped, tploc_exit.x, tploc_exit.y, tploc_exit.z - 0.8)
-					SetEntityHeading(ped, tploc_exit.a)
-				end
-			end
-		end
-		Wait(sleep)
-	end
-end)
-
 CreateThread(function()
 	if IsModelInCdimage(`vw_prop_casino_3cardpoker_01`) and IsModelInCdimage(`s_f_y_casino_01`) then
 		CreateThread(ProcessTables)
