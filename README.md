@@ -2,6 +2,11 @@
 
 Edited Casino Pack for QBus Framework
 
+# Coming soon
+
+**[Rubbertoe98's DiamondBlackjack](https://github.com/rubbertoe98/DiamondBlackjack)**
+
+
 # Updated 11/30/21
 - seat switching in qb-blackjack fixed (misplaced callback caused whole mess up...)
 #### Updated 11/14/21
