@@ -50,54 +50,64 @@ CreateThread(function()
 	end)
 end)
 
-
 CreateThread(function()
-	while true do
-        local sleep = 5
-        local playerPed = PlayerPedId()
-        local inZone = false
-        local coords = GetEntityCoords(playerPed)
-        local distance = GetDistanceBetweenCoords(coords, _wheelPos.x, _wheelPos.y, _wheelPos.z, true)
-        if distance < 2.9 and not _isRolling then
-            if distance < 2.8 and not _isRolling then
-                inZone  = true
-				if Config.LuckyWheelPrompt == 'press' then 
-					text = "<b>Diamond Casino Lucky Wheel</b></p>Press [E] to spin for $"..Config.startingPrice
-					if IsControlJustPressed(0, 38) then -- E
-						exports['textUi']:DrawTextUi('hide')
-						Citizen.Wait(200)
-						TriggerEvent('luckywheel:client:startWheel') 
-					end
-				elseif Config.LuckyWheelPrompt == 'peek' then
-					text = "<b>Diamond Casino Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
-					exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
-						name="LuckyWheel",
-						heading=160,
-						debugPoly=false,
-						useZ=true,
-						}, {
-							options = {
-								{
-									event = "luckywheel:client:startWheel",
-									icon = "fas fa-sync-alt",
-									label = "Try Your Luck",
-								},
+    local LuckyWheelZone = CircleZone:Create(vector3(949.71, 45.1, 70.9), 2.5, {
+        name="LuckyWheelZone",
+        heading=328.0,
+        debugPoly=false,
+        useZ=true,
+    })
+    LuckyWheelZone:onPlayerInOut(function(isPointInside)
+        if isPointInside then
+			if Config.LuckyWheelPrompt == 'walk-up' then 
+				TriggerEvent('doj:casinoLuckyWheelHeader') 
+			elseif Config.LuckyWheelPrompt == 'peek' then
+				text = "<b>Diamond Casino Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
+				exports['textUi']:DrawTextUi('show', text)
+				exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
+					name="LuckyWheel",
+					heading=160,
+					debugPoly=false,
+					useZ=true,
+					}, {
+						options = {
+							{
+								event = "luckywheel:client:startWheel",
+								icon = "fas fa-sync-alt",
+								label = "Try Your Luck",
 							},
-						distance = 2.0 
-					})
-				end
-            end
-            if inZone and not alreadyEnteredZone then
-                alreadyEnteredZone = true
-                exports['textUi']:DrawTextUi('show', text)  
-            end
-            if not inZone and alreadyEnteredZone then
-                alreadyEnteredZone = false
-                exports['textUi']:HideTextUi('hide')
-            end
+						},
+					distance = 2.0 
+				})
+			end
+        else
+			exports['qb-menu']:closeMenu()
+            exports['textUi']:HideTextUi('hide')
         end
-        Wait(sleep)		
-	end
+    end)
+end)
+
+RegisterNetEvent('doj:casinoLuckyWheelHeader', function()
+    exports['qb-menu']:showHeader({
+        {
+            header = "Diamond Casino Lucky Wheel",
+            isMenuHeader = true,
+        },
+        {
+            header = "Try Your Luck", 
+            txt = "$"..Config.startingPrice.." a spin",
+            params = {
+                event = "luckywheel:client:startWheel",
+            }
+        },
+        {
+            header = "Cancel",
+			txt = "",
+			params = {
+                event = "doj:casinoLuckyWheelHeader"
+            }
+        },
+    })
 end)
 
 RegisterNetEvent("luckywheel:client:startWheel", function()
