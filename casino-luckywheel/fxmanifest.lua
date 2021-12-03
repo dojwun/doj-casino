@@ -6,6 +6,11 @@ description 'Lucky Wheel'
 
 
 server_script 'server.lua'
-client_script 'client.lua'
-shared_script 'config.lua'
 
+client_scripts {	
+    '@PolyZone/client.lua',
+    '@PolyZone/CircleZone.lua',
+    'client.lua',
+}
+
+shared_script 'config.lua' 
