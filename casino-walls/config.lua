@@ -2,8 +2,8 @@ Config = {}
 
 Config.PlayCasinoAmbientNoise = true
 Config.SetShowCarOnDisplay = true
-Config.VehicleOnDisplay = `demon`
-Config.CasinoEmployeePrompt  = 'peek' -- 'press' or 'peek' ['press' = press e to start] ['peek' = uses qb-target interact with employee]
+Config.VehicleOnDisplay = `xa21`
+Config.CasinoEmployeePrompt  = 'walk-up' -- 'peek' or 'walk-up' ['walk-up' = walk up to open menu] ['peek' = uses qb-target to interact with employee]
 
 
 Config.SetAnimatedWalls = true
