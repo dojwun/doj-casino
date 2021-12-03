@@ -2,9 +2,9 @@
 
 Edited Casino Pack for QBus Framework
 
-# Coming soon
+<!-- # Coming soon
 
-**[Rubbertoe98's DiamondBlackjack](https://github.com/rubbertoe98/DiamondBlackjack)**
+**[Rubbertoe98's DiamondBlackjack](https://github.com/rubbertoe98/DiamondBlackjack)** -->
 
 
 # Updated 11/30/21
