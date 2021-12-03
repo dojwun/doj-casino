@@ -1,5 +1,13 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
+RegisterNetEvent('qb-casino:client:openCasinoShop', function()
+    local ShopItems = {}
+    ShopItems.label = "Diamond Casino Shop"
+    ShopItems.items = Config.CasinoShop
+    ShopItems.slots = #Config.CasinoShop 
+    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_", ShopItems)
+end)
+
 RegisterNetEvent('doj:casinoChipMenu', function()
     TriggerEvent('drawtextui:HideUI')
     exports['qb-menu']:openMenu({
@@ -59,24 +67,19 @@ RegisterNetEvent('doj:casinoChipMenu', function()
 end)
 
 CreateThread(function()
-    local alreadyEnteredZone = false
-    while true do
-        wait = 5
-        local inZone = false
-        local PlayerPed = PlayerPedId()
-        local PlayerPos = GetEntityCoords(PlayerPed)
-        local dist = #(PlayerPos - vector3(948.739, 34.114, 71.839))
-        if dist <= 2.0 then
-            wait = 5
-            inZone  = true
-            if Config.CasinoEmployeePrompt == 'press' then 
-                text = '<b>Diamond Casino Exchange</b></p>Press [E] to talk to employee'
-                if IsControlJustPressed(0, 38) then -- E
-                    Wait(200)
-                    TriggerEvent('doj:casinoMainMenu') 
-                end
+    local CasinoShop = CircleZone:Create(vector3(948.591, 34.207, 71.839), 2.0, {
+        name="CasinoShop",
+        heading=160,
+        debugPoly=false,
+        useZ=true,
+    })
+    CasinoShop:onPlayerInOut(function(isPointInside)
+        if isPointInside then
+            if Config.CasinoEmployeePrompt == 'walk-up' then 
+                TriggerEvent('doj:casinoMenuHeader') 
             elseif Config.CasinoEmployeePrompt == 'peek' then
                 text = '<b>Diamond Casino Exchange</b>'
+                exports['textUi']:DrawTextUi('show', text)
                 exports['qb-target']:AddTargetModel(`U_F_M_CasinoCash_01`, {
                     options = {
                         { 
@@ -88,30 +91,45 @@ CreateThread(function()
                     distance = 3.0 
                 })
             end
-        end
-        if inZone and not alreadyEnteredZone then
-            alreadyEnteredZone = true
-            exports['textUi']:DrawTextUi('show', text)
-        end
-
-        if not inZone and alreadyEnteredZone then
-            alreadyEnteredZone = false
+        else
+            exports['qb-menu']:closeMenu()
             exports['textUi']:HideTextUi('hide')
         end
-        Wait(wait)
-    end
+    end)
 end)
 
-RegisterNetEvent('qb-casino:client:openCasinoShop', function()
-    local ShopItems = {}
-    ShopItems.label = "Diamond Casino Shop"
-    ShopItems.items = Config.CasinoShop
-    ShopItems.slots = #Config.CasinoShop 
-    TriggerServerEvent("inventory:server:OpenInventory", "shop", "Vendingshop_", ShopItems)
+RegisterNetEvent('doj:casinoMenuHeader', function()
+    exports['qb-menu']:showHeader({
+        {
+            header = "Diamond Casino Shop",
+            isMenuHeader = true,
+        },
+        {
+            header = "Chip Exchange", 
+            txt = "See current prices",
+            params = {
+                event = "doj:casinoChipMenu",
+            }
+        },
+        {
+            header = "Browse Shop", 
+            txt = "See what we have to offer",
+            params = {
+                event = "qb-casino:client:openCasinoShop",
+            }
+        },
+        {
+            header = "Cancel",
+			txt = "",
+			params = {
+                event = "doj:casinoMenuHeader"
+            }
+        },
+    })
 end)
-
 
 RegisterNetEvent('doj:casinoMainMenu', function()
+    exports['textUi']:HideTextUi('hide')
     exports['qb-menu']:openMenu({
         {
             header = "Diamond Casino",
