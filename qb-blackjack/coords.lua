@@ -7,19 +7,6 @@ function DebugPrint(str)
 	end
 end
 
-elevator_roof_location = {
-	["x"] = 930.0716,
-	["y"] = 33.86854,
-	["z"] = 81.09772,
-	["a"] = 69.9051208
-}
-elevator_entrance_location = {
-	["x"] = 965.0619,
-	["y"] = 58.51287,
-	["z"] = 112.553,
-	["a"] = 53.0310745
-}
-
 ChackCardPropAnim = true
 
 tables = { -- Spawns Ped Only -- Setup Currently For This https://forum.cfx.re/t/cayo-perico-casino-dlc-ipl-loader/2099391
