@@ -6,71 +6,70 @@ local tick = 0
 local checkRaceStatus = false
 local insideTrackActive = false
 local gameOpen = false
-local insideTrackLocation = vector3(955.619, 70.179, 70.433)
 
-local insideMarker = false
-Citizen.CreateThread(function()
-    local alreadyEnteredZone = false
-    while true do
-        wait = 5
-        local ped = PlayerPedId()
-        local inZone = false
-        local coords = GetEntityCoords(ped)
-        local dist = #(insideTrackLocation - coords)
-        if dist <= 7.0 then
-            if dist <= 6.0 and not insideTrackActive then
-                insideMarker = true
-                wait = 5
-                inZone  = true
-                if Config.HorseBetPrompt == 'press' then 
-                    text = '<b>Diamond Casino Inside Track</b></p>Press [E] to start betting'
-					if IsControlJustPressed(0, 38) then -- E
-						Citizen.Wait(200)
-						TriggerEvent('QBCore:client:openInsideTrack') 
-					end
-				elseif Config.HorseBetPrompt == 'peek' then
-                    text = '<b>Diamond Casino Inside Track</b>'
-                    exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
-                        name="Betting",
-                        heading=160,
-                        debugPoly=false,
-                        useZ=true,
-                    }, {
-                        options = {
-                            {
-                                event = "QBCore:client:openInsideTrack", 
-                                icon = "fas fa-coins",
-                                label = "Start Betting",
-                            },
+
+
+CreateThread(function()
+    local insideTrackZone = CircleZone:Create(vector3(955.619, 70.179, 70.433), 2.5, {
+        name="insideTrack",
+        heading=328.0,
+        debugPoly=false,
+        useZ=true,
+    })
+    insideTrackZone:onPlayerInOut(function(isPointInside)
+        if isPointInside then
+            if Config.HorseBetPrompt == 'walk-up' then 
+                TriggerEvent('doj:casinoinsideTrackHeader') 
+            elseif Config.HorseBetPrompt == 'peek' then
+                text = '<b>Diamond Casino Inside Track</b>'
+                exports['textUi']:DrawTextUi('show', text)
+                exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
+                    name="Betting",
+                    heading=160,
+                    debugPoly=false,
+                    useZ=true,
+                }, {
+                    options = {
+                        {
+                            event = "QBCore:client:openInsideTrack", 
+                            icon = "fas fa-coins",
+                            label = "Start Betting",
                         },
-                        distance = 3.0 
-                    })
-				end
+                    },
+                    distance = 3.0 
+                })
             end
         else
-            wait = 1000
-        end
-        if inZone and not alreadyEnteredZone then
-            alreadyEnteredZone = true
-            exports['textUi']:DrawTextUi('show', text)
-        end
-
-        if not inZone and alreadyEnteredZone then
-            alreadyEnteredZone = false
+			exports['qb-menu']:closeMenu()
             exports['textUi']:HideTextUi('hide')
         end
-        Citizen.Wait(wait)
-    end
+    end)
+end)
+
+RegisterNetEvent('doj:casinoinsideTrackHeader', function()
+    exports['qb-menu']:showHeader({
+        {
+            header = "Diamond Casino Inside Track",
+            isMenuHeader = true,
+        },
+        {
+            header = "Start Horse Betting", 
+            txt = "100 red casino chips",
+            params = {
+                event = "QBCore:client:openInsideTrack",
+            }
+        },
+        {
+            header = "Cancel",
+			txt = "",
+			params = {
+                event = "doj:casinoinsideTrackHeader"
+            }
+        },
+    })
 end)
 
 local function OpenInsideTrack()
-    Citizen.CreateThread(function() -- Disable pause when while in-blackjack
-        while true do
-            Citizen.Wait(0)
-            SetPauseMenuActive(false)
-        end
-    end)
-
     QBCore.Functions.TriggerCallback("insidetrack:server:getbalance", function(balance)
         Utils.PlayerBalance = balance
     end)
@@ -100,8 +99,6 @@ end
 function closeHorseBets()
     insideTrackActive = false
     SetPlayerControl(PlayerId(), true, 0)
-    DisplayHud(true)
-    SetPauseMenuActive(true)
     SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
     Utils.Scaleform = -1
     StopSound(0)
@@ -109,23 +106,22 @@ end
 
 local function LeaveInsideTrack()
     insideTrackActive = false
-    DisplayHud(true)
-    SetPauseMenuActive(true)
     SetPlayerControl(PlayerId(), true, 0)
     SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
     Utils.Scaleform = -1
+    StopSound(0)
 end
 
 RegisterNetEvent('QBCore:client:closeBetsNotEnough')
 AddEventHandler('QBCore:client:closeBetsNotEnough', function()
     closeHorseBets()
-    QBCore.Functions.Notify("Bets Closed! You dont have enough White Casino Chips...", "error", 3500)
+    QBCore.Functions.Notify("Bets Closed! You dont have enough Red Casino Chips...", "error", 3500)
 end)
 
 RegisterNetEvent('QBCore:client:closeBetsZeroChips')
 AddEventHandler('QBCore:client:closeBetsZeroChips', function()
     closeHorseBets()
-    QBCore.Functions.Notify("Bets Closed! You dont have any White Casino Chips...", "error", 3500)
+    QBCore.Functions.Notify("Bets Closed! You dont have any Red Casino Chips...", "error", 3500)
 end)
 
 
@@ -143,7 +139,7 @@ end)
 
 
 function Utils:DrawInsideTrack()
-    Citizen.CreateThread(function()
+    CreateThread(function()
         while insideTrackActive do
             Wait(0)
             local xMouse, yMouse = GetDisabledControlNormal(2, 239), GetDisabledControlNormal(2, 240)
@@ -169,7 +165,7 @@ function Utils:DrawInsideTrack()
 end
 
 function Utils:HandleControls()
-    Citizen.CreateThread(function()
+    CreateThread(function()
         while insideTrackActive do
             Wait(0)
 
