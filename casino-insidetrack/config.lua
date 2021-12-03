@@ -1,4 +1,4 @@
 Config	= {}
 
 
-Config.HorseBetPrompt = 'peek' -- 'press' or 'peek' ['press' = press e to start] ['peek' = uses qb-target to start bets]
+Config.HorseBetPrompt = 'walk-up' -- 'peek' or 'walk-up' ['walk-up' = walk up to open menu] ['peek' = uses qb-target to start bets]
