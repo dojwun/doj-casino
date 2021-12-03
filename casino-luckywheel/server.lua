@@ -1,26 +1,43 @@
 
 local QBCore = exports['qb-core']:GetCoreObject()
-
 isRoll = false
-math.randomseed(os.time())
+
+if Config.LimitedSpins then
+	Citizen.CreateThread(function()
+		while true do
+			Wait(Config.LimitedSpinResetTime)
+			exports.oxmysql:execute('UPDATE players SET luckywheel_spins = 0')
+			TriggerClientEvent('QBCore:Notify', -1, "Daily LuckyWheel reset", "success")
+		end
+	end)
+end
 
 RegisterNetEvent('luckywheel:getwheel', function()
-    local Player = QBCore.Functions.GetPlayer(source)
-    local bankBalance = Player.PlayerData.money["bank"]
-    local MinAmount = Config.startingPrice
-
-    if bankBalance >= MinAmount then
-        Player.Functions.RemoveMoney("bank", tonumber(MinAmount), "lucky-wheel")
-		TriggerEvent("luckywheel:startwheel", Player, source)
-    else
-        return TriggerClientEvent('QBCore:Notify', source, "You have enough in the bank to spin", "error")
-    end
+	local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+	if Config.LimitedSpins == true then 
+		local result = exports.oxmysql:scalarSync('SELECT luckywheel_spins FROM players where citizenid= ?', {Player.PlayerData.citizenid})
+		if result == '0' then
+			TriggerEvent("luckywheel:startwheel", Player, src)
+		else
+			TriggerClientEvent('QBCore:Notify', src, "You have already had a spin on the wheel today", "error")
+		end
+	elseif Config.LimitedSpins == false then
+		if Player.PlayerData.money["bank"] >= Config.startingPrice then
+			Player.Functions.RemoveMoney("bank", tonumber(Config.startingPrice), "lucky-wheel")
+			TriggerEvent("luckywheel:startwheel", Player, src)
+		else
+			return TriggerClientEvent('QBCore:Notify', src, "You have enough in the bank to spin", "error")
+		end
+	end
 end)
 
-RegisterNetEvent('luckywheel:startwheel', function(xPlayer, source)
-    local _source = source
+RegisterNetEvent('luckywheel:startwheel', function(Player, source)
+	local src = source
+	local Player = QBCore.Functions.GetPlayer(src)
     if not isRoll then
-        if xPlayer ~= nil then
+        if Player ~= nil then
+            exports.oxmysql:execute('UPDATE players SET luckywheel_spins = 1 where citizenid= ?', {Player.PlayerData.citizenid})
 			isRoll = true
 			local rnd = math.random(1, 1000)
 			local price = 0
@@ -32,8 +49,8 @@ RegisterNetEvent('luckywheel:startwheel', function(xPlayer, source)
 					break
 				end
 			end
-			TriggerClientEvent("luckywheel:syncanim", _source, priceIndex)
-			TriggerClientEvent("luckywheel:startroll", -1, _source, priceIndex, price)
+			TriggerClientEvent("luckywheel:syncanim", src, priceIndex)
+			TriggerClientEvent("luckywheel:startroll", -1, src, priceIndex, price)
 		end
 	end
 end)
@@ -44,23 +61,17 @@ RegisterNetEvent('luckywheel:give', function(source, price)
 	if price.type == 'car' then
 		TriggerClientEvent("dojLuckywheel:winCar", source)
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-
 	elseif price.type == 'item' then
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-
 		Player.Functions.AddItem(price.name, price.count, slot, {["quality"] = 100})
 		TriggerClientEvent('QBCore:Notify', source, "Congratulations! You won "..price.count.." "..price.name.."!", 'success')
 		TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[price.name], "add",price.count )
-
 	elseif price.type == 'money' then
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-
 		Player.Functions.AddMoney('bank', tonumber(price.count), 'banking-quick-depo')
 		TriggerClientEvent('QBCore:Notify', source, "Congratulations! You won $"..price.count, 'success')
-
 	elseif price.type == 'weapon' then
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-
 		Player.Functions.AddItem(price.name, 1, slot, {["quality"] = 100})
 		TriggerClientEvent('QBCore:Notify', source, "Congratulations! You won a Pistol!", 'success')
 		TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[price.name], "add",1)
