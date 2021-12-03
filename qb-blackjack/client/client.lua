@@ -164,14 +164,7 @@ RegisterNetEvent("BLACKJACK:client:stop", function()
 	leaveBlackjack()
 end)
 
-function s2m(s)
-    if s <= 0 then 
-        return "00:00"
-    else
-        local m = string.format("%02.f", math.floor(s/60))
-        return m..":"..string.format("%02.f", math.floor(s - m * 60))
-    end
-end
+
 
 -- RegisterCommand("bet", function(source, args, rawCommand)
 -- 	if args[1] and _DEBUG == true then
@@ -458,8 +451,9 @@ RegisterNetEvent("BLACKJACK:BetReceived")
 local upPressed = false
 local downPressed = false
 
-RegisterNetEvent("BLACKJACK:RequestBets", function(index, _timeLeft)
-	timeLeft = _timeLeft
+
+RegisterNetEvent("BLACKJACK:RequestBets", function(index)
+	-- timeLeft = _timeLeft
 	if leavingBlackjack == true then leaveBlackjack() return end
 	QBCore.Functions.TriggerCallback('BLACKJACK:server:blackChipsAmount', function(result)
 		retval = result
@@ -468,7 +462,7 @@ RegisterNetEvent("BLACKJACK:RequestBets", function(index, _timeLeft)
 			exports['textUi']:DrawTextUi('show', "<strong>Max Bet:</strong> Q</p><strong>Adjust Bet: </strong>←/→</p><strong>Place Bet: </strong>ENTER</p><strong>ESC:</strong> Exit") 
 			while true do
 				Wait(0)
-				exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Time Left: "..s2m(timeLeft).."</p>Current Bet: "..bet.." </p>Availble chips: "..retval)   
+				exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Time Left: 0:"..timeLeft.."</p>Current Bet: "..bet.." </p>Availble chips: "..retval)   
 				local tableLimit = (tables[scrollerIndex].highStakes == true) and #bettingNums or lowTableLimit
 				if IsControlJustPressed(1, 205) then -- Q / Y
 					selectedBet = tableLimit
