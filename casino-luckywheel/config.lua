@@ -6,6 +6,8 @@ Config.startingPrice = 5000
 Config.VehiclePrize = 'xa21'
 Config.LuckyWheelPrompt = 'walk-up' -- 'peek' or 'walk-up' ['walk-up' = walk up to open menu] ['peek' = uses qb-target to start wheel]
 
+Config.LimitedSpins = true				-- [true = players spin once per day for free] [false= $5000 a spin]
+Config.LimitedSpinResetTime = 3600000 	-- 1 hour real time
 
 -- First it will pick a random 
 -- type: weapon, money, item, car (for money it will give only in bank)
