@@ -2,6 +2,9 @@
 
 Edited Casino Pack for QBus Framework
 
+| If you are intested in recieving github updates join the community on **[Discord](https://discord.gg/NVsaunpesE)**! |
+|----|
+
 
 # Updated 12/3/21
 - added **[Rubbertoe98's DiamondBlackjack](https://github.com/rubbertoe98/DiamondBlackjack)**
