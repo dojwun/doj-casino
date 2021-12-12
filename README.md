@@ -32,14 +32,14 @@ Edited Casino Pack for QBus Framework
 
 
 ## casino-blackjack (New)
-- Testing phase... be advised
+- Testing... more fixes at a later date
 
 **[preview](https://streamable.com/rfjiol)**
 
 **[source](https://github.com/rubbertoe98/DiamondBlackjack)**
 
 ## qb-blackjack
-- Bugged with multiple people, re-work coming soon
+- Blackjack: play at 14 different tables  (multiple people should be working)
 
 **[preview](https://streamable.com/jpabhl)**
 
