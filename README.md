@@ -52,12 +52,12 @@ Edited Casino Pack for QBus Framework
 
 **[source](https://forum.cfx.re/t/cayo-perico-casino-dlc-ipl-loader/2099391)**
 
-## casino-luckywheel
-- Luckywheel: (peek to spin the luckywheel with $5000 a V.I.P membership)
+## casino-luckywheel *(contact if interested)* ```</dojwun>#2103```
+- Luckywheel: (peek to spin the luckywheel with $5000 a V.I.P membership) -REMOVED
 
-**[preview](https://streamable.com/ucv48w)**
+**[preview](https://streamable.com/ucv48w)** -REMOVED
 
-**[source](https://github.com/Sn0wBiT/esx_tpnrp_luckywheel)**
+**[source](https://github.com/Sn0wBiT/esx_tpnrp_luckywheel)** -REMOVED
 
 ## casino-insidetrack
 - Inside Track: (bet on virtual racehorses with a casino membership and a 100 min chip bet)
