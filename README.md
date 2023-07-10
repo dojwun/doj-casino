@@ -37,7 +37,7 @@ Edited Casino Pack for QBus Framework
 
 **[preview](https://streamable.com/jpabhl)** OLD VIDEO
 
-**[source](https://github.com/Xinerki/kgv-blackjack/DiamondBlackjack)**
+**[source](https://github.com/Xinerki/kgv-blackjack)**
 
 ## casino-blackjackRT98
 
