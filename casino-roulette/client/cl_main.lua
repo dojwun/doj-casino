@@ -221,7 +221,7 @@ createRulettAsztal = function(index, data)
                 end
             end)
 
-            Wait(1500)
+            Wait(1000)
         else
             TriggerServerEvent('casino:rulett:notUsing', selectedRulett)
             if DoesCamExist(self.rulettCam) then
