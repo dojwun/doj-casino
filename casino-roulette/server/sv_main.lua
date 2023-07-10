@@ -35,7 +35,7 @@ function removeChips(source, amount)
     if Player.Functions.RemoveItem("casino_goldchip", amount)  then
         TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove")
         TriggerClientEvent('QBCore:Notify', source, "- "..amount.." Chips")
-    end
+    end 
 end
 
 
@@ -314,7 +314,7 @@ RegisterNetEvent('casino:taskBetRulett',function(rulettIndex, betId, betAmount)
                     TriggerClientEvent('client:rulett:playBetAnim', src, chairId)
                 end
             else
-                TriggerClientEvent('QBCore:Notify', src, 'You do not have enough blue chips to place bet.', "error")
+                TriggerClientEvent('QBCore:Notify', src, 'You do not have enough Casino chips to place bet.', "error")
             end
         else
             TriggerClientEvent('QBCore:Notify', src, 'You dont have any caino chips', 'error')
