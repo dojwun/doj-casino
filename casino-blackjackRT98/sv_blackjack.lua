@@ -23,6 +23,22 @@ end)
 
 local blackjackTables = {
     --[chairId] == false or source if taken
+    [0] = false,
+    [1] = false,
+    [2] = false,
+    [3] = false,
+    [4] = false,
+    [5] = false,
+    [6] = false,
+    [7] = false,
+    [8] = false,
+    [9] = false,
+    [10] = false,
+    [11] = false,
+    [12] = false,
+    [13] = false,
+    [14] = false,
+    [15] = false,
 }
 
 for i=0,127,1 do
@@ -34,23 +50,28 @@ local blackjackGameData = {}
 
 function tryTakeChips(source,amount)
     local Player = QBCore.Functions.GetPlayer(source)
-    if Player ~= nil then 
-        local Chips = Player.Functions.GetItemByName("casino_goldchip")
-		if Chips ~= nil then 
-			if Chips.amount >= 10 then
-                Player.Functions.RemoveItem("casino_goldchip", amount)
-                TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove", amount) 
-                return true
-			else
-                TriggerClientEvent('QBCore:Notify', source, 'You dont have enough Casino Chips', 'error')
-                return false
-			end
-		else
-            TriggerClientEvent('QBCore:Notify', source, 'You dont have any Casino Chips', 'error')
-			return false
-		end
+    local ItemList = {
+        ["casino_goldchip"] = 1,
+    }
+    local playerChips = Player.Functions.GetItemByName("casino_goldchip")
+    local canBet = false
+
+    if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
+        for k, v in pairs(Player.PlayerData.items) do 
+            if Player.PlayerData.items[k] ~= nil then 
+                if ItemList[Player.PlayerData.items[k].name] ~= nil then 
+                    if playerChips.amount >= amount then 
+                        Player.Functions.RemoveItem("casino_goldchip", amount)
+                        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items["casino_goldchip"], 'remove')
+                        canBet = true
+                    end
+                end
+            end
+        end
     end
-end
+
+    return canBet
+end 
 
 
 function giveChips(source,amount)
@@ -138,10 +159,9 @@ AddEventHandler("Blackjack:setBlackjackBet",function(gameId,betAmount,chairId)
                         TriggerClientEvent("Blackjack:successBlackjackBet",source)
                         TriggerClientEvent("Blackjack:syncChipsPropBlackjack",-1,betAmount,chairId)
                         -- TriggerClientEvent('QBCore:Notify', source, 'Bet placed: ' .. tostring(betAmount) .. ' chips.', 'success')
-
-                    -- else 
-                    --     TriggerClientEvent('QBCore:Notify', source, 'Not enough chips!', 'error')
-
+                    else  
+                        TriggerClientEvent('QBCore:Notify', source, 'You dont have enough chips', 'error')
+                        TriggerClientEvent("doj:client:openBetMenu", source)
                     end
                 end
             end
