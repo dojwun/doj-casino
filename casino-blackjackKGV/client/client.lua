@@ -455,7 +455,7 @@ local downPressed = false
 RegisterNetEvent("BLACKJACK:RequestBets", function(index)
 	-- timeLeft = _timeLeft
 	if leavingBlackjack == true then leaveBlackjack() return end
-	QBCore.Functions.TriggerCallback('BLACKJACK:server:blackChipsAmount', function(result)
+	QBCore.Functions.TriggerCallback('BLACKJACKKGV:server:blackChipsAmount', function(result)
 		retval = result
 		CreateThread(function()
 			scrollerIndex = index
@@ -899,9 +899,9 @@ function ProcessTables()
 							inZone  = true
 
 							if highStakes then
-								text = "<strong>The Diamond Casino & Resort</p>Blackjack (High-Limit)</strong></p>Press <strong>E</strong> to sit"  
+								text = "<strong>The Diamond Casino & Resort</p>Blackjack KGV(High-Limit)</strong></p>Press <strong>E</strong> to sit"  
 							else
-								text = "<strong>The Diamond Casino & Resort</p>Blackjack</strong></p>Press <strong>E</strong> to sit" 
+								text = "<strong>The Diamond Casino & Resort</p>Blackjack KGV</strong></p>Press <strong>E</strong> to sit" 
 							end
 						
 						
