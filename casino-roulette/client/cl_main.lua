@@ -906,9 +906,9 @@ Citizen.CreateThread(function()
                         if closestChairData == nil then
                             break
                         end
-                        -- if IsControlJustPressed(0, 38) then
-                        --     TriggerServerEvent('server_remote:rulett:taskSitDown', k, closestChairData)
-                        -- end 
+                        if IsControlJustPressed(0, 38) then
+                            TriggerServerEvent('server_remote:rulett:taskSitDown', k, closestChairData)
+                        end 
                         -- break
                     -- else
                     --     wait = 2000
