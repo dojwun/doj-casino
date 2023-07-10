@@ -5,7 +5,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local ItemList = {
     ["casino_goldchip"] = 1
 }
-QBCore.Functions.CreateCallback('BLACKJACK:server:blackChipsAmount', function(source, cb)
+QBCore.Functions.CreateCallback('BLACKJACKRT98:server:blackChipsAmount', function(source, cb)
     local retval = 0
     local Player = QBCore.Functions.GetPlayer(source)
     if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
