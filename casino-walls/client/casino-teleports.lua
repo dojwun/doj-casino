@@ -1,3 +1,4 @@
+local QBCore = exports['qb-core']:GetCoreObject()
 
 CreateThread(function()
     local TeleportUpZone = CircleZone:Create(vector3(930.251, 34.324, 81.089), 1.5, {
@@ -8,9 +9,17 @@ CreateThread(function()
     })
     TeleportUpZone:onPlayerInOut(function(isPointInside)
         if isPointInside then
-            TriggerEvent("doj:casinoTeleportUp")
+            -- exports['qb-core']:DrawText('<b>The Diamond Casino & Resort</p>Elevators</b>')
+                QBCore.Functions.TriggerCallback('doj:server:HasCasinoMembership', function(HasItem)
+                if HasItem then  
+                    TriggerEvent("doj:casinoTeleportUp")
+                else
+                    exports['qb-core']:DrawText('<b>The Diamond Casino & Resort</p>NOT A MEMBER</p></b>Please visit the front desk!</b>')
+                end
+            end)
         else
 			exports['qb-menu']:closeMenu()
+            exports["qb-core"]:HideText()
         end
     end)
 end)
