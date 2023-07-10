@@ -403,7 +403,7 @@ CreateThread(function()
         if not sittingAtBlackjackTable then
             if closestChair ~= nil and closestChairDist < 1.3 then
                 inZone  = true
-                text = "<b>The Diamond Casino & Resort</p>Blackjack</b></p>Press <b>E</b> to sit" 
+                text = "<b>The Diamond Casino & Resort</p>Blackjack RT98</b></p>Press <b>E</b> to sit" 
                 if not timeoutHowToBlackjack then
                     if IsControlJustPressed(0, 38) then
                         if blackjackTableData[closestChair] == false then
@@ -451,7 +451,7 @@ end)
 CreateThread(function()
     while true do
         if drawTimerBar then
-            QBCore.Functions.TriggerCallback('BLACKJACK:server:blackChipsAmount', function(result)
+            QBCore.Functions.TriggerCallback('BLACKJACKRT98:server:blackChipsAmount', function(result)
                 retval = result
                 exports['casinoUi']:DrawCasinoUi('show', "<b>The Diamond Casino & Resort Blackjack</b></p>Time Left: 0:"..timeLeft.."</p>Availble chips: "..math.floor(result).."</p>Current Bet: "..math.floor(currentBetAmount))   
 	        end) 
