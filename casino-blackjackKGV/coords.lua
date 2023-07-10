@@ -15,7 +15,7 @@ tables = { -- Spawns Ped Only -- Setup Currently For This https://forum.cfx.re/t
 	-- 	highStakes = false
 	-- },
 	-- {
-	-- 	coords = vector4(1000.66, 50.88, 68.45, 6.73), --Table 2 -- poker
+	-- 	coords = vector4(1000.66, 50.88, 68.45, 6.73), --Table 2 -- poker 
 	-- 	highStakes = false
 	-- },
 	{
@@ -34,14 +34,14 @@ tables = { -- Spawns Ped Only -- Setup Currently For This https://forum.cfx.re/t
 	-- 	coords = vector4(994.89, 58.29, 68.45, 237.13), --Table 6 -- poker
 	-- 	highStakes = false
 	-- },
-	{
-		coords = vector4(985.95, 60.56, 69.25, 187.91), --Table 7
-		highStakes = true
-	},
-	{
-		coords = vector4(982.50, 62.85, 69.25, 101.44), --Table 8
-		highStakes = true
-	},
+	-- {
+	-- 	coords = vector4(985.95, 60.56, 69.25, 187.91), --Table 7 --USED BY Rubbertoe98 Blackjack
+	-- 	highStakes = true
+	-- },
+	-- {
+	-- 	coords = vector4(982.50, 62.85, 69.25, 101.44), --Table 8 -USED BY Rubbertoe98 Blackjack
+	-- 	highStakes = true
+	-- },
 	-- {
 	-- 	coords = vector4(984.97, 66.64, 69.25, 3.39), --Table 9 -- poker
 	-- 	highStakes = true
@@ -50,14 +50,14 @@ tables = { -- Spawns Ped Only -- Setup Currently For This https://forum.cfx.re/t
 	-- 	coords = vector4(988.45, 64.38, 69.25, 278.52), --Table 10 -- poker
 	-- 	highStakes = true
 	-- },
-	{
-		coords = vector4(989.05, 45.69, 69.25, 22.31), --Table 11
-		highStakes = true
-	},
-	{
-		coords = vector4(987.30, 42.19, 69.25, 102.30), --Table 12
-		highStakes = true
-	},
+	-- {
+	-- 	coords = vector4(989.05, 45.69, 69.25, 22.31), --Table 11 -USED BY Rubbertoe98 Blackjack
+	-- 	highStakes = true
+	-- },
+	-- {
+	-- 	coords = vector4(987.30, 42.19, 69.25, 102.30), --Table 12 -USED BY Rubbertoe98 Blackjack
+	-- 	highStakes = true
+	-- },
 	-- {
 	-- 	coords = vector4(991.56, 40.10, 69.25, 200.84), --Table 13 -- poker
 	-- 	highStakes = true
