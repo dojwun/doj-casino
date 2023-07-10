@@ -900,7 +900,7 @@ exports("SetGiveChipsCallback", SetGiveChipsCallback)
 local ItemList = {
     ["casino_goldchip"] = 1
 }
-QBCore.Functions.CreateCallback('BLACKJACK:server:blackChipsAmount', function(source, cb)
+QBCore.Functions.CreateCallback('BLACKJACKKGV:server:blackChipsAmount', function(source, cb)
     local retval = 0
     local Player = QBCore.Functions.GetPlayer(source)
     if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
@@ -916,7 +916,7 @@ QBCore.Functions.CreateCallback('BLACKJACK:server:blackChipsAmount', function(so
 end)
 
 function SetExports()
-	exports["casino-blackjack"]:SetGetChipsCallback(function(source)
+	exports["casino-blackjackKGV"]:SetGetChipsCallback(function(source)
 		local src = source 
 		local Player = QBCore.Functions.GetPlayer(src)
 		local Chips = Player.Functions.GetItemByName("casino_goldchip")
@@ -925,14 +925,14 @@ function SetExports()
 			if Chips.amount >= minAmount then
 				Chips = Chips 
 			else
-				return TriggerClientEvent('QBCore:Notify', src, 'You dont have any Casino Chips', 'error')
+				return TriggerClientEvent('QBCore:Notify', src, 'You dont have enough Casino Chips', 'error')
 			end
 		else
 			return TriggerClientEvent('QBCore:Notify', src, 'You dont have any Casino Chips', 'error')
 		end
     end) 
 	
-    exports["casino-blackjack"]:SetTakeChipsCallback(function(source, amount)
+    exports["casino-blackjackKGV"]:SetTakeChipsCallback(function(source, amount)
 		local Player = QBCore.Functions.GetPlayer(source)
         if Player ~= nil then
             Player.Functions.RemoveItem("casino_goldchip", amount)
@@ -940,7 +940,7 @@ function SetExports()
         end
     end) 
 
-    exports["casino-blackjack"]:SetGiveChipsCallback(function(source, amount)
+    exports["casino-blackjackKGV"]:SetGiveChipsCallback(function(source, amount)
 		local src = source 
         local Player = QBCore.Functions.GetPlayer(source)
         if Player ~= nil then
@@ -955,12 +955,11 @@ function SetExports()
 end
 
 AddEventHandler("onResourceStart", function(resourceName) 
-	if ("casino-blackjack" == resourceName) then
+	if ("casino-blackjackKGV" == resourceName) then
         Citizen.Wait(1000)
         SetExports()
     end
 end)
 
 SetExports()
-
 
