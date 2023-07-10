@@ -3,8 +3,12 @@
 Edited Casino Pack for QBus Framework
 
 
+# Updated 7/9/23
+- Added **[KGV](https://github.com/Xinerki/kgv-blackjack)** & **[Rubbertoe98](https://github.com/rubbertoe98)** Blackjack 
 # Updated 7/7/23
-- Fixed most of the casino & added a few things
+- Fixed most of the casino & added & removed a few things
+
+
 
 
 # Dependencies
@@ -29,11 +33,17 @@ Edited Casino Pack for QBus Framework
 
 **[source](https://forum.cfx.re/t/cayo-perico-casino-dlc-ipl-loader/2099391)**
 
-## casino-blackjack
+## casino-blackjackKGV
 
 **[preview](https://streamable.com/jpabhl)** OLD VIDEO
 
 **[source](https://github.com/Xinerki/kgv-blackjack)**
+
+## casino-blackjackRT98
+
+**[preview](https://streamable.com/rfjiol)**  OLD VIDEO
+
+**[source](https://github.com/rubbertoe98/DiamondBlackjack)**
 
 
 ## casino-luckywheel 
