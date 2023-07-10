@@ -14,14 +14,14 @@ Config.RulettTables = {
     [0] = {
         position = vector3(1001.53, 56.479, 68.433), --Test Loc
         rot = 102.133,
-        minBet = 5,
-        maxBet = 100 
+        minBet = 10,
+        maxBet = 1000 
     },
     [1] = {
         position = vector3(997.595, 55.573, 68.433),
         rot = 280.612,
-        minBet = 100,
-        maxBet = 500
+        minBet = 10,
+        maxBet = 1000
     },
     -- [3] = {
     --     position = vector3(984.6, 56.603, 70.238),
