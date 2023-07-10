@@ -459,7 +459,7 @@ CreateThread(function()
         if drawCurrentHand then
             exports['qb-core']:DrawText("<b>Dealers Hand: </b>"..math.floor(dealersHand).."</p><b>Your hand: </b>"..math.floor(currentHand)) 
         end
-        Wait(1000)
+        Wait(250) 
     end
 end)
 
