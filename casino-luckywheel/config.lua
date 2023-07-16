@@ -4,7 +4,8 @@ Config	= {}
 Config.WheelPos = {x = 949.71, y = 45.1, z = 70.9, h =328.0}	-- Where the wheel prop will spawn OR where wheel prop is
 Config.startingPrice = 5000
 Config.VehiclePrize = 'xa21'
-Config.LuckyWheelPrompt = 'peek' -- 'peek' or 'walk-up' ['walk-up' = walk up to open menu] ['peek' = uses qb-target to start wheel]
+Config.VehicleSpawnCoords = vector4(933.29, -2.82, 78.76, 144.6)
+Config.VehiclePlateText = 'Diamond'
 
 
 Config.LimitedSpins = false				-- [true = players spin once per day for free] [false= $5000 a spin]
