@@ -99,9 +99,11 @@ RegisterNetEvent('luckywheel:server:setVehicleOwner', function()
 		vehicle,
 		GetHashKey(vehicle),
 		'{}',
-		plate,
+		-- plate,
+		Config.VehiclePlateText,
 		0
 	})
+	TriggerClientEvent('QBCore:Notify', src, "YOU WON THE SHOW CAR! congratulations!", 'success')
 end)
 
 
