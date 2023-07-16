@@ -59,27 +59,23 @@ CreateThread(function()
     })
     LuckyWheelZone:onPlayerInOut(function(isPointInside)
         if isPointInside then
-			if Config.LuckyWheelPrompt == 'walk-up' then 
-				TriggerEvent('doj:casinoLuckyWheelHeader') 
-			elseif Config.LuckyWheelPrompt == 'peek' then
-				text = "<b>The Diamond Casino & Resort</p>Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
-				exports['qb-core']:DrawText(text)
-				exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
-					name="LuckyWheel",
-					heading=160,
-					debugPoly=false,
-					useZ=true,
-					}, {
-						options = {
-							{
-								event = "luckywheel:client:startWheel",
-								icon = "fas fa-sync-alt",
-								label = "Try Your Luck",
-							},
+			text = "<b>The Diamond Casino & Resort</p>Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
+			exports['qb-core']:DrawText(text)
+			exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
+				name="LuckyWheel",
+				heading=160,
+				debugPoly=false,
+				useZ=true,
+				}, {
+					options = {
+						{
+							event = "luckywheel:client:startWheel",
+							icon = "fas fa-sync-alt",
+							label = "Try Your Luck",
 						},
-					distance = 2.0 
-				})
-			end
+					},
+				distance = 2.0 
+			})
         else
 			exports['qb-menu']:closeMenu()
             exports["qb-core"]:HideText()
@@ -282,19 +278,21 @@ function doRoll(index)
     end
 end
 
-RegisterNetEvent("dojLuckywheel:winCar", function() 
-    local coords = { ['x'] = 933.29, ['y'] = -2.82, ['z'] = 78.76, ['h'] = 144.6 }
-	QBCore.Functions.SpawnVehicle(Config.VehiclePrize, function(veh)
-		TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(veh))
-		TriggerServerEvent('luckywheel:server:setVehicleOwner')
-		exports['LegacyFuel']:SetFuel(veh, 100.0)
-		SetEntityHeading(veh, coords.h)
-		TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-		SetVehicleEngineOn(veh, true, true) 
-		QBCore.Functions.Notify("YOU WON THE SHOW CAR! Dodge Challenger SRT Demon!", "primary", 3500)
-	end, coords, true)            
-end)
 
+
+RegisterNetEvent('dojLuckywheel:winCar', function(plate)
+	local ped = PlayerPedId()
+	local coords = Config.VehicleSpawnCoords 
+	QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
+		local veh = NetToVeh(netId)
+		SetVehicleNumberPlateText(veh, Config.VehiclePlateText)
+		TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
+		SetVehicleFuelLevel(veh, 100)
+		TriggerEvent("vehiclekeys:client:SetOwner", Config.VehiclePrize)
+		TriggerServerEvent('luckywheel:server:setVehicleOwner')
+		QBCore.Functions.SetVehicleProperties(veh, vehmods)
+	end, Config.VehiclePrize, coords, true)
+end)
 
 
 
