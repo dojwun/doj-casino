@@ -1056,11 +1056,11 @@ exports("SetLeaveCheckCallback", SetLeaveCheckCallback)
 exports("SetCanSitDownCallback", SetCanSitDownCallback)
 
 
-exports["casino-blackjack"]:SetSatDownCallback(function()
+exports["casino-blackjackKGV"]:SetSatDownCallback(function()
 	exports["qb-core"]:HideText()
 end)
 
-exports["casino-blackjack"]:SetStandUpCallback(function()
+exports["casino-blackjackKGV"]:SetStandUpCallback(function()
 	hideUi()
 end)
 
