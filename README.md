@@ -76,9 +76,15 @@ Edited Casino Pack for QBus Framework
 
 **[source](https://forum.cfx.re/t/standalone-paid-aquiver-three-card-poker/3378769)**
 
-# qb-core/shared.lua info 
+# qb-core/shared.lua info old qbcore
 ```
 	["casino_goldchip"] 			 = {["name"] = "casino_goldchip", 			 ["label"] = "Casino Chip", 			["weight"] = 0, 		["type"] = "item", 		["image"] = "casino_goldchip.png", 				["unique"] = false, 	["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Chip"},
 	["casino_member"] 				 = {["name"] = "casino_member", 			 ["label"] = "Casino Membership", 		["weight"] = 500, 		["type"] = "item", 		["image"] = "casino_member.png", 				["unique"] = true, 		["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino Member Card"},
 	["casino_vip"] 					 = {["name"] = "casino_vip", 			 	 ["label"] = "V.I.P Membership", 		["weight"] = 500, 		["type"] = "item", 		["image"] = "casino_vip.png", 				    ["unique"] = true, 		["useable"] = false, 	["shouldClose"] = false,   ["combinable"] = nil,   ["description"] = "Diamond Casino V.I.P Card"},
-```  
+``` 
+#  qb-core/shared.lua info new qbcore
+```
+casino_goldchip              = { name = 'casino_goldchip', label = 'Casino Chip', weight = 0, type = 'item', image = 'casino_goldchip.png', unique = false, useable = false, shouldClose = false, combinable = nil, description = 'Diamond Casino Chip' },
+    casino_member                = { name = 'casino_member', label = 'Casino Membership', weight = 500, type = 'item', image = 'casino_member.png', unique = true, useable = false, shouldClose = false, combinable = nil, description = 'Diamond Casino Member Card' },
+    casino_vip                   = { name = 'casino_vip', label = 'V.I.P Membership', weight = 500, type = 'item', image = 'casino_vip.png', unique = true, useable = false, shouldClose = false, combinable = nil, description = 'Diamond Casino V.I.P Card' },
+```
