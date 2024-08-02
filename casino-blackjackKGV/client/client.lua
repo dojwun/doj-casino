@@ -1,4 +1,3 @@
-local QBCore = exports['qb-core']:GetCoreObject()
 
 local seatSideAngle = 30
 local bet = 0
@@ -18,7 +17,7 @@ local canSitDownCallback = nil
 CreateThread(function()
     while true do
 		sleep = 1000
-        local playerCoords = GetEntityCoords(PlayerPedId())
+        local playerCoords = GetEntityCoords(cache.ped)
         local closestChairDist = #(playerCoords - vector3(948.54760742188, 32.051155090332, 76.101249084473))
         if closestChairDist < 55.0 then
 			sleep = 10
@@ -436,14 +435,14 @@ RegisterNetEvent("BLACKJACK:PlaceBetChip", function(index, seat, bet, double, sp
 end)
 
 function hideUi()
-	exports["qb-core"]:HideText()
-	exports['casinoUi']:HideCasinoUi('hide') 
+	lib.hideTextUI()
+	exports['casino-ui']:HideCasinoUi('hide')
 end
  
 function hideUiOnStart()
-	exports["qb-core"]:HideText()
-	exports['casinoUi']:HideCasinoUi('hide') 
-	exports['qb-menu']:closeMenu() 
+	lib.hideTextUI()
+	exports['casino-ui']:HideCasinoUi('hide')
+	-- exports['qb-menu']:closeMenu()
 end
 
 RegisterNetEvent("BLACKJACK:BetReceived")
@@ -455,123 +454,121 @@ local downPressed = false
 RegisterNetEvent("BLACKJACK:RequestBets", function(index)
 	-- timeLeft = _timeLeft
 	if leavingBlackjack == true then leaveBlackjack() return end
-	QBCore.Functions.TriggerCallback('BLACKJACKKGV:server:blackChipsAmount', function(result)
-		retval = result
-		CreateThread(function()
-			scrollerIndex = index
-			-- exports["qb-core"]:DrawText("<strong>Max Bet:</strong> Q</p><strong>Adjust Bet: </strong>↑/↓</p><strong>Place Bet: </strong>ENTER</p><strong>ESC:</strong> Exit")  
-			exports["qb-core"]:DrawText("<strong>Place Bet: </strong>↵</p><strong>Adjust Bet: </strong>↑/↓</p><strong><strong>Exit:</strong> ←") 
-			while true do
-				Wait(0)
-				exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Time Left: 0:"..timeLeft.."</p>Current Bet: "..bet.." </p>Availble chips: "..math.floor(retval))   
-				local tableLimit = (tables[scrollerIndex].highStakes == true) and #bettingNums or lowTableLimit
-				if IsControlJustPressed(1, 205) then -- Q / Y 
-					selectedBet = tableLimit
-				elseif IsControlJustPressed(1, 202) then -- ESC / B
-					leaveBlackjack()
-					return
-				end
-				if not upPressed then
-					if IsControlJustPressed(1, 172) then -- UP ARROW
-						upPressed = true
-						CreateThread(function()
+	CreateThread(function()
+		scrollerIndex = index
+		-- lib.showTextUI("Max Bet: Q Adjust Bet: ↑/↓ Place Bet: ENTER ESC: Exit")
+
+		lib.showTextUI("Place Bet: ↵  \n  Adjust Bet: ↑/↓  \n  Exit: ←")
+		while true do
+			Wait(0)
+			exports['casino-ui']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Time Left: 0:"..timeLeft.."</p>Current Bet: "..bet.." </p>Availble chips: "..exports.ox_inventory:GetItemCount("casinochips")) 
+			local tableLimit = (tables[scrollerIndex].highStakes == true) and #bettingNums or lowTableLimit
+			if IsControlJustPressed(1, 205) then -- Q / Y 
+				selectedBet = tableLimit
+			elseif IsControlJustPressed(1, 202) then -- ESC / B
+				leaveBlackjack()
+				return
+			end
+			if not upPressed then
+				if IsControlJustPressed(1, 172) then -- UP ARROW
+					upPressed = true
+					CreateThread(function()
+						selectedBet = selectedBet + 1
+						if selectedBet > tableLimit then selectedBet = 1 end
+						Wait(175)
+						while IsControlPressed(1, 172) do
 							selectedBet = selectedBet + 1
 							if selectedBet > tableLimit then selectedBet = 1 end
-							Wait(175)
-							while IsControlPressed(1, 172) do
-								selectedBet = selectedBet + 1
-								if selectedBet > tableLimit then selectedBet = 1 end
-								Wait(125)
-							end
-	
-							upPressed = false
-						end)
-					end
-				end
-				if not downPressed then
-					if IsControlJustPressed(1, 173) then -- DOWN ARROW
-						downPressed = true
-						CreateThread(function()
-							selectedBet = selectedBet - 1
-							if selectedBet < 1 then selectedBet = tableLimit end
-							Wait(175)
-							while IsControlPressed(1, 173) do
-								selectedBet = selectedBet - 1
-								if selectedBet < 1 then selectedBet = tableLimit end
-								Wait(125)
-							end
-	
-							downPressed = false
-						end)
-					end
-				end
-				bet = bettingNums[selectedBet] or 10000
-				if #bettingNums < lowTableLimit and tables[scrollerIndex].highStakes == true then
-					bet = bet * 10
-				end
-				if IsControlJustPressed(1, 201) then -- ENTER / A
-					TriggerServerEvent("BLACKJACK:CheckPlayerBet", g_seat, bet)
-					local betCheckRecieved = false
-					local canBet = false
-					local eventHandler = AddEventHandler("BLACKJACK:BetReceived", function(_canBet)
-						betCheckRecieved = true
-						canBet = _canBet
-					end)
-					repeat Wait(0) until betCheckRecieved == true
-					RemoveEventHandler(eventHandler)
-					if canBet then
-						hideUi()
-						if selectedBet < 27 then
-							if leavingBlackjack == true then leaveBlackjack() return end
-							local ped = PlayerPedId()
-							local anim = "place_bet_small"						
-							playerBusy = true
-							local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, false, 1065353216, 0, 1065353216)
-							NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@blackjack@player", anim, 2.0, -2.0, 13, 16, 1148846080, 0)
-							NetworkStartSynchronisedScene(scene)						
-							Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))					
-							if leavingBlackjack == true then leaveBlackjack() return end
-							TriggerServerEvent("BLACKJACK:SetPlayerBet", g_seat, closestChair, bet, selectedBet, false)
-							Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))			
-							if leavingBlackjack == true then leaveBlackjack() return end
-							playerBusy = false						
-							local idleVar = "idle_var_0"..math.random(1,5)						
-							DebugPrint("IDLING POsh-BUSY: "..idleVar)						
-							local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, true, 1065353216, 0, 1065353216)
-							NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
-							NetworkStartSynchronisedScene(scene)
-						else
-							if leavingBlackjack == true then leaveBlackjack() return end
-							local ped = PlayerPedId()
-							local anim = "place_bet_large"						
-							playerBusy = true
-							local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, false, 1065353216, 0, 1065353216)
-							NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@blackjack@player", anim, 2.0, -2.0, 13, 16, 1148846080, 0)
-							NetworkStartSynchronisedScene(scene)						
-							Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))						
-							if leavingBlackjack == true then leaveBlackjack() return end
-							TriggerServerEvent("BLACKJACK:SetPlayerBet", g_seat, closestChair, bet, selectedBet, false)
-							Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))
-							if leavingBlackjack == true then leaveBlackjack() return end						
-							playerBusy = false						
-							local idleVar = "idle_var_0"..math.random(1,5)						
-							DebugPrint("IDLING POsh-BUSY: "..idleVar)
-							local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, true, 1065353216, 0, 1065353216)
-							NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
-							NetworkStartSynchronisedScene(scene)
+							Wait(125)
 						end
-						return
-					else
-						QBCore.Functions.Notify('You dont have any casino chips...', 'error', 3500)
-					end
+
+						upPressed = false
+					end)
 				end
 			end
-		end)
+			if not downPressed then
+				if IsControlJustPressed(1, 173) then -- DOWN ARROW
+					downPressed = true
+					CreateThread(function()
+						selectedBet = selectedBet - 1
+						if selectedBet < 1 then selectedBet = tableLimit end
+						Wait(175)
+						while IsControlPressed(1, 173) do
+							selectedBet = selectedBet - 1
+							if selectedBet < 1 then selectedBet = tableLimit end
+							Wait(125)
+						end
+
+						downPressed = false
+					end)
+				end
+			end
+			bet = bettingNums[selectedBet] or 10000
+			if #bettingNums < lowTableLimit and tables[scrollerIndex].highStakes == true then
+				bet = bet * 10
+			end
+			if IsControlJustPressed(1, 201) then -- ENTER / A
+				TriggerServerEvent("BLACKJACK:CheckPlayerBet", g_seat, bet)
+				local betCheckRecieved = false
+				local canBet = false
+				local eventHandler = AddEventHandler("BLACKJACK:BetReceived", function(_canBet)
+					betCheckRecieved = true
+					canBet = _canBet
+				end)
+				repeat Wait(0) until betCheckRecieved == true
+				RemoveEventHandler(eventHandler)
+				if canBet then
+					hideUi()
+					if selectedBet < 27 then
+						if leavingBlackjack == true then leaveBlackjack() return end
+						local ped = cache.ped
+						local anim = "place_bet_small"						
+						playerBusy = true
+						local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, false, 1065353216, 0, 1065353216)
+						NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@blackjack@player", anim, 2.0, -2.0, 13, 16, 1148846080, 0)
+						NetworkStartSynchronisedScene(scene)						
+						Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))					
+						if leavingBlackjack == true then leaveBlackjack() return end
+						TriggerServerEvent("BLACKJACK:SetPlayerBet", g_seat, closestChair, bet, selectedBet, false)
+						Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))			
+						if leavingBlackjack == true then leaveBlackjack() return end
+						playerBusy = false						
+						local idleVar = "idle_var_0"..math.random(1,5)						
+						DebugPrint("IDLING POsh-BUSY: "..idleVar)						
+						local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, true, 1065353216, 0, 1065353216)
+						NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
+						NetworkStartSynchronisedScene(scene)
+					else
+						if leavingBlackjack == true then leaveBlackjack() return end
+						local ped = cache.ped
+						local anim = "place_bet_large"						
+						playerBusy = true
+						local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, false, 1065353216, 0, 1065353216)
+						NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@blackjack@player", anim, 2.0, -2.0, 13, 16, 1148846080, 0)
+						NetworkStartSynchronisedScene(scene)						
+						Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))						
+						if leavingBlackjack == true then leaveBlackjack() return end
+						TriggerServerEvent("BLACKJACK:SetPlayerBet", g_seat, closestChair, bet, selectedBet, false)
+						Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@blackjack@player", anim)*500))
+						if leavingBlackjack == true then leaveBlackjack() return end						
+						playerBusy = false						
+						local idleVar = "idle_var_0"..math.random(1,5)
+						DebugPrint("IDLING POsh-BUSY: "..idleVar)
+						local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, true, 1065353216, 0, 1065353216)
+						NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
+						NetworkStartSynchronisedScene(scene)
+					end
+					return
+				else
+					lib.notify({title = "You dont have any casino chips...", type = 'error'})
+				end
+			end
+		end
 	end)
 end)
 
 RegisterNetEvent("doj:client:blackjackMenu", function(args)
-	local ped = PlayerPedId()
+	local ped = cache.ped
 	local args = tonumber(args)
 	hideUi()
 	if args == 1 then 
@@ -643,8 +640,8 @@ RegisterNetEvent("doj:client:blackjackMenu", function(args)
 			NetworkStartSynchronisedScene(scene)
 			return
 		else
-			QBCore.Functions.Notify("You don't have enough casino chips to double down.", "error")
-			exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand))  
+			lib.notify({title = "You don't have enough casino chips to double down.", type = 'warning'})
+			exports['casino-ui']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand))  
 			TriggerEvent("casino:context:hit&stand")
 		end
 	else
@@ -683,41 +680,41 @@ RegisterNetEvent("doj:client:blackjackMenu", function(args)
 			NetworkStartSynchronisedScene(scene)
 			return
 		else
-			QBCore.Functions.Notify("You don't have enough casino chips to split.", "error")
-			exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand))  
+			lib.notify({title = "You don't have enough casino chips to split.", type = 'warning'})
+			exports['casino-ui']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand))  
 			TriggerEvent("casino:context:hit&stand")
 		end
 	end 
 end)
 
 RegisterNetEvent("BLACKJACK:RequestMove", function()
-	exports["qb-core"]:DrawText("Bets closing in 30 seconds...")
-	if leavingBlackjack == true then 
-		leaveBlackjack() 
+	lib.showTextUI("Bets closing in 30 seconds...")
+	if leavingBlackjack == true then
+		leaveBlackjack()
 		return 
 	elseif  #hand < 3 and #splitHand == 0 then
 		TriggerEvent("casino:context:hit&doubledown")
-		exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand))  
+		exports['casino-ui']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand))  
 	elseif CanSplitHand(hand) == true then
 		TriggerEvent("casino:context:hit&split")
-		exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand).."</p>[Split Hand: "..handValue(splitHand).."]") 
+		exports['casino-ui']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand).."</p>[Split Hand: "..handValue(splitHand).."]") 
 	elseif leavingBlackjack == false then
 		TriggerEvent("casino:context:hit&stand")
-		exports['casinoUi']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand)) 
+		exports['casino-ui']:DrawCasinoUi('show', "Diamond Casino Blackjack</p>Dealer: "..dealerValue[g_seat].."</p>Hand: "..handValue(hand)) 
 	end
 end)
 
 RegisterNetEvent("BLACKJACK:GameEndReaction", function(result)
 	CreateThread(function()
 		if #hand == 2 and handValue(hand) == 21 and result == "good" then 
-			QBCore.Functions.Notify("You have BLACKJACK!", "success")
+			lib.notify({title = 'You have BLACKJACK!', type = 'success'})
 			PlaySoundFrontend(-1, "TENNIS_MATCH_POINT", "HUD_AWARDS", 1)
 		elseif handValue(hand) > 21 and result ~= "good" then
-			QBCore.Functions.Notify("You BUST", "error", 3500)
+			lib.notify({title = 'You BUST', type = 'warning'})
 			PlaySoundFrontend(-1, "ERROR", "HUD_AMMO_SHOP_SOUNDSET", 1)
 		else
 			PlaySoundFrontend(-1, "CHALLENGE_UNLOCKED", "HUD_AWARDS", 1) 
-			QBCore.Functions.Notify("You "..resultNames[result].." with the hand: "..handValue(hand)) 
+			lib.notify({title = "You "..resultNames[result].." with the hand: "..handValue(hand), type = 'info'})
 		end
 
 		hand = {}
@@ -727,14 +724,14 @@ RegisterNetEvent("BLACKJACK:GameEndReaction", function(result)
 		DebugPrint("Reacting: "..anim)	
 		playerBusy = true
 		local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, false, false, 1065353216, 0, 1065353216)
-		NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, "anim_casino_b@amb@casino@games@shared@player@", anim, 2.0, -2.0, 13, 16, 1148846080, 0)
+		NetworkAddPedToSynchronisedScene(cache.ped, scene, "anim_casino_b@amb@casino@games@shared@player@", anim, 2.0, -2.0, 13, 16, 1148846080, 0)
 		NetworkStartSynchronisedScene(scene)
 		Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", anim)*990))
 		if leavingBlackjack == true then leaveBlackjack() return end
 		playerBusy = false	
 		idleVar = "idle_var_0"..math.random(1,5)
 		local scene = NetworkCreateSynchronisedScene(g_coords, g_rot, 2, true, true, 1065353216, 0, 1065353216)
-		NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
+		NetworkAddPedToSynchronisedScene(cache.ped, scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
 		NetworkStartSynchronisedScene(scene)
 	end)
 end)
@@ -840,12 +837,12 @@ function ProcessTables()
 	while true do
 		local sleep = 5 
 		local inZone = false
-		if not IsEntityDead(PlayerPedId()) then
+		if not IsEntityDead(cache.ped) then
 			for i,v in pairs(tables) do
 				local cord = v.coords
 				local highStakes = v.highStakes
-				if #(GetEntityCoords(PlayerPedId()) - vector3(cord.x, cord.y, cord.z)) < 3.0 then
-					local pCoords = GetEntityCoords(PlayerPedId())
+				if #(GetEntityCoords(cache.ped) - vector3(cord.x, cord.y, cord.z)) < 3.0 then
+					local pCoords = GetEntityCoords(cache.ped)
 
 					-- local tableObj = GetClosestObjectOfType(pCoords, 1.0, `vw_prop_casino_3cardpoker_01`, false, false, false)
 					-- if GetEntityCoords(tableObj) == vector3(0.0, 0.0, 0.0) then
@@ -899,133 +896,132 @@ function ProcessTables()
 							inZone  = true
 
 							if highStakes then
-								text = "<strong>The Diamond Casino & Resort</p>Blackjack KGV(High-Limit)</strong></p>Press <strong>E</strong> to sit"  
+								text = "Blackjack KGV (High-Limit)  \n  E - Sit"
 							else
-								text = "<strong>The Diamond Casino & Resort</p>Blackjack KGV</strong></p>Press <strong>E</strong> to sit" 
+								text = "Blackjack KGV  \n  E - Sit"
 							end
 						
 						
-							if IsControlJustPressed(1, 51) then
-								-- QBCore.Functions.TriggerCallback('QBCore.Functions.HasItem', function(HasItem)
-								-- 	if HasItem then
-										if satDownCallback ~= nil then
-											satDownCallback()
-										end			
-										local ped = PlayerPedId()
-										local initPos = GetAnimInitialOffsetPosition("anim_casino_b@amb@casino@games@shared@player@", seatAnim, coords, rot, 0.01, 2)
-										local initRot = GetAnimInitialOffsetRotation("anim_casino_b@amb@casino@games@shared@player@", seatAnim, coords, rot, 0.01, 2)										
-										TaskGoStraightToCoord(ped, initPos, 1.0, 5000, initRot.z, 0.01)
-										repeat Wait(0) until GetScriptTaskStatus(ped, 2106541073) == 7
-										Wait(50)									
-										SetPedCurrentWeaponVisible(ped, 0, true, 0, 0)									
-										local scene = NetworkCreateSynchronisedScene(coords, rot, 2, true, true, 1065353216, 0, 1065353216)
-										NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", seatAnim, 2.0, -2.0, 13, 16, 1148846080, 0)
-										NetworkStartSynchronisedScene(scene)		
-										local scene = NetworkConvertSynchronisedSceneToSynchronizedScene(scene)
-										repeat Wait(0) until GetSynchronizedScenePhase(scene) >= 0.99 or HasAnimEventFired(ped, 2038294702) or HasAnimEventFired(ped, -1424880317)	
-										Wait(1000)
-										idleVar = "idle_cardgames"
-										scene = NetworkCreateSynchronisedScene(coords, rot, 2, true, true, 1065353216, 0, 1065353216)
-										NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 2.0, -2.0, 13, 16, 1148846080, 0)
-										NetworkStartSynchronisedScene(scene)
-										repeat Wait(0) until IsEntityPlayingAnim(ped, "anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 3) == 1
-										g_seat = i
-										leavingBlackjack = false	
-										TriggerServerEvent("BLACKJACK:PlayerSatDown", i, closestChair)		
-										local endTime = GetGameTimer() + math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", idleVar)*990)
-		
-										CreateThread(function()
-											local startCount = false
-											local count = 0
-											while true do
-												Wait(0)
-												SetPauseMenuActive(false)
-												if leavingBlackjack == true then
-													startCount = true
-												end
-												if startCount == true then
-													count = count + 1
-												end
-												if count > 100 then
-													break
-												end
-											end
-										end)
-		
+							if IsControlJustPressed(1, 51) then 
+								local HasItem = exports.ox_inventory:GetItemCount("casino_member")
+								if HasItem >= 1 then
+									if satDownCallback ~= nil then
+										satDownCallback()
+									end			
+									local ped = cache.ped
+									local initPos = GetAnimInitialOffsetPosition("anim_casino_b@amb@casino@games@shared@player@", seatAnim, coords, rot, 0.01, 2)
+									local initRot = GetAnimInitialOffsetRotation("anim_casino_b@amb@casino@games@shared@player@", seatAnim, coords, rot, 0.01, 2)										
+									TaskGoStraightToCoord(ped, initPos, 1.0, 5000, initRot.z, 0.01)
+									repeat Wait(0) until GetScriptTaskStatus(ped, 2106541073) == 7
+									Wait(50)									
+									SetPedCurrentWeaponVisible(ped, 0, true, 0, 0)									
+									local scene = NetworkCreateSynchronisedScene(coords, rot, 2, true, true, 1065353216, 0, 1065353216)
+									NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", seatAnim, 2.0, -2.0, 13, 16, 1148846080, 0)
+									NetworkStartSynchronisedScene(scene)		
+									local scene = NetworkConvertSynchronisedSceneToSynchronizedScene(scene)
+									repeat Wait(0) until GetSynchronizedScenePhase(scene) >= 0.99 or HasAnimEventFired(ped, 2038294702) or HasAnimEventFired(ped, -1424880317)	
+									Wait(1000)
+									idleVar = "idle_cardgames"
+									scene = NetworkCreateSynchronisedScene(coords, rot, 2, true, true, 1065353216, 0, 1065353216)
+									NetworkAddPedToSynchronisedScene(ped, scene, "anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 2.0, -2.0, 13, 16, 1148846080, 0)
+									NetworkStartSynchronisedScene(scene)
+									repeat Wait(0) until IsEntityPlayingAnim(ped, "anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 3) == 1
+									g_seat = i
+									leavingBlackjack = false	
+									TriggerServerEvent("BLACKJACK:PlayerSatDown", i, closestChair)		
+									local endTime = GetGameTimer() + math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", idleVar)*990)
+	
+									CreateThread(function()
+										local startCount = false
+										local count = 0
 										while true do
 											Wait(0)
-											if GetGameTimer() >= endTime then
-												if playerBusy == true then
-													while playerBusy == true do
-														Wait(0)
-														local playerPed = PlayerPedId()
-														if IsEntityDead(playerPed) then
+											SetPauseMenuActive(false)
+											if leavingBlackjack == true then
+												startCount = true
+											end
+											if startCount == true then
+												count = count + 1
+											end
+											if count > 100 then
+												break
+											end
+										end
+									end)
+	
+									while true do
+										Wait(0)
+										if GetGameTimer() >= endTime then
+											if playerBusy == true then
+												while playerBusy == true do
+													Wait(0)
+													local playerPed = cache.ped
+													if IsEntityDead(playerPed) then
+														TriggerServerEvent("BLACKJACK:PlayerRemove", i)
+														ClearPedTasks(playerPed)
+														leaveBlackjack()
+														break
+													elseif leaveCheckCallback ~= nil then
+														if leaveCheckCallback() then
 															TriggerServerEvent("BLACKJACK:PlayerRemove", i)
 															ClearPedTasks(playerPed)
 															leaveBlackjack()
-															break
-														elseif leaveCheckCallback ~= nil then
-															if leaveCheckCallback() then
-																TriggerServerEvent("BLACKJACK:PlayerRemove", i)
-																ClearPedTasks(playerPed)
-																leaveBlackjack()
-																break									
-															end
+															break									
 														end
 													end
 												end
-												if leavingBlackjack == false then
-													idleVar = "idle_var_0"..math.random(1,5)
-													local scene = NetworkCreateSynchronisedScene(coords, rot, 2, true, true, 1065353216, 0, 1065353216)
-													NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
-													NetworkStartSynchronisedScene(scene)
-													endTime = GetGameTimer() + math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", idleVar)*990)
-												end
 											end
-											if leavingBlackjack == true then
+											if leavingBlackjack == false then
+												idleVar = "idle_var_0"..math.random(1,5)
+												local scene = NetworkCreateSynchronisedScene(coords, rot, 2, true, true, 1065353216, 0, 1065353216)
+												NetworkAddPedToSynchronisedScene(cache.ped, scene, "anim_casino_b@amb@casino@games@shared@player@", idleVar, 2.0, -2.0, 13, 16, 1148846080, 0)
+												NetworkStartSynchronisedScene(scene)
+												endTime = GetGameTimer() + math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", idleVar)*990)
+											end
+										end
+										if leavingBlackjack == true then
+											if standUpCallback ~= nil then
+												standUpCallback()
+											end
+											local scene = NetworkCreateSynchronisedScene(coords, rot, 2, false, false, 1065353216, 0, 1065353216)
+											NetworkAddPedToSynchronisedScene(cache.ped, scene, "anim_casino_b@amb@casino@games@shared@player@", "sit_exit_left", 2.0, -2.0, 13, 16, 1148846080, 0)
+											NetworkStartSynchronisedScene(scene)
+											TriggerServerEvent("BLACKJACK:PlayerSatUp", i)
+											Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", "sit_exit_left")*800))
+											ClearPedTasks(cache.ped)
+											break
+										else
+											local playerPed = cache.ped
+											if IsEntityDead(playerPed) then
+												TriggerServerEvent("BLACKJACK:PlayerRemove", i)
+												ClearPedTasks(playerPed)
+												leaveBlackjack()
 												if standUpCallback ~= nil then
 													standUpCallback()
 												end
-												local scene = NetworkCreateSynchronisedScene(coords, rot, 2, false, false, 1065353216, 0, 1065353216)
-												NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, "anim_casino_b@amb@casino@games@shared@player@", "sit_exit_left", 2.0, -2.0, 13, 16, 1148846080, 0)
-												NetworkStartSynchronisedScene(scene)
-												TriggerServerEvent("BLACKJACK:PlayerSatUp", i)
-												Wait(math.floor(GetAnimDuration("anim_casino_b@amb@casino@games@shared@player@", "sit_exit_left")*800))
-												ClearPedTasks(PlayerPedId())
 												break
-											else
-												local playerPed = PlayerPedId()
-												if IsEntityDead(playerPed) then
+											elseif leaveCheckCallback ~= nil then
+												if leaveCheckCallback() then
 													TriggerServerEvent("BLACKJACK:PlayerRemove", i)
 													ClearPedTasks(playerPed)
 													leaveBlackjack()
 													if standUpCallback ~= nil then
 														standUpCallback()
 													end
-													break
-												elseif leaveCheckCallback ~= nil then
-													if leaveCheckCallback() then
-														TriggerServerEvent("BLACKJACK:PlayerRemove", i)
-														ClearPedTasks(playerPed)
-														leaveBlackjack()
-														if standUpCallback ~= nil then
-															standUpCallback()
-														end
-														break									
-													end
+													break									
 												end
 											end
 										end
-								-- 	else
-								-- 		QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
-								-- 	end
-								-- end, 'casino_member')
+									end
+								else
+									lib.notify({title = "You are not a member of the casino", type = 'warning'})
+								end
 							end
 						end
 					end
 					if inZone and not alreadyEnteredZone then
 						alreadyEnteredZone = true
-						exports["qb-core"]:DrawText(text) 
+						lib.showTextUI(text)
 					end
 					if not inZone and alreadyEnteredZone then
 						alreadyEnteredZone = false
