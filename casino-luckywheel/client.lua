@@ -1,133 +1,46 @@
 
-local QBCore = exports['qb-core']:GetCoreObject()
 
-local car, h
+local h
 local _wheel, _base, _lights1, _lights2, _arrow1, _arrow2 = nil, nil, nil, nil, nil, nil
-
-
-local m1a = GetHashKey('vw_prop_vw_luckylight_off')
-local m1b = GetHashKey('vw_prop_vw_luckylight_on')
-local m2a = GetHashKey('vw_prop_vw_jackpot_off')
-local m2b = GetHashKey('vw_prop_vw_jackpot_on')
-	
-local _wheelPos = Config.WheelPos
 local _isRolling = false
 
 CreateThread(function()
-	RequestScriptAudioBank("DLC_VINEWOOD\\CASINO_GENERAL", false)
+	lib.requestAudioBank("DLC_VINEWOOD\\CASINO_GENERAL")
 	local model1 = GetHashKey('vw_prop_vw_luckywheel_02a')
 	local model2 = GetHashKey('vw_prop_vw_luckywheel_01a')
-	local podiumModel = GetHashKey('vw_prop_vw_casino_podium_01a')
-	CreateThread(function()
-		RequestModel(model1) while not HasModelLoaded(model1) do Wait(0) end
-		RequestModel(model2) while not HasModelLoaded(model2) do Wait(0) end
-		RequestModel(m1a) while not HasModelLoaded(m1a) do Wait(0) end
-		RequestModel(m1b) while not HasModelLoaded(m1b) do Wait(0) end
-		RequestModel(m2a) while not HasModelLoaded(m2a) do Wait(0) end
-		RequestModel(m2b) while not HasModelLoaded(m2b) do Wait(0) end
-		ClearArea(Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z, 5.0, true, false, false, false)
-		_wheel = CreateObject(model1, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z, false, false, true)
-		SetEntityHeading(_wheel, Config.WheelPos.h)
-		SetModelAsNoLongerNeeded(model1)
-		_base = CreateObject(model2, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z-0.26, false, false, true)
-		SetEntityHeading(_base, Config.WheelPos.h)
-		SetModelAsNoLongerNeeded(_base)
-		_lights1 = CreateObject(m1a, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+0.35, false, false, true)
-		SetEntityHeading(_lights1, Config.WheelPos.h)
-		SetModelAsNoLongerNeeded(_lights1)
-		_lights2 = CreateObject(m1b, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+0.35, false, false, true)
-		SetEntityVisible(_lights2, false, 0)
-		SetEntityHeading(_lights2, Config.WheelPos.h)
-		SetModelAsNoLongerNeeded(_lights2)
-		_arrow1 = CreateObject(m2a, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+2.5, false, false, true)
-		SetEntityHeading(_arrow1, Config.WheelPos.h)
-		SetModelAsNoLongerNeeded(_arrow1)
-		_arrow2 = CreateObject(m2b, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+2.5, false, false, true)
-		SetEntityVisible(_arrow2, false, 0)
-		SetEntityHeading(_arrow2, Config.WheelPos.h)
-		SetModelAsNoLongerNeeded(_arrow2)
-		h = GetEntityRotation(_wheel)
-	end)
+	local m1a = GetHashKey('vw_prop_vw_luckylight_off')
+	local m1b = GetHashKey('vw_prop_vw_luckylight_on')
+	local m2a = GetHashKey('vw_prop_vw_jackpot_off')
+	local m2b = GetHashKey('vw_prop_vw_jackpot_on')
+	lib.RequestModel(model1)
+	lib.RequestModel(model2)
+	lib.RequestModel(m1a)
+	lib.RequestModel(m1b)
+	lib.RequestModel(m2a)
+	lib.RequestModel(m2b)
+	ClearArea(Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z, 5.0, true, false, false, false)
+	_wheel = CreateObject(model1, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z, false, false, true)
+	SetEntityHeading(_wheel, Config.WheelPos.h)
+	SetModelAsNoLongerNeeded(model1)
+	_base = CreateObject(model2, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z-0.26, false, false, true)
+	SetEntityHeading(_base, Config.WheelPos.h)
+	SetModelAsNoLongerNeeded(_base)
+	_lights1 = CreateObject(m1a, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+0.35, false, false, true)
+	SetEntityHeading(_lights1, Config.WheelPos.h)
+	SetModelAsNoLongerNeeded(_lights1)
+	_lights2 = CreateObject(m1b, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+0.35, false, false, true)
+	SetEntityVisible(_lights2, false, 0)
+	SetEntityHeading(_lights2, Config.WheelPos.h)
+	SetModelAsNoLongerNeeded(_lights2)
+	_arrow1 = CreateObject(m2a, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+2.5, false, false, true)
+	SetEntityHeading(_arrow1, Config.WheelPos.h)
+	SetModelAsNoLongerNeeded(_arrow1)
+	_arrow2 = CreateObject(m2b, Config.WheelPos.x, Config.WheelPos.y, Config.WheelPos.z+2.5, false, false, true)
+	SetEntityVisible(_arrow2, false, 0)
+	SetEntityHeading(_arrow2, Config.WheelPos.h)
+	SetModelAsNoLongerNeeded(_arrow2)
+	h = GetEntityRotation(_wheel)
 end)
-
-CreateThread(function()
-    local LuckyWheelZone = CircleZone:Create(vector3(949.71, 45.1, 70.9), 2.5, {
-        name="LuckyWheelZone",
-        heading=328.0,
-        debugPoly=false,
-        useZ=true,
-    })
-    LuckyWheelZone:onPlayerInOut(function(isPointInside)
-        if isPointInside then
-			text = "<b>The Diamond Casino & Resort</p>Lucky Wheel</b></p> $"..Config.startingPrice.." a spin"
-			exports['qb-core']:DrawText(text)
-			exports['qb-target']:AddCircleZone("LuckyWheel", vector3(949.391, 44.72, 71.638), 2.0, {
-				name="LuckyWheel",
-				heading=160,
-				debugPoly=false,
-				useZ=true,
-				}, {
-					options = {
-						{
-							event = "luckywheel:client:startWheel",
-							icon = "fas fa-sync-alt",
-							label = "Try Your Luck",
-						},
-					},
-				distance = 2.0 
-			})
-        else
-			exports['qb-menu']:closeMenu()
-            exports["qb-core"]:HideText()
-        end
-    end)
-end)
-
-RegisterNetEvent('doj:casinoLuckyWheelHeader', function()
-    exports['qb-menu']:showHeader({
-        {
-            header = "The Diamond Casino & Resort Lucky Wheel",
-            isMenuHeader = true,
-        },
-        {
-            header = "Try Your Luck", 
-            txt = "$"..Config.startingPrice.." a spin",
-            params = {
-                event = "luckywheel:client:startWheel",
-            }
-        },
-        {
-            header = "Cancel",
-			txt = "",
-			params = {
-                event = "doj:casinoLuckyWheelHeader"
-            }
-        },
-    })
-end)
-
--- RegisterNetEvent("luckywheel:client:startWheel", function()
--- 	QBCore.Functions.TriggerCallback('QBCore.Functions.HasItem', function(HasItem)
--- 		if HasItem then
--- 			TriggerServerEvent("luckywheel:getwheel")
--- 		else
--- 			QBCore.Functions.Notify('You are not a V.I.P of the casino', 'error', 3500)
--- 		end
--- 	end, "casino_vip")
--- end)
-
-
-RegisterNetEvent("luckywheel:client:startWheel", function() 
-	QBCore.Functions.TriggerCallback('doj:server:HasVIPMembership', function(HasItem)
-		if HasItem then 
-			TriggerServerEvent("luckywheel:getwheel")
-		else
-			QBCore.Functions.Notify('You dont have a V.I.P Membership!', 'error', 3500)
-			text = '<b>The Diamond Casino & Resort</p>Please visit the front desk!</b>'
-            exports['qb-core']:DrawText(text)
-		end
-	end)
-end) 
 
 RegisterNetEvent("luckywheel:syncanim", function()
 	doRoll(0)
@@ -222,7 +135,8 @@ RegisterNetEvent("luckywheel:rollFinished", function()
     _isRolling = false
 end)
 
-function QBCoreRequestAnimDict(animDict, cb)
+
+function CbRequestAnimDict(animDict, cb)
 	if not HasAnimDictLoaded(animDict) then
 		RequestAnimDict(animDict)
 
@@ -238,21 +152,21 @@ end
 
 function doRoll(index)
     if not _isRolling then
-		exports["qb-core"]:HideText()
+		lib.hideTextUI()
         _isRolling = true
-        local playerPed = PlayerPedId()
+        local playerPed = cache.ped
         local _lib = 'anim_casino_a@amb@casino@games@lucky7wheel@female'
         if IsPedMale(playerPed) then
             _lib = 'anim_casino_a@amb@casino@games@lucky7wheel@male'
         end
         local lib, anim = _lib, 'enter_right_to_baseidle'
 
-        QBCoreRequestAnimDict(lib, function()
+        CbRequestAnimDict(lib, function()
 			local _movePos = GetObjectOffsetFromCoords(GetEntityCoords(_base), GetEntityHeading(_base),-0.9, -0.8, -1.0)
             TaskGoStraightToCoord(playerPed,  _movePos.x,  _movePos.y,  _movePos.z,  1.0,  3000,  GetEntityHeading(_base),  0.0)
             local _isMoved = false
             while not _isMoved do
-                local coords = GetEntityCoords(PlayerPedId())
+                local coords = GetEntityCoords(playerPed)
                 if coords.x >= (_movePos.x - 0.01) and coords.x <= (_movePos.x + 0.01) and coords.y >= (_movePos.y - 0.01) and coords.y <= (_movePos.y + 0.01) then
                     _isMoved = true
                 end
@@ -278,22 +192,79 @@ function doRoll(index)
     end
 end
 
-
-
-RegisterNetEvent('dojLuckywheel:winCar', function(plate)
-	local ped = PlayerPedId()
-	local coords = Config.VehicleSpawnCoords 
-	QBCore.Functions.TriggerCallback('QBCore:Server:SpawnVehicle', function(netId)
-		local veh = NetToVeh(netId)
-		SetVehicleNumberPlateText(veh, Config.VehiclePlateText)
-		TaskWarpPedIntoVehicle(PlayerPedId(), veh, -1)
-		SetVehicleFuelLevel(veh, 100)
-		TriggerEvent("vehiclekeys:client:SetOwner", Config.VehiclePrize)
-		TriggerServerEvent('luckywheel:server:setVehicleOwner')
-		QBCore.Functions.SetVehicleProperties(veh, vehmods)
-	end, Config.VehiclePrize, coords, true)
+RegisterNetEvent("doj:casinoLuckyWheel", function() 
+	lib.hideTextUI()
+    local HasItem = exports.ox_inventory:GetItemCount("casino_vip")
+	if HasItem >= 1 then
+		    exports['envi-interact']:OpenChoiceMenu({
+            title = 'Diamond Casino LuckyWheel',
+            speech = 'Hello, Are you feeling Lucky today?', 
+            duration = 1000,
+            menuID = 'luckywheel-menu',
+            position = 'right',
+            options = {
+                { 
+                    key = 'E',
+                    label = 'Spin Wheel for $'..Config.startingPrice,
+                    selected = function()
+						TriggerServerEvent("luckywheel:getwheel")
+					end
+                },
+            }
+        })
+	else
+		exports['envi-interact']:OpenChoiceMenu({
+            title = 'Diamond Casino LuckyWheel (unavailable)',
+            speech = 'You are not a V.I.P of the casino, Please go visit the front desk.',
+            duration = 2000,
+            menuID = 'luckywheel-menu-denied',
+            position = 'right',
+            options = {
+                {
+                    key = 'X',
+                    label = 'Leave', 
+                    selected = function(data)
+                        exports['envi-interact']:CloseEverything()
+                    end
+                }
+            }
+        })
+	end
 end)
-
-
+ 
+RegisterNetEvent('doj:client:winCar', function(vehicle, plate, vehicleId)
+    for i = 1, #Config.Vehicle do
+        local v = Config.Vehicle[i]
+    	local netId = lib.callback.await('doj:server:spawnVehicle', false, vehicle, v.spawn, plate, vehicleId)
+    	local veh = NetToVeh(netId)
+    	local props = lib.getVehicleProperties(veh)
+        SetVehicleModKit(veh, 0)
+        SetVehicleColours(veh, v.colors[1], v.colors[2])
+        SetVehicleExtraColours(veh, v.extraColors[1], v.extraColors[2])
+        SetVehicleWindowTint(veh, 3)
+        SetVehicleLights(veh, 2)
+        ToggleVehicleMod(veh, 22, true)
+        SetVehicleXenonLightsColor(veh, v.XenonColor)
+        SetVehicleInteriorColor(veh, v.intColor)
+        SetVehicleExtra(veh, v.extra, false)
+        SetVehicleExtra(veh, v.extra2, false)
+        if v.neons then
+            SetVehicleNeonLightsColour(veh, v.neons[1], v.neons[2], v.neons[3])
+            for i = 0, 3 do
+                SetVehicleNeonLightEnabled(veh, i, true)
+            end
+        end
+        if v.livery then
+            SetVehicleMod(veh, 48, v.livery, false)
+            SetVehicleLivery(veh, v.livery)
+        end
+        for mod, id in pairs(v.modKits) do
+            SetVehicleMod(veh, mod, id - 1, false)
+        end
+        SetVehicleFuelLevel(veh, 100.0)
+    	props.plate = plate
+    	TriggerServerEvent('qb-vehicletuning:server:SaveVehicleProps', props)
+	end
+end)
 
 
