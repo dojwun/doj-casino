@@ -1,99 +1,79 @@
-local QBCore = exports['qb-core']:GetCoreObject()
+-- Credit for elevators https://github.com/GouveiaXS/angelicxs-elevators
 
 CreateThread(function()
-    local TeleportUpZone = CircleZone:Create(vector3(930.251, 34.324, 81.089), 1.5, {
-        name="TeleportUp",
-        heading=328.0,
-        debugPoly=false,
-        useZ=true,
-    })
-    TeleportUpZone:onPlayerInOut(function(isPointInside)
-        if isPointInside then
-            -- exports['qb-core']:DrawText('<b>The Diamond Casino & Resort</p>Elevators</b>')
-                QBCore.Functions.TriggerCallback('doj:server:HasCasinoMembership', function(HasItem)
-                if HasItem then  
-                    TriggerEvent("doj:casinoTeleportUp")
-                else
-                    exports['qb-core']:DrawText('<b>The Diamond Casino & Resort</p>NOT A MEMBER</p></b>Please visit the front desk!</b>')
+    for elevatorName, elevatorFloors in pairs(Config.Elevators) do
+        for index, floor in pairs(elevatorFloors) do
+            CreateThread(function()
+                while true do
+                    local sleep = 2000
+                    local playerCoords = GetEntityCoords(cache.ped)
+                    local distance = #(playerCoords - floor.position)
+                    if distance <= 3.0 then
+                        sleep = 0
+                        qbx.drawText3d({text = "Press ~b~E~w~ to use Elevator From " .. floor.level, coords = vec3(floor.position.x,floor.position.y,floor.position.z)})
+                        if distance <= 1.5 and IsControlJustReleased(0, 38) then
+                            local data = {}
+                            data.elevator = elevatorName
+                            data.level = index
+                            TriggerEvent('angelicxs_elevator:showFloors', data)
+                        end
+                    end
+                    Wait(sleep)
                 end
             end)
-        else
-			exports['qb-menu']:closeMenu()
-            exports["qb-core"]:HideText()
         end
-    end)
-end)
-
-CreateThread(function()
-    local TeleportDownZone = CircleZone:Create(vector3(964.737, 58.743, 112.553), 1.5, {
-        name="TeleportDown",
-        heading=328.0,
-        debugPoly=false,
-        useZ=true,
-    })
-    TeleportDownZone:onPlayerInOut(function(isPointInside)
-        if isPointInside then
-            TriggerEvent("doj:casinoTeleportDown")
-        else
-			exports['qb-menu']:closeMenu()
-        end
-    end)
-end)
-
-RegisterNetEvent('doj:casinoTeleports', function(args)
-    local args = tonumber(args)
-    local ped = PlayerPedId()
-    if args == 1 then 
-        SetEntityCoords(ped, 965.0619, 58.51287, 112.553, false, false, false, true)
-    else
-        SetEntityCoords(ped, 930.0716, 33.86854, 81.09772, false, false, false, true)
     end
 end)
 
-RegisterNetEvent('doj:casinoTeleportUp', function()
-    exports['qb-menu']:showHeader({
-        {
-            header = "The Diamond Casino & Resort Elevators",
-            isMenuHeader = true,
-        },
-        {
-            header = "Elevator Up", 
-            txt = "Roof access",
-            params = {
-                event = "doj:casinoTeleports",
-                args = 1,
-            }
-        },
-        {
-            header = "return",
-			txt = "",
-			params = {
-                event = "doj:casinoTeleportUp"
-            }
-        },
-    })
+RegisterNetEvent("angelicxs_elevator:showFloors", function(data)
+	local elevator = {}
+	local floor = {}
+	for index, floor in pairs(Config.Elevators[data.elevator]) do
+        table.insert(elevator, {
+            title = floor.level,
+            description = floor.label,
+            onSelect = function()
+                TriggerEvent("angelicxs_elevator:movement", floor)
+            end
+        })
+	end
+    lib.registerContext({
+        id = 'angelicxs-elevator_ox',
+        options = elevator,
+        title = data.elevator,
+        position = 'top-right',
+    }, function(selected, scrollIndex, args)
+    end)
+    lib.showContext('angelicxs-elevator_ox')
 end)
 
-RegisterNetEvent('doj:casinoTeleportDown', function()
-    exports['qb-menu']:showHeader({
-        {
-            header = "The Diamond Casino & Resort Elevators",
-            isMenuHeader = true,
-        },
-        {
-            header = "Elevator Down", 
-            txt = "Main Lobby",
-            params = {
-                event = "doj:casinoTeleports",
-                args = 2,
-            }
-        },
-        {
-            header = "return",
-			txt = "",
-			params = {
-                event = "doj:casinoTeleportDown"
-            }
-        },
-    })
+RegisterNetEvent("angelicxs_elevator:movement", function(arg)
+	local floor = arg
+	local ped = cache.ped
+	DoScreenFadeOut(1500)
+	while not IsScreenFadedOut() do
+		Wait(10)
+	end
+	RequestCollisionAtCoord(floor.position.x, floor.position.y, floor.position.z)
+	while not HasCollisionLoadedAroundEntity(ped) do
+		Wait(0)
+	end
+	SetEntityCoords(ped, floor.position.x, floor.position.y, floor.position.z, false, false, false, false)
+	SetEntityHeading(ped, floor.heading and floor.heading or 0.0)
+	Wait(2*1000)
+	DoScreenFadeIn(1500)
 end)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
