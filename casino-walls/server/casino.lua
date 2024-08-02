@@ -1,138 +1,121 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-
-local quantity = 0
-local ItemList = {
-    ["casino_goldchip"] = 1,
-}
-
-RegisterServerEvent("qb-casino:server:GoldSell")
-AddEventHandler("qb-casino:server:GoldSell", function()
-    local src = source
-    local price = Config.casinoChipPrice
-    local Player = QBCore.Functions.GetPlayer(src)
-    local xItem = Player.Functions.GetItemByName("casino_goldchip")
-    if xItem ~= nil then
-        local quantity = 0
-        for k, v in pairs(Player.PlayerData.items) do 
-            if Player.PlayerData.items[k] ~= nil then 
-                if ItemList[Player.PlayerData.items[k].name] ~= nil then 
-                    quantity = quantity + Player.PlayerData.items[k].amount
-                    Player.Functions.RemoveItem(Player.PlayerData.items[k].name, Player.PlayerData.items[k].amount, k)
-                end
-            end
-        end
-        price = price * quantity
-        Player.Functions.AddMoney(Config.payment, price, "sold-casino-chips")
-        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove", quantity)
-        TriggerClientEvent('QBCore:Notify', src, "You sold "..quantity.." Gold chips for $"..price)
-        TriggerEvent('qb-log:server:CreateLog', 'guedesteste', 'Dinheiro Venda | '..Player.PlayerData.name, 'default', quantity.." fichas de ouro por "..price.."€")
-        TriggerClientEvent("doj:casinoChipMenu", src)
-		quantity = 0
-    else
-        TriggerClientEvent('QBCore:Notify', src, "You dont have any gold casino chips...", "error") 
-        TriggerClientEvent("doj:casinoChipMenu", src)
-    end
-end)
-
+local ox_inventory = exports.ox_inventory
+local qbx_core = exports.qbx_core
 
 RegisterNetEvent("doj:server:purchaseMembership", function()
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local MembershipCheck = Player.Functions.GetItemByName('casino_member')
-    if MembershipCheck ~= nil then
-        TriggerClientEvent('doj:casinoMembershipMenu', src)
-        TriggerClientEvent('QBCore:Notify', src, 'You already have a Membership', 'error')
+    local Player = qbx_core:GetPlayer(source)
+    if Player.Functions.RemoveMoney(Config.Casino.Payment, Config.Casino.MemberCost) then 
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, 'membership-menu', 'Membership Purchased.', 750)
+        ox_inventory:AddItem(source, 'casino_member', 1)
     else
-	    if Player.Functions.AddItem('casino_member', 1, false, info) then
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['casino_member'], "add", 1)
-            TriggerClientEvent('doj:casinoMembershipMenu', src)
-
-        end
+        local missingMoney = Player.Functions.GetMoney(Config.Casino.Payment) - Config.Casino.MemberCost
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "membership-menu", 'You are missing $'..missingMoney, 1000)
     end
 end)
 
 RegisterNetEvent("doj:server:purchaseVIPMembership", function()
-    local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local VIPMembershipCheck = Player.Functions.GetItemByName('casino_vip')
-    if VIPMembershipCheck ~= nil then
-        TriggerClientEvent('doj:casinoMembershipMenu', src)
-        TriggerClientEvent('QBCore:Notify', src, 'You already have a Membership', 'error')
+    local Player = qbx_core:GetPlayer(source)
+    if Player.Functions.RemoveMoney(Config.Casino.Payment, Config.Casino.VipCost) then 
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, 'vip-menu', 'V.I.P Purchased.', 750)
+        ox_inventory:AddItem(source, 'casino_vip', 1)
     else
-	    if Player.Functions.AddItem('casino_vip', 1, false, info) then
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['casino_vip'], "add", 1)
-            TriggerClientEvent('doj:casinoMembershipMenu', src)
+        local missingMoney = Player.Functions.GetMoney(Config.Casino.Payment) - Config.Casino.VipCost
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "vip-menu", 'You are missing $'..missingMoney, 1000)
+    end
+end)
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+RegisterNetEvent('doj:server:sellAllChips', function()
+    local Player = qbx_core:GetPlayer(source)
+    local item = ox_inventory:GetItem(source, Config.Casino.Item, nil, true)
+    local price = item * Config.Casino.ChipPrice
+    if ox_inventory:RemoveItem(source, Config.Casino.Item, item) then 
+        Player.Functions.AddMoney(Config.Casino.Payment, price , "casino") 
+        ox_inventory:RemoveItem(source, Config.Casino.Item, item)
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "exchange-menu", 'You sold '..item..' Casino Chips for $'..price..'.', 1250)
+    else
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "exchange-menu", 'You dont have any chips!', 750)
+    end
+end)
+
+RegisterNetEvent('doj:server:sellSelectedAmount', function(amount)
+    local Player = qbx_core:GetPlayer(source)
+    local item = ox_inventory:GetItem(source, Config.Casino.Item, nil, true)
+    local price = Config.Casino.ChipPrice
+    if item >= amount then
+        Player.Functions.AddMoney(Config.Casino.Payment, amount * price , "casino")
+        ox_inventory:RemoveItem(source, Config.Casino.Item, amount)
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "exchange-menu", 'You sold '..amount..' Casino Chip(s) for $'..price..'.', 1500)
+    else
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "exchange-menu", 'Not enough chips!', 500)
+    end
+end)
+
+RegisterNetEvent('doj:server:buySelectedAmount', function(amount)
+    local Player = qbx_core:GetPlayer(source)
+    local totalAmount = amount * Config.Casino.ChipPrice
+    if Player.Functions.RemoveMoney(Config.Casino.Payment, totalAmount) then
+        Player.Functions.RemoveMoney(Config.Casino.Payment, totalAmount)
+        ox_inventory:AddItem(source, Config.Casino.Item, amount)
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "cashier-menu", 'You bought '..amount..' Casino Chip(s) for $'..totalAmount..'.', 1250)
+    else
+        TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "cashier-menu", 'You dont have enough money! Goodbye.', 1000)
+    end
+end)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+RegisterNetEvent('doj:server:checkItemsForGumball', function()
+    if Config.SecretGumball.Machine.Payment == 'items' then
+        local items = ox_inventory:Search(source, 'count', {'casino_member', 'casino_vip', Config.Casino.Item})
+        if items and items.casino_member >= 1 and items.casino_vip >= 1 and items.Config.Casino.Item >= Config.SecretGumball.Machine.Price then
+            ox_inventory:RemoveItem(source, 'casino_member', 1)
+            ox_inventory:RemoveItem(source, 'casino_vip', 1)
+            ox_inventory:RemoveItem(source, Config.Casino.Item, Config.SecretGumball.Machine.Price)
+            TriggerClientEvent('doj:client:acceptTradeForGumball', source)
+        elseif items and items.casino_member <= 1 or items.casino_vip <= 1 or items.Config.Casino.Item <= Config.SecretGumball.Machine.Price then
+            TriggerClientEvent('doj:client:UpdateInteractSpeech', source, 'gumball-menu', 'Membership: ['..items.casino_member..']  V.I.P: ['..items.casino_vip..'] Casino Chips: ['..items.Config.Casino.Item..']', 2000)
+            TriggerClientEvent('doj:client:RefreshZones', source)
         end
-    end 
-end)
-
-
-QBCore.Functions.CreateCallback('doj:server:HasCasinoMembership', function(source, cb)
-    local Player = QBCore.Functions.GetPlayer(source)
-    local Item = Player.Functions.GetItemByName("casino_member")
-
-    if Item ~= nil then 
-        cb(true)
-    else
-        cb(false)
+    elseif Config.SecretGumball.Machine.Payment == 'cash' then
+        local Player = qbx_core:GetPlayer(source)
+        if Player.Functions.RemoveMoney(Config.SecretGumball.Machine.Payment, Config.SecretGumball.Machine.Price) then 
+            TriggerClientEvent('doj:client:acceptTradeForGumball', source)
+        else
+            local missingMoney = Player.Functions.GetMoney(Config.SecretGumball.Machine.Payment) - Config.SecretGumball.Machine.Price
+            TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "gumball-menu", 'You are missing $'..missingMoney, 1000)
+            TriggerClientEvent('doj:client:RefreshZones', source)
+        end
     end
 end)
 
-QBCore.Functions.CreateCallback('doj:server:HasVIPMembership', function(source, cb)
-    local Player = QBCore.Functions.GetPlayer(source)
-    local Item = Player.Functions.GetItemByName("casino_vip")
-
-    if Item ~= nil then 
-        cb(true)
-    else
-        cb(false)
-    end
+RegisterNetEvent('doj:server:giveGumball', function()
+    ox_inventory:AddItem(source, 'casino_gumball', 1)
 end)
 
+RegisterNetEvent('doj:server:AddRandomGumballLoot', function()
+    local items = Config.SecretGumball.Loot.Items[math.random(#Config.SecretGumball.Loot.Items)]
+    ox_inventory:AddItem(source, items, Config.SecretGumball.Loot.Amount)
+end)
 
+exports.qbx_core:CreateUseableItem('casino_gumball', function(source)
+    TriggerClientEvent('doj:client:consumeGumball', source)
+    ox_inventory:RemoveItem(source, 'casino_gumball', 1)
+end)
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
--- RegisterNetEvent("doj:server:validateMembership")
--- AddEventHandler("doj:server:validateMembership", function(args)
---     local src = source
---     local Player = QBCore.Functions.GetPlayer(src)
---     local args = tonumber(args)
--- 	if args == 1 then 
---         if Player.Functions.GetItemByName("casino_member") then
---             Player.Functions.RemoveItem("casino_member", 1)
---             local info = {
---                 owner = Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname,
---             }
---             Player.Functions.AddItem("casino_member_validated", 1, false, info)
---             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["casino_member_validated"], "add", 1) 
---             TriggerClientEvent('QBCore:Notify', src, "Membership has been validated", "success")
---         else
---             TriggerClientEvent('QBCore:Notify', src, "You need to buy a Casino Membership first", "error")
---         end
---     else
---         if Player.Functions.GetItemByName("casino_vip") then
---             Player.Functions.RemoveItem("casino_vip", 1)
---             local info = {
---                 owner = Player.PlayerData.charinfo.firstname.." "..Player.PlayerData.charinfo.lastname,
---             }
---             Player.Functions.AddItem("casino_vip_validated", 1, false, info)
---             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["casino_vip_validated"], "add", 1) 
---             TriggerClientEvent('QBCore:Notify', src, "Membership has been validated", "success")
---         else
---             TriggerClientEvent('QBCore:Notify', src, "You need to buy a V.I.P Membership first", "error")
---         end
---     end
--- end)
-
-
-
-
-
-
-
-
+RegisterServerEvent('doj:server:addVendingItems', function(item, price)
+    local Player = qbx_core:GetPlayer(source)
+    local balance = Player.Functions.GetMoney(Config.Casino.Payment)
+    if balance >= price then
+		ox_inventory:AddItem(source, item, 1)
+        Player.Functions.RemoveMoney(Config.Casino.Payment, price, "vending")
+        TriggerClientEvent('ox_lib:notify', source, {title= 'Bought $'..price..' '..exports.ox_inventory:Items(item).label, type='success'})
+        TriggerClientEvent('doj:client:casinoShopCatalog', source)
+    else
+        TriggerClientEvent('ox_lib:notify', source, {title= 'Not Enough Money', type='error'})
+    end
+end)
 
 
 
