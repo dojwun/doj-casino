@@ -1,90 +1,91 @@
 RegisterNetEvent('casino:context:hit&stand', function() 
-    exports['qb-menu']:openMenu({
+    local options = {
         {
-            header = "Diamond Casino Blackjack",
-            isMenuHeader = true,
+            title = 'Hit',
+            description = 'Draw another card',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 1
         },
         {
-            header = "Hit", 
-            txt = "Draw another card",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 1
-            }
+            title = 'Stand',
+            description = 'Be a pussy',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 2
         },
-        {
-            header = "Stand", 
-            txt = "Be a pussy",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 2
-            }
-        },
+    }
+    lib.registerContext({
+        id = 'hit&stand',
+        title = 'Diamond Casino Blackjack',
+        canClose = false,
+        options = options,
     })
+    lib.showContext('hit&stand')
 end)
 
 RegisterNetEvent('casino:context:hit&doubledown', function() 
-    exports['qb-menu']:openMenu({
+    local options = {
         {
-            header = "Diamond Casino Blackjack",
-            isMenuHeader = true,
+            title = 'Hit',
+            description = 'Draw another card',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 1
         },
         {
-            header = "Hit", 
-            txt = "Draw another card",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 1
-            }
+            title = 'Stand',
+            description = 'Be a pussy',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 2
         },
         {
-            header = "Stand", 
-            txt = "Be a pussy",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 2
-            }
+            title = 'Double Down',
+            description = 'Double your initial bet',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 3
         },
-        {
-            header = "Double Down", 
-            txt = "Double your initial bet",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 3
-            }
-        },
+    }
+    lib.registerContext({
+        id = 'hit&doubledown',
+        title = 'Diamond Casino Blackjack',
+        canClose = false,
+        options = options,
     })
+    lib.showContext('hit&doubledown')
 end)
 
 RegisterNetEvent('casino:context:hit&split', function()
-    exports['qb-menu']:openMenu({
+    local options = {
         {
-            header = "Diamond Casino Blackjack",
-            isMenuHeader = true,
+            title = 'Hit',
+            description = 'Draw another card',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 1
         },
         {
-            header = "Hit", 
-            txt = "Draw another card",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 1
-            }
+            title = 'Stand',
+            description = 'Be a pussy',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 2
         },
         {
-            header = "Stand", 
-            txt = "Be a pussy",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 2
-            }
+            title = 'Split',
+            description = 'Split',
+            -- metadata = {''},
+            event = 'doj:client:blackjackMenu',
+            args = 4
         },
-        {
-            header = "Split", 
-            txt = "Split",
-            params = {
-                event = "doj:client:blackjackMenu",
-                args = 4
-            }
-        },
+    }
+    lib.registerContext({
+        id = 'hit&split',
+        title = 'Diamond Casino Blackjack',
+        canClose = false,
+        options = options,
     })
+    lib.showContext('hit&split')
 end)
