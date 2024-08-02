@@ -4,9 +4,7 @@ SharedPokers = {}
 closeToPokers = false
 
 function ShowHelpNotification(msg)
-    exports["qb-core"]:DrawText(msg)
-    -- exports["qb-core"]:DrawText("<strong>Diamond Casino Poker</strong></p>"..msg)
-    -- exports['casinoUi']:DrawCasinoUi('show', "<strong>Diamond Casino Poker</strong></p>"..reactiveText)  
+    lib.showTextUI(msg)
 end
 
 local mainScene = nil -- the main sitting scene, we need it globally, for the exit
@@ -130,7 +128,7 @@ AddEventHandler(
 AddEventHandler('aquiverPoker:resetTable',function(tableId)
     if SharedPokers[tableId] ~= nil then
         SharedPokers[tableId].resetTable()
-        exports["qb-core"]:DrawText("<strong>Place Bet: </strong>↵</p><strong>Adjust Bet: </strong>↑/↓</p><strong><strong>Exit:</strong> ←")
+        lib.showTextUI("Place Bet: ↵  \n  Adjust Bet: ↑/↓  \n  Exit: ←")
     end
 end)
 
@@ -252,7 +250,7 @@ AquiverPoker = function(index, data)
 
     self.playerWin = function()
         local reaction = nil
-        if GetEntityModel(PlayerPedId()) == GetHashKey('mp_f_freemode_01') then -- female
+        if GetEntityModel(cache.ped) == GetHashKey('mp_f_freemode_01') then -- female
             reaction =
                 ({
                 'female_reaction_great_var_01',
@@ -267,7 +265,7 @@ AquiverPoker = function(index, data)
 
         if reaction then
             local reactionScene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-            NetworkAddPedToSynchronisedScene(PlayerPedId(), reactionScene, Config.PlayerAnimDictShared, reaction, 2.0, -2.0, 13, 16, 2.0, 0)
+            NetworkAddPedToSynchronisedScene(cache.ped, reactionScene, Config.PlayerAnimDictShared, reaction, 2.0, -2.0, 13, 16, 2.0, 0)
             NetworkStartSynchronisedScene(reactionScene)
         end
 
@@ -283,7 +281,7 @@ AquiverPoker = function(index, data)
 
     self.playerLost = function()
         local reaction = nil
-        if GetEntityModel(PlayerPedId()) == GetHashKey('mp_f_freemode_01') then -- female
+        if GetEntityModel(cache.ped) == GetHashKey('mp_f_freemode_01') then -- female
             reaction =
                 ({
                 'female_reaction_terrible_var_01',
@@ -298,7 +296,7 @@ AquiverPoker = function(index, data)
 
         if reaction then
             local reactionScene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-            NetworkAddPedToSynchronisedScene(PlayerPedId(), reactionScene, Config.PlayerAnimDictShared, reaction, 2.0, -2.0, 13, 16, 2.0, 0)
+            NetworkAddPedToSynchronisedScene(cache.ped, reactionScene, Config.PlayerAnimDictShared, reaction, 2.0, -2.0, 13, 16, 2.0, 0)
             NetworkStartSynchronisedScene(reactionScene)
         end
 
@@ -402,67 +400,73 @@ AquiverPoker = function(index, data)
     end
 
     self.sitDown = function(chairId, chairCoords, chairRotation)
-        StartAudioScene('DLC_VW_Casino_Table_Games')
+        local HasItem = exports.ox_inventory:GetItemCount("casino_member")
+        if HasItem >= 1 then
 
-        if not IsEntityDead(PlayerPedId()) then
-            QBCore.Functions.TriggerCallback(
-                'aquiverPoker:sitDown', 
-                function(canSit)
-                    if canSit then
-                        activeChairData = {
-                            chairId = chairId,
-                            chairCoords = chairCoords,
-                            chairRotation = chairRotation
-                        }
+            StartAudioScene('DLC_VW_Casino_Table_Games')
 
-                        exports["qb-core"]:HideText()
-                        -- exports['casinoUi']:HideCasinoUi('hide')
-
-                        if GetEntityModel(PlayerPedId()) == GetHashKey('mp_m_freemode_01') then
-                            local rspeech = math.random(1, 2)
-                            if rspeech == 1 then
-                                self.speakPed('MINIGAME_DEALER_GREET')
+            if not IsEntityDead(cache.ped) then
+                QBCore.Functions.TriggerCallback(
+                    'aquiverPoker:sitDown', 
+                    function(canSit)
+                        if canSit then
+                            activeChairData = {
+                                chairId = chairId,
+                                chairCoords = chairCoords,
+                                chairRotation = chairRotation
+                            }
+    
+                            lib.hideTextUI()
+    
+    
+                            if GetEntityModel(cache.ped) == GetHashKey('mp_m_freemode_01') then
+                                local rspeech = math.random(1, 2)
+                                if rspeech == 1 then
+                                    self.speakPed('MINIGAME_DEALER_GREET')
+                                else
+                                    self.speakPed('MINIGAME_DEALER_GREET_MALE')
+                                end
                             else
-                                self.speakPed('MINIGAME_DEALER_GREET_MALE')
+                                local rspeech = math.random(1, 2)
+                                if rspeech == 1 then
+                                    self.speakPed('MINIGAME_DEALER_GREET')
+                                else
+                                    self.speakPed('MINIGAME_DEALER_GREET_FEMALE')
+                                end
                             end
+    
+                            buttonScaleform = setupFirstButtons('instructional_buttons')
+    
+                            RequestAnimDict(Config.PlayerAnimDictShared)
+                            while not HasAnimDictLoaded(Config.PlayerAnimDictShared) do
+                                Citizen.Wait(1)
+                            end
+                            SetPlayerControl(cache.ped, 0, 0)
+                            local sitScene = NetworkCreateSynchronisedScene(chairCoords, chairRotation, 2, true, false, 1.0, 0.0, 1.0)
+                            local sitAnim = ({'sit_enter_left_side', 'sit_enter_right_side'})[math.random(1, 2)]
+                            NetworkAddPedToSynchronisedScene(cache.ped, sitScene, Config.PlayerAnimDictShared, sitAnim, 2.0, -2.0, 13, 16, 2.0, 0)
+                            NetworkStartSynchronisedScene(sitScene)
+    
+                            Citizen.Wait(4000)
+                            mainScene = NetworkCreateSynchronisedScene(chairCoords, chairRotation, 2, true, false, 1.0, 0.0, 1.0)
+                            NetworkAddPedToSynchronisedScene(cache.ped, mainScene, Config.PlayerAnimDictShared, 'idle_cardgames', 2.0, -2.0, 13, 16, 1000.0, 0)
+                            NetworkStartSynchronisedScene(mainScene)
+    
+                            self.EnableRender(true)
+                            SetPlayerControl(cache.ped, 1, 0)
+                            lib.showTextUI("Place Bet: ↵  \n  Adjust Bet: ↑/↓  \n  Exit: ←")
+    
+                            Citizen.Wait(500)
                         else
-                            local rspeech = math.random(1, 2)
-                            if rspeech == 1 then
-                                self.speakPed('MINIGAME_DEALER_GREET')
-                            else
-                                self.speakPed('MINIGAME_DEALER_GREET_FEMALE')
-                            end
+                            QBCore.Functions.Notify('This seat is occupied.')
                         end
-
-                        buttonScaleform = setupFirstButtons('instructional_buttons')
-
-                        RequestAnimDict(Config.PlayerAnimDictShared)
-                        while not HasAnimDictLoaded(Config.PlayerAnimDictShared) do
-                            Citizen.Wait(1)
-                        end
-                        SetPlayerControl(PlayerPedId(), 0, 0)
-                        local sitScene = NetworkCreateSynchronisedScene(chairCoords, chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-                        local sitAnim = ({'sit_enter_left_side', 'sit_enter_right_side'})[math.random(1, 2)]
-                        NetworkAddPedToSynchronisedScene(PlayerPedId(), sitScene, Config.PlayerAnimDictShared, sitAnim, 2.0, -2.0, 13, 16, 2.0, 0)
-                        NetworkStartSynchronisedScene(sitScene)
-
-                        Citizen.Wait(4000)
-                        mainScene = NetworkCreateSynchronisedScene(chairCoords, chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-                        NetworkAddPedToSynchronisedScene(PlayerPedId(), mainScene, Config.PlayerAnimDictShared, 'idle_cardgames', 2.0, -2.0, 13, 16, 1000.0, 0)
-                        NetworkStartSynchronisedScene(mainScene)
-
-                        self.EnableRender(true)
-                        SetPlayerControl(PlayerPedId(), 1, 0)
-                        exports["qb-core"]:DrawText("<strong>Place Bet: </strong>↵</p><strong>Adjust Bet: </strong>↑/↓</p><strong><strong>Exit:</strong> ←") 
-
-                        Citizen.Wait(500)
-                    else
-                        QBCore.Functions.Notify('This seat is occupied.')
-                    end
-                end,
-                self.index,
-                chairId
-            )
+                    end,
+                    self.index,
+                    chairId
+                )
+            end
+        else
+            lib.notify({title = 'You are not a member of the casino!', type = 'warning'})
         end
     end
 
@@ -672,7 +676,7 @@ AquiverPoker = function(index, data)
                 -- if we are the player, we call it once
                 if GetPlayerServerId(PlayerId()) == targetSrc and self.index == activePokerTable then
                     local scene = NetworkCreateSynchronisedScene(data.chairData.chairCoords, data.chairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, Config.PlayerAnimDictPoker, 'cards_pickup', 2.0, -2.0, 13, 16, 1000.0, 0)
+                    NetworkAddPedToSynchronisedScene(cache.ped, scene, Config.PlayerAnimDictPoker, 'cards_pickup', 2.0, -2.0, 13, 16, 1000.0, 0)
                     NetworkStartSynchronisedScene(scene)
                     Citizen.CreateThread(
                         function()
@@ -680,7 +684,7 @@ AquiverPoker = function(index, data)
                             watchingCards = true
                             -- ShakeGameplayCam('HAND_SHAKE', 0.15)
                             -- buttonScaleform = setupThirdButtons('instructional_buttons')
-                            exports["qb-core"]:DrawText("<strong>Play Hand:</strong> E</p><strong>Fold Hand:</strong> ←") 
+                            lib.showTextUI("Play Hand: E  \n  Fold Hand: ← ")
 
                             local playerHandValue = Config.getHandAllValues(data.Hand)
                             if playerHandValue ~= nil then
@@ -691,7 +695,7 @@ AquiverPoker = function(index, data)
                                         function()
                                             while watchingCards do
                                                 Citizen.Wait(0)
-                                                exports['casinoUi']:DrawCasinoUi('show', "<strong>The Diamond Casino & Resort Poker</strong></p>Player hand: "..form)   
+                                                exports['casino-ui']:DrawCasinoUi('show', "<strong>The Diamond Casino & Resort Poker</strong></p>Player hand: "..form)   
 
                                                 -- drawText2d(0.5, 0.9, 0.45, form)
 
@@ -699,7 +703,7 @@ AquiverPoker = function(index, data)
                                         end
                                     )
                                 -- else
-                                --     exports['casinoUi']:HideCasinoUi('hide')
+                                --     exports['casino-ui']:HideCasinoUi('hide')
                                 end
                             end
                         end
@@ -720,7 +724,7 @@ AquiverPoker = function(index, data)
 
         if GetPlayerServerId(PlayerId()) == mainSrc then
             local scene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-            NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, Config.PlayerAnimDictPoker, 'cards_fold', 2.0, -2.0, 13, 16, 1000.0, 0)
+            NetworkAddPedToSynchronisedScene(cache.ped, scene, Config.PlayerAnimDictPoker, 'cards_fold', 2.0, -2.0, 13, 16, 1000.0, 0)
             NetworkStartSynchronisedScene(scene)
             playerDecidedChoice = true
             watchingCards = false
@@ -747,15 +751,15 @@ AquiverPoker = function(index, data)
             Citizen.CreateThread(
                 function()
                     local scene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, Config.PlayerAnimDictPoker, 'cards_play', 2.0, -2.0, 13, 16, 1000.0, 0)
+                    NetworkAddPedToSynchronisedScene(cache.ped, scene, Config.PlayerAnimDictPoker, 'cards_play', 2.0, -2.0, 13, 16, 1000.0, 0)
                     NetworkStartSynchronisedScene(scene)
 
-                    while not HasAnimEventFired(PlayerPedId(), -1424880317) do
+                    while not HasAnimEventFired(cache.ped, -1424880317) do
                         Citizen.Wait(1)
                     end
 
                     local nextScene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), nextScene, Config.PlayerAnimDictPoker, 'cards_bet', 2.0, -2.0, 13, 16, 1000.0, 0)
+                    NetworkAddPedToSynchronisedScene(cache.ped, nextScene, Config.PlayerAnimDictPoker, 'cards_bet', 2.0, -2.0, 13, 16, 1000.0, 0)
                     NetworkStartSynchronisedScene(nextScene)
 
                     Citizen.Wait(500)
@@ -785,10 +789,10 @@ AquiverPoker = function(index, data)
 
                     local chipObj = CreateObjectNoOffset(chipModel, offset, true, false, true)
                     SetEntityCoordsNoOffset(chipObj, offset, false, false, true)
-                    SetEntityHeading(chipObj, GetEntityHeading(PlayerPedId()))
+                    SetEntityHeading(chipObj, GetEntityHeading(cache.ped))
                     table.insert(networkedChips, chipObj)
 
-                    while not HasAnimEventFired(PlayerPedId(), -1424880317) do
+                    while not HasAnimEventFired(cache.ped, -1424880317) do
                         Citizen.Wait(1)
                     end
 
@@ -809,7 +813,7 @@ AquiverPoker = function(index, data)
     self.playerRandomIdleAnim = function()
         local selectedIdleAnim = nil
 
-        if GetEntityModel(PlayerPedId()) == GetHashKey('mp_f_freemode_01') then -- female
+        if GetEntityModel(cache.ped) == GetHashKey('mp_f_freemode_01') then -- female
             local fmlIdles = {
                 'female_idle_cardgames_var_01',
                 'female_idle_cardgames_var_02',
@@ -842,15 +846,15 @@ AquiverPoker = function(index, data)
 
         if selectedIdleAnim ~= nil then
             local playerIdleScene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-            NetworkAddPedToSynchronisedScene(PlayerPedId(), playerIdleScene, Config.PlayerAnimDictShared, selectedIdleAnim, 2.0, -2.0, 13, 16, 1000.0, 0)
+            NetworkAddPedToSynchronisedScene(cache.ped, playerIdleScene, Config.PlayerAnimDictShared, selectedIdleAnim, 2.0, -2.0, 13, 16, 1000.0, 0)
             NetworkStartSynchronisedScene(playerIdleScene)
 
-            while not HasAnimEventFired(PlayerPedId(), -1424880317) do
+            while not HasAnimEventFired(cache.ped, -1424880317) do
                 Citizen.Wait(1)
             end
 
             local playerIdleScene2 = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-            NetworkAddPedToSynchronisedScene(PlayerPedId(), playerIdleScene2, Config.PlayerAnimDictShared, 'idle_cardgames', 2.0, -2.0, 13, 16, 1000.0, 0)
+            NetworkAddPedToSynchronisedScene(cache.ped, playerIdleScene2, Config.PlayerAnimDictShared, 'idle_cardgames', 2.0, -2.0, 13, 16, 1000.0, 0)
             NetworkStartSynchronisedScene(playerIdleScene2)
         end
     end
@@ -922,7 +926,7 @@ AquiverPoker = function(index, data)
 
                         if buttonScaleform ~= nil then
                             -- DrawScaleformMovieFullscreen(buttonScaleform, 255, 255, 255, 255, 0)
-                            exports['casinoUi']:DrawCasinoUi('show', "<strong>The Diamond Casino & Resort Poker</strong></p>Current Bet: "..currentBetInput.."</p>Availble chips: "..PlayerOwnedChips)   
+                            exports['casino-ui']:DrawCasinoUi('show', "<strong>The Diamond Casino & Resort Poker</strong></p>Current Bet: "..currentBetInput.."</p>Availble chips: "..PlayerOwnedChips)   
                         end
 
                         EnableControlAction(0, 0, true) -- changing camera
@@ -1060,18 +1064,18 @@ AquiverPoker = function(index, data)
                         --         end
                         --     end
                         -- end
-                        -- exports['casinoUi']:DrawCasinoUi('show', "BET:"..currentBetInput.."</br>CHIPS:"..PlayerOwnedChips.."</br>MIN/MAX:"..self.data.MinimumBet.."/"..self.data.MaximumBet.."</br>TIME:")   
+                        -- exports['casino-ui']:DrawCasinoUi('show', "BET:"..currentBetInput.."</br>CHIPS:"..PlayerOwnedChips.."</br>MIN/MAX:"..self.data.MinimumBet.."/"..self.data.MaximumBet.."</br>TIME:")   
                     end
                 end
             )
         else
-            exports['casinoUi']:HideCasinoUi('hide')
+            exports['casino-ui']:HideCasinoUi('hide')
             exports["qb-core"]:HideText()
 
 
             self.speakPed('MINIGAME_DEALER_LEAVE_NEUTRAL_GAME')
             local sitExitScene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-            NetworkAddPedToSynchronisedScene(PlayerPedId(), sitExitScene, Config.PlayerAnimDictShared, 'sit_exit_left', 2.0, -2.0, 13, 16, 2.0, 0)
+            NetworkAddPedToSynchronisedScene(cache.ped, sitExitScene, Config.PlayerAnimDictShared, 'sit_exit_left', 2.0, -2.0, 13, 16, 2.0, 0)
             NetworkStartSynchronisedScene(sitExitScene)
             Citizen.Wait(4000)
             TriggerServerEvent('aquiverPoker:standUp', self.index, activeChairData.chairId)
@@ -1106,16 +1110,16 @@ AquiverPoker = function(index, data)
                                     while DoesCamExist(mainCamera) do
                                         Citizen.Wait(0)
 
-                                        exports['casinoUi']:DrawCasinoUi('show', "<strong>The Diamond Casino & Resort Poker</strong></p>Dealer hand: "..form)   
+                                        exports['casino-ui']:DrawCasinoUi('show', "<strong>The Diamond Casino & Resort Poker</strong></p>Dealer hand: "..form)   
 
                                         -- drawText2d(0.5, 0.9, 0.45, form)
                                     -- elseif
-                                    --     exports['casinoUi']:HideCasinoUi('hide')
+                                    --     exports['casino-ui']:HideCasinoUi('hide')
                                     end
                                 end
                             )
                         -- else
-                        --     exports['casinoUi']:HideCasinoUi('hide')
+                        --     exports['casino-ui']:HideCasinoUi('hide')
                         end
                     end
 
@@ -1279,8 +1283,8 @@ AquiverPoker = function(index, data)
 
     self.clearTable = function()
         self.speakPed('MINIGAME_DEALER_ANOTHER_GO')
-        -- exports["qb-core"]:HideText()
-        -- exports['casinoUi']:HideCasinoUi('hide')
+
+        -- lib.hideTextUI()
         -- deck picking up anim
         local firstScene = CreateSynchronizedScene(self.data.Position, 0.0, 0.0, self.data.Heading, 2)
         if self.isPedFemale() then
@@ -1414,10 +1418,10 @@ AquiverPoker = function(index, data)
         end
 
         local scene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, true, false, 1.0, 0.0, 1.0)
-        NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, Config.PlayerAnimDictPoker, animName, 2.0, -2.0, 13, 16, 1000.0, 0)
+        NetworkAddPedToSynchronisedScene(cache.ped, scene, Config.PlayerAnimDictPoker, animName, 2.0, -2.0, 13, 16, 1000.0, 0)
         NetworkStartSynchronisedScene(scene)
 
-        while not HasAnimEventFired(PlayerPedId(), -1424880317) do
+        while not HasAnimEventFired(cache.ped, -1424880317) do
             Citizen.Wait(1)
         end
 
@@ -1430,7 +1434,7 @@ AquiverPoker = function(index, data)
 
         local chipObj = CreateObjectNoOffset(chipModel, offset, true, false, true)
         SetEntityCoordsNoOffset(chipObj, offset, false, false, true)
-        SetEntityHeading(chipObj, GetEntityHeading(PlayerPedId()))
+        SetEntityHeading(chipObj, GetEntityHeading(cache.ped))
         table.insert(networkedChips, chipObj)
 
         self.playerRandomIdleAnim()
@@ -1467,10 +1471,10 @@ AquiverPoker = function(index, data)
         end
 
         local scene = NetworkCreateSynchronisedScene(activeChairData.chairCoords, activeChairData.chairRotation, 2, false, true, 1.0, 0.0, 1.0)
-        NetworkAddPedToSynchronisedScene(PlayerPedId(), scene, Config.PlayerAnimDictPoker, animName, 2.0, -2.0, 13, 16, 1000.0, 0)
+        NetworkAddPedToSynchronisedScene(cache.ped, scene, Config.PlayerAnimDictPoker, animName, 2.0, -2.0, 13, 16, 1000.0, 0)
         NetworkStartSynchronisedScene(scene)
 
-        while not HasAnimEventFired(PlayerPedId(), -1424880317) do
+        while not HasAnimEventFired(cache.ped, -1424880317) do
             Citizen.Wait(1)
         end
 
@@ -1483,7 +1487,7 @@ AquiverPoker = function(index, data)
 
         local chipObj = CreateObjectNoOffset(chipModel, offset, true, false, true)
         SetEntityCoordsNoOffset(chipObj, offset, false, false, true)
-        SetEntityHeading(chipObj, GetEntityHeading(PlayerPedId()))
+        SetEntityHeading(chipObj, GetEntityHeading(cache.ped))
         table.insert(networkedChips, chipObj)
 
         self.playerRandomIdleAnim()
@@ -1497,7 +1501,7 @@ end
 
 Citizen.CreateThread(function()
     while true do
-        local playerpos = GetEntityCoords(PlayerPedId())
+        local playerpos = GetEntityCoords(cache.ped)
         closeToPokers = false
         for k, v in pairs(Config.Pokers) do
             if #(playerpos - v.Position) < 100.0 then
@@ -1531,7 +1535,7 @@ Citizen.CreateThread(function()
         local sleep = 5
         local inZone = false
         if QBCore and not InformationPlaying and activePokerTable == nil and activeChairData == nil then
-                local playerpos = GetEntityCoords(PlayerPedId())
+                local playerpos = GetEntityCoords(cache.ped)
                 for k, v in pairs(SharedPokers) do
                     local dist = #(playerpos - v.data.Position)
                     if dist < 3.0 then
@@ -1544,7 +1548,7 @@ Citizen.CreateThread(function()
                                         if #(playerpos - chaircoords) < 1.5 then
                                             wait = 5
                                             inZone  = true
-                                            text = "<strong>The Diamond Casino & Resort</p>Poker</strong></p>Press <strong>E</strong> to sit"
+                                            text = "Poker  \n  E - Sit"
 
                                             local chairrotation = GetWorldRotationOfEntityBone(tableObj, GetEntityBoneIndexByName(tableObj, chairBone))
                                             -- drawfreameeMarker(chaircoords + vector3(0.0, 0.0, 1.0))
@@ -1566,11 +1570,11 @@ Citizen.CreateThread(function()
 
         if inZone and not alreadyEnteredZone then
             alreadyEnteredZone = true
-            exports["qb-core"]:DrawText(text) 
+            lib.showTextUI(text)
         end
         if not inZone and alreadyEnteredZone then
-            alreadyEnteredZone = false
-            exports["qb-core"]:HideText()
+            alreadyEnteredZone = false 
+            lib.hideTextUI()
         end
         Wait(sleep)	
     end
@@ -2076,7 +2080,7 @@ end
     function()
         local found = false
 
-        local playercoords = GetEntityCoords(PlayerPedId())
+        local playercoords = GetEntityCoords(cache.ped)
         for i = 1, #Config.Tables, 1 do
             local obj = GetClosestObjectOfType(playercoords, 3.0, GetHashKey(Config.Tables[i]), false, false, false)
             if DoesEntityExist(obj) then
