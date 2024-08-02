@@ -1,20 +1,19 @@
 fx_version 'cerulean'
 
 game 'gta5'
-
 description 'Rexhack Gaming : Inside-Track'
+lua54 'yes'
 
-version '1.0.1'
 
 client_scripts {
-	'@PolyZone/client.lua',
-	'@PolyZone/BoxZone.lua',
-	'@PolyZone/EntityZone.lua',
-	'@PolyZone/CircleZone.lua',
-	'@PolyZone/ComboZone.lua',
-    'config.lua',
     'client/utils.lua',
     'client/client.lua',
 }
 
-server_script 'server/server.lua' 
+server_script 'server/server.lua'
+
+
+shared_scripts {
+	'@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua',
+}
