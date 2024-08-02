@@ -1,6 +1,4 @@
-shared_scripts { 
-	'config.lua'
-}
+
 
 client_scripts {
     'locales/*.lua',
@@ -13,7 +11,12 @@ server_scripts {
     'server/sv_main.lua'
 }
 
-
+shared_scripts {
+	'config.lua',
+	'@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua',
+}
 
 game 'gta5'
 fx_version 'adamant'
+lua54 'yes'
