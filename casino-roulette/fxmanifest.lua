@@ -4,7 +4,6 @@ decription 'Aquiver rulett'
 
 
 client_scripts {
-    'config.lua',
     '@PolyZone/client.lua',
 	'@PolyZone/BoxZone.lua',
 	'@PolyZone/EntityZone.lua',
@@ -14,10 +13,18 @@ client_scripts {
 } 
 
 server_scripts {
-    'config.lua',
-    -- 'translations.lua',
+    
     'server/sv_main.lua'
 }
 
 game 'gta5'
 fx_version 'adamant'
+
+
+shared_scripts {
+    'config.lua',
+	'@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua',
+}
+
+lua54 'yes'
