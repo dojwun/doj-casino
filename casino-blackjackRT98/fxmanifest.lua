@@ -10,4 +10,9 @@ client_scripts {
 
 server_script "sv_blackjack.lua"
 
+shared_scripts {
+	'@ox_lib/init.lua',
+    '@qbx_core/modules/lib.lua',
+}
 
+lua54 'yes'
