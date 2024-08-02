@@ -1,11 +1,11 @@
 QBCore = exports['qb-core']:GetCoreObject()
 
 
-function getPlayerChips(source)
-    local Player = QBCore.Functions.GetPlayer(source)
+local function getPlayerChips(source)
+    local Player = exports.qbx_core:GetPlayer(source)
     if Player then
-        if Player.Functions.GetItemByName('casino_goldchip') ~= nil then
-            return Player.Functions.GetItemByName('casino_goldchip').amount
+        if Player.Functions.GetItemByName('casinochips') ~= nil then
+            return Player.Functions.GetItemByName('casinochips').amount
         else
             return 0
         end
@@ -14,20 +14,18 @@ function getPlayerChips(source)
     end
 end
 
-function giveChips(source, amount)
-    local Player = QBCore.Functions.GetPlayer(source)
+local function giveChips(source, amount)
+    local Player = exports.qbx_core:GetPlayer(source)
     if Player then
-        Player.Functions.AddItem("casino_goldchip", amount, nil, nil, false, GetCurrentResourceName(), "", "", "")
-        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "add", amount) 
-        updatePlayerChips(source) 
+        Player.Functions.AddItem('casinochips', amount)
+        updatePlayerChips(source)
     end
 end
 
-function removeChips(source, amount)
-    local Player = QBCore.Functions.GetPlayer(source)
+local function removeChips(source, amount)
+    local Player = exports.qbx_core:GetPlayer(source)
     if Player then
-        Player.Functions.RemoveItem("casino_goldchip", amount)
-        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove", amount) 
+        Player.Functions.RemoveItem("casinochips", amount)
         updatePlayerChips(source)
     end
 end
@@ -56,7 +54,7 @@ AddEventHandler(
     'aquiverPoker:playCards',
     function(tableId, bettedAmount)
         local source = source
-        local Player = QBCore.Functions.GetPlayer(source)
+        local Player = exports.qbx_core:GetPlayer(source)
         if Player then
             if ServerPokers[tableId] ~= nil then
                 if getPlayerChips(source) >= bettedAmount then
@@ -85,7 +83,7 @@ AddEventHandler(
     'aquiverPoker:betPairPlusPlayer',
     function(tableId, betAmount)
         local source = source
-        local Player = QBCore.Functions.GetPlayer(source)
+        local Player = exports.qbx_core:GetPlayer(source)
         if Player then
             if ServerPokers[tableId] ~= nil then
                 if ServerPokers[tableId].PairPlusBets[source] == nil then
@@ -120,7 +118,7 @@ AddEventHandler(
     'aquiverPoker:betPlayer',
     function(tableId, chairData, betAmount)
         local source = source
-        local Player = QBCore.Functions.GetPlayer(source)
+        local Player = exports.qbx_core:GetPlayer(source)
         if Player then
             if ServerPokers[tableId] ~= nil then
                 if ServerPokers[tableId].PlayerBets[source] == nil then
@@ -324,7 +322,7 @@ end
 function playerPairPlusWon(targetSrc, tableId, pairMultiplier)
     local betAmount = getPlayerPairPlusBetAmount(targetSrc, tableId)
     if betAmount > 0 then
-        local Player = QBCore.Functions.GetPlayer(targetSrc)
+        local Player = exports.qbx_core:GetPlayer(targetSrc)
         if Player then
             local plusChips = math.floor(betAmount * pairMultiplier)
             if plusChips > 0 then
@@ -341,7 +339,7 @@ end
 function playerWon(targetSrc, tableId, handValue)
     local betAmount = getPlayerBetAmount(targetSrc, tableId)
     if betAmount > 0 then
-        local Player = QBCore.Functions.GetPlayer(targetSrc)
+        local Player = exports.qbx_core:GetPlayer(targetSrc)
         if Player then
             local plusChips = math.floor((betAmount * 2) * 2)
 
@@ -365,7 +363,7 @@ function playerDraw(targetSrc, tableId, handValue)
     if betAmount > 0 then
         local plusChips = math.floor(betAmount * 2)
 
-        local Player = QBCore.Functions.GetPlayer(targetSrc)
+        local Player = exports.qbx_core:GetPlayer(targetSrc)
         if Player then
             -- you will get your ante bet bonus even if you loss or draw
             local AnteMultiplier = Config.GetAnteMultiplier(handValue)
@@ -385,7 +383,7 @@ end
 function playerLost(targetSrc, tableId, handValue)
     local betAmount = getPlayerBetAmount(targetSrc, tableId)
     if betAmount > 0 then
-        local Player = QBCore.Functions.GetPlayer(targetSrc)
+        local Player = exports.qbx_core:GetPlayer(targetSrc)
         if Player then
             TriggerClientEvent('QBCore:Notify', targetSrc, _U('lose'), 'error')
         end
