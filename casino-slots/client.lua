@@ -1,100 +1,17 @@
-local QBCore = exports['qb-core']:GetCoreObject()
-local Slot
-local SlotCoords
-local ClosestSlot
+local Slot, SlotCoords, ClosestSlot, ClosestSlotRotation, NearbySlot, EnteredSlot, IsSpinning, ReelLocation1, ReelLocation2, ReelLocation3, ClosestSlotForwardX, ClosestSlotForwardY, ClosestSlotModel
 local ClosestSlotCoord = vector3(0, 0, 0)
-local ClosestSlotRotation
-local NearbySlot
-local EnteredSlot
-local IsSpinning
-local ReelLocation1
-local ReelLocation2
-local ReelLocation3
-local ClosestSlotForwardX
-local ClosestSlotForwardY
 local ShouldDrawScaleForm = false
 local Scaleform
-local ClosestSlotModel
 local AnimDict = 'anim_casino_a@amb@casino@games@slots@male'
-local Sounds = {
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'no_win', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'small_win', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'big_win', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'jackpot', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'place_bet', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'place_max_bet', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'spinning', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'start_spin', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'wheel_stop_clunk', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'wheel_stop_on_prize', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'welcome_stinger', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'spin_wheel', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end,
-    function() local SoundId = GetSoundId() PlaySoundFromCoord(SoundId, 'spin_wheel_win', ClosestSlotCoord, SlotReferences[ClosestSlotModel].sound, false, 20, false) ReleaseSoundId(SoundId) end
-}
-local Slots = {
-    2362925439,
-    2775323096,
-    3863977906,
-    654385216,
-    161343630,
-    1096374064,
-    207578973,
-    3807744938
-}
-local RandomEnter = {
-    'enter_left',
-    'enter_right',
-    'enter_left_short',
-    'enter_right_short'
-}
-local RandomLeave = {
-    'exit_left',
-    'exit_right'
-}
-local RandomIdle = {
-    'base_idle_a',
-    'base_idle_b',
-    'base_idle_c',
-    'base_idle_d',
-    'base_idle_e',
-    'base_idle_f'
-}
-local RandomSpin = {
-    'press_spin_a',
-    'press_spin_b',
-    'pull_spin_a',
-    'pull_spin_b'
-}
-local RandomSpinningIdle = {
-    'spinning_a',
-    'spinning_b',
-    'spinning_c'
-}
-local RandomWin = {
-    'win_a',
-    'win_b',
-    'win_c',
-    'win_d',
-    'win_e',
-    'win_f',
-    'win_g',
-    'win_spinning_wheel'
-}
-local RandomLose = {
-    'lose_a',
-    'lose_b',
-    'lose_c',
-    'lose_d',
-    'lose_e',
-    'lose_f',
-    'lose_cruel_a',
-    'lose_cruel_b'
-}
-local RandomBigWin = {
-    'win_big_a',
-    'win_big_b',
-    'win_big_c'
-}
+local Slots = { 2362925439, 2775323096, 3863977906, 654385216, 161343630, 1096374064, 207578973, 3807744938 }
+local RandomEnter = { 'enter_left', 'enter_right', 'enter_left_short', 'enter_right_short' }
+local RandomLeave = { 'exit_left', 'exit_right' }
+local RandomIdle = { 'base_idle_a', 'base_idle_b', 'base_idle_c', 'base_idle_d', 'base_idle_e', 'base_idle_f' }
+local RandomSpin = { 'press_spin_a', 'press_spin_b', 'pull_spin_a', 'pull_spin_b' }
+local RandomSpinningIdle = { 'spinning_a', 'spinning_b', 'spinning_c' }
+local RandomWin = { 'win_a', 'win_b', 'win_c', 'win_d', 'win_e', 'win_f', 'win_g', 'win_spinning_wheel' }
+local RandomLose = { 'lose_a', 'lose_b', 'lose_c', 'lose_d', 'lose_e', 'lose_f', 'lose_cruel_a', 'lose_cruel_b' }
+local RandomBigWin = { 'win_big_a', 'win_big_b', 'win_big_c' }
 local RandomEnterMessage = {
     'Daring today?',
     'Spin to win',
@@ -105,29 +22,26 @@ local RandomEnterMessage = {
 }
 local ChosenBetAmount = 1
 
-local function DrawText3D(x, y, z, text)
+function DrawText3D(coords, text)
     SetTextScale(0.35, 0.35)
     SetTextFont(4)
-    SetTextProportional(1)
     SetTextColour(255, 255, 255, 215)
-    SetTextEntry("STRING")
+    BeginTextCommandDisplayText("STRING")
     SetTextCentre(true)
-    AddTextComponentString(text)
-    SetDrawOrigin(x,y,z, 0)
-    DrawText(0.0, 0.0)
+    AddTextComponentSubstringPlayerName(text)
+    SetDrawOrigin(coords.x, coords.y, coords.z, 0)
+    EndTextCommandDisplayText(0.0, 0.0)
     local factor = (string.len(text)) / 370
-    DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 75)
+    DrawRect(0.0, 0.0 + 0.0125, 0.017 + factor, 0.03, 0, 0, 0, 75)
     ClearDrawOrigin()
 end
 
-local function LoadAnimDict(dict) while not HasAnimDictLoaded(dict) do RequestAnimDict(dict) Wait(0) end end
-
 local function StartIdleScene(CurrentAnimation)
     Wait(GetAnimDuration(AnimDict, CurrentAnimation) * 800)
-    local IdleScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-    LoadAnimDict(AnimDict)
+    local IdleScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, false, true, 1.0, 0, 1.0)
+    lib.requestAnimDict(AnimDict)
     local RandomAnimName = RandomIdle[math.random(1, #RandomIdle)]
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), IdleScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, IdleScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
     NetworkStartSynchronisedScene(IdleScene)
 end
 
@@ -175,99 +89,103 @@ local function SetupScaleform()
         local handle = CreateNamedRenderTargetForModel("machine_"..SlotReferences[ClosestSlotModel].scriptrt, model)
         while ShouldDrawScaleForm do
             N_0x32f34ff7f617643b(Scaleform, 1)
-            SetTextRenderId(handle) -- Sets the render target to the handle we grab above
+            SetTextRenderId(handle)
             SetScriptGfxDrawOrder(4)
             SetScriptGfxDrawBehindPausemenu(true)
             DrawScaleformMovie(Scaleform, 0.401, 0.09, 0.805, 0.195, 255, 255, 255, 255, 0)
-            SetTextRenderId(GetDefaultScriptRendertargetRenderId()) -- Resets the render target
+            SetTextRenderId(GetDefaultScriptRendertargetRenderId())
             Wait(0)
         end
     end)
 end
 
+local function Sounds(audioName)
+    local SoundId = GetSoundId()
+    PlaySoundFromCoord(SoundId, audioName, ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, SlotReferences[ClosestSlotModel].sound, false, 20, false)
+    ReleaseSoundId(SoundId)
+end
+
 local function SlotMachineHandler()
     local LeverScene = 0
-    local IdleScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-    LoadAnimDict(AnimDict)
+    local IdleScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, false, true, 1.0, 0, 1.0)
+    lib.requestAnimDict(AnimDict)
     local RandomAnimName = RandomIdle[math.random(1, #RandomIdle)]
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), IdleScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, IdleScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
     NetworkStartSynchronisedScene(IdleScene)
-    exports['qb-core']:DrawText('<strong>Spin:</strong> ↵<br><strong>Leave: </strong>←<br><strong>Adjust Bet:</strong> ↑')
+    lib.showTextUI('E - Bet One  \n R - Bet Max  \n ↵ - Spin  \n ← - Leave')
     CreateThread(function()
         while true do
-            QBCore.Functions.TriggerCallback('doj:server:CasinoChipsAmount', function(result)
-                exports['casinoUi']:DrawCasinoUi('show', "The Diamond Casino & Resort Slots</p>"..SlotReferences[ClosestSlotModel].name.."</p>Availble chips: "..math.floor(result))   
-            end)
+            exports['casino-ui']:DrawCasinoUi('show', SlotReferences[ClosestSlotModel].name.."</p>Availble Chips: "..exports.ox_inventory:GetItemCount("casinochips"))
             if not IsSpinning then
-                if IsControlJustPressed(0, 202) then -- BACKSPACE 
-                    local LeaveScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                    LoadAnimDict(AnimDict)
+                if IsControlJustPressed(0, 202) then
+                    local LeaveScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, false, false, 1.0, 0, 1.0)
+                    lib.requestAnimDict(AnimDict)
                     RandomAnimName = RandomLeave[math.random(1, #RandomLeave)]
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), LeaveScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
+                    NetworkAddPedToSynchronisedScene(cache.ped, LeaveScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
                     NetworkStartSynchronisedScene(LeaveScene)
                     Wait(GetAnimDuration(AnimDict, RandomAnimName) * 700)
                     NetworkStopSynchronisedScene(LeaveScene)
                     EnteredSlot = false
                     ShouldDrawScaleForm = false
-                    exports['qb-core']:HideText()
-                    exports['casinoUi']:HideCasinoUi('hide') 
+                    lib.hideTextUI()
+                    exports['casino-ui']:HideCasinoUi('hide')
                     CallScaleformMethod('SET_BET')
                     CallScaleformMethod('SET_LAST_WIN')
                     CallScaleformMethod('SET_MESSAGE', '')
                     TriggerServerEvent('dc-casino:slots:server:leave')
                     break
-                elseif IsControlJustPressed(0, 201) then -- ENTER
-                    local SpinScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                    LoadAnimDict(AnimDict)
+                elseif IsControlJustPressed(0, 201) then
+                    local SpinScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+                    lib.requestAnimDict(AnimDict)
                     RandomAnimName = RandomSpin[math.random(1, #RandomSpin)]
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), SpinScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 1000.0, 0)
+                    NetworkAddPedToSynchronisedScene(cache.ped, SpinScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 1000.0, 0)
                     NetworkStartSynchronisedScene(SpinScene)
                     local AnimationDuration = GetAnimDuration(AnimDict, RandomAnimName)
                     if RandomAnimName == 'pull_spin_a' then
-                        LeverScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                        N_0x45f35c0edc33b03b(LeverScene, GetEntityModel(ClosestSlot), ClosestSlotCoord, AnimDict, 'pull_spin_a_SLOTMACHINE', 2.0, -1.5, 13.0)
+                        LeverScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+                        N_0x45f35c0edc33b03b(LeverScene, GetEntityModel(ClosestSlot), ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, AnimDict, 'pull_spin_a_SLOTMACHINE', 2.0, -1.5, 13.0)
                         NetworkStartSynchronisedScene(LeverScene)
                         Wait(AnimationDuration * 320)
                     elseif RandomAnimName == 'pull_spin_b' then
-                        LeverScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                        N_0x45f35c0edc33b03b(LeverScene, GetEntityModel(ClosestSlot), ClosestSlotCoord, AnimDict, 'pull_spin_b_SLOTMACHINE', 2.0, -1.5, 13.0)
+                        LeverScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+                        N_0x45f35c0edc33b03b(LeverScene, GetEntityModel(ClosestSlot), ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, AnimDict, 'pull_spin_b_SLOTMACHINE', 2.0, -1.5, 13.0)
                         NetworkStartSynchronisedScene(LeverScene)
                         Wait(AnimationDuration * 320)
                     end
                     Wait(AnimationDuration * 180)
-                    Sounds[8]()
+                    Sounds('start_spin')
                     TriggerServerEvent('dc-casino:slots:server:spin', ChosenBetAmount)
                     Wait(AnimationDuration * 500)
-                    local SpinningScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                    LoadAnimDict(AnimDict)
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), SpinningScene, AnimDict, RandomSpinningIdle[math.random(1, #RandomSpinningIdle)], 2.0, -1.5, 13, 16, 2.0, 0)
+                    local SpinningScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+                    lib.requestAnimDict(AnimDict)
+                    NetworkAddPedToSynchronisedScene(cache.ped, SpinningScene, AnimDict, RandomSpinningIdle[math.random(1, #RandomSpinningIdle)], 2.0, -1.5, 13, 16, 2.0, 0)
                     NetworkStartSynchronisedScene(SpinningScene)
                     NetworkStopSynchronisedScene(LeverScene) --- Has to be stopped otherwise it will only work 50% of the time
                     FreezeEntityPosition(ClosestSlot, true)  --- N_0x45f35c0edc33b03b will prevent the machine being stuck to their position for some reason?
-                elseif IsControlJustPressed(0, 172) then -- UP ARROW
-                    Sounds[5]()
+                elseif IsControlJustPressed(0, 38) then
+                    Sounds('place_bet')
                     if not SlotReferences[ClosestSlotModel].betamounts[ChosenBetAmount + 1] then ChosenBetAmount = 1 else ChosenBetAmount = ChosenBetAmount + 1 end
-                    local BetOneScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                    LoadAnimDict(AnimDict)
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), BetOneScene, AnimDict, 'press_betone_a', 2.0, -1.5, 13, 16, 2.0, 0)
+                    local BetOneScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+                    lib.requestAnimDict(AnimDict)
+                    NetworkAddPedToSynchronisedScene(cache.ped, BetOneScene, AnimDict, 'press_betone_a', 2.0, -1.5, 13, 16, 2.0, 0)
                     NetworkStartSynchronisedScene(BetOneScene)
                     Wait(GetAnimDuration(AnimDict, 'press_betone_a') * 200)
                     CallScaleformMethod('SET_BET', SlotReferences[ClosestSlotModel].betamounts[ChosenBetAmount])
-                    StartIdleScene('press_betone_a') 
-                elseif IsControlJustPressed(0, 45) then -- R
-                    Sounds[6]()
+                    StartIdleScene('press_betone_a')
+                elseif IsControlJustPressed(0, 45) then
+                    Sounds('place_max_bet')
                     ChosenBetAmount = #SlotReferences[ClosestSlotModel].betamounts
-                    local BetMaxScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-                    LoadAnimDict(AnimDict)
-                    NetworkAddPedToSynchronisedScene(PlayerPedId(), BetMaxScene, AnimDict, 'press_betmax_a', 2.0, -1.5, 13, 16, 2.0, 0)
+                    local BetMaxScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+                    lib.requestAnimDict(AnimDict)
+                    NetworkAddPedToSynchronisedScene(cache.ped, BetMaxScene, AnimDict, 'press_betmax_a', 2.0, -1.5, 13, 16, 2.0, 0)
                     NetworkStartSynchronisedScene(BetMaxScene)
                     Wait(GetAnimDuration(AnimDict, 'press_betmax_a') * 200)
                     CallScaleformMethod('SET_BET', SlotReferences[ClosestSlotModel].betamounts[ChosenBetAmount])
                     StartIdleScene('press_betmax_a')
-                elseif IsEntityDead(PlayerPedId()) then
+                elseif IsEntityDead(cache.ped) then
                     EnteredSlot = false
                     ShouldDrawScaleForm = false
-                    exports['qb-core']:HideText()
+                    lib.hideTextUI()
                     CallScaleformMethod('SET_BET')
                     CallScaleformMethod('SET_MESSAGE', '')
                     TriggerServerEvent('dc-casino:slots:server:leave')
@@ -280,17 +198,14 @@ local function SlotMachineHandler()
 end
 
 CreateThread(function()
-    while not RequestScriptAudioBank("dlc_vinewood/casino_slot_machines_01", 0) do Wait(0) end
-    while not RequestScriptAudioBank("dlc_vinewood/casino_slot_machines_02", 0) do Wait(0) end
-    while not RequestScriptAudioBank("dlc_vinewood/casino_slot_machines_03", 0) do Wait(0) end
 	while true do
-        local PlayerCoords = GetEntityCoords(PlayerPedId())
+        local PlayerCoords = GetEntityCoords(cache.ped)
         for i = 1, #Slots do
-            Slot = GetClosestObjectOfType(PlayerCoords, 1.2, Slots[i], true)
+            Slot = GetClosestObjectOfType(PlayerCoords.x, PlayerCoords.y, PlayerCoords.z, 1.2, Slots[i], false, false, false)
             if Slot ~= 0 then
                 SlotCoords = GetEntityCoords(Slot)
                 local CurrentDistance = #(PlayerCoords - SlotCoords)
-                if CurrentDistance < 1.9 and CurrentDistance < #(PlayerCoords - ClosestSlotCoord) then
+                if CurrentDistance < 1.8 and CurrentDistance < #(PlayerCoords - ClosestSlotCoord) then
                     NearbySlot = true
                     ClosestSlot = Slot
                     ClosestSlotCoord = SlotCoords
@@ -298,11 +213,11 @@ CreateThread(function()
                     ClosestSlotForwardY = GetEntityForwardY(ClosestSlot)
                     ClosestSlotModel = GetEntityModel(ClosestSlot)
                     ClosestSlotRotation = GetEntityRotation(ClosestSlot)
-                    ReelLocation1 = GetObjectOffsetFromCoords(ClosestSlotCoord, GetEntityHeading(ClosestSlot), -0.115, 0.047, 0.906)
-                    ReelLocation2 = GetObjectOffsetFromCoords(ClosestSlotCoord, GetEntityHeading(ClosestSlot), 0.005, 0.047, 0.906)
-                    ReelLocation3 = GetObjectOffsetFromCoords(ClosestSlotCoord, GetEntityHeading(ClosestSlot), 0.125, 0.047, 0.906)
+                    ReelLocation1 = GetObjectOffsetFromCoords(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, GetEntityHeading(ClosestSlot), -0.115, 0.047, 0.906)
+                    ReelLocation2 = GetObjectOffsetFromCoords(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, GetEntityHeading(ClosestSlot), 0.005, 0.047, 0.906)
+                    ReelLocation3 = GetObjectOffsetFromCoords(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, GetEntityHeading(ClosestSlot), 0.125, 0.047, 0.906)
                 end
-            elseif #(PlayerCoords - ClosestSlotCoord) > 1.9 then
+            elseif #(PlayerCoords - ClosestSlotCoord) > 1.8 then
                 NearbySlot = false
             end
         end
@@ -314,84 +229,75 @@ end)
 -- 	while true do
 --         local WaitTime = 500
 --         if NearbySlot and not EnteredSlot then
---             WaitTime = 0 
---             -- exports['qb-core']:DrawText('<b>Diamond Casino Slots</p></b>'..SlotReferences[ClosestSlotModel].name..'</p>Press [E] to sit</p>')
---             DrawText3D(ClosestSlotCoord.x - ClosestSlotForwardX, ClosestSlotCoord.y - ClosestSlotForwardY, ClosestSlotCoord.z + 1, "[E] - Play ~b~"..SlotReferences[ClosestSlotModel].name)
+--             WaitTime = 0
+--             DrawText3D(vector3(ClosestSlotCoord.x - ClosestSlotForwardX, ClosestSlotCoord.y - ClosestSlotForwardY, ClosestSlotCoord.z + 1), "~o~E~w~ - Play "..SlotReferences[ClosestSlotModel].name)
 --             if IsControlJustReleased(0, 38) then
-
---                 QBCore.Functions.TriggerCallback('doj:server:HasCasinoMembership', function(HasItem)
---                     if HasItem then 
---                         local netID = NetworkGetEntityIsNetworked(ClosestSlot) and NetworkGetNetworkIdFromEntity(ClosestSlot)
---                         if not netID then
---                             NetworkRegisterEntityAsNetworked(ClosestSlot)
---                             netID = NetworkGetNetworkIdFromEntity(ClosestSlot)
---                             NetworkUseHighPrecisionBlending(netID, false)
---                             SetNetworkIdExistsOnAllMachines(netID, true) 
---                             SetNetworkIdCanMigrate(netID, true)
---                         end
---                         NetworkRequestControlOfEntity(ClosestSlot)
---                         TriggerServerEvent('dc-casino:slots:server:enter', netID, ReelLocation1, ReelLocation2, ReelLocation3)
---                     else
---                         QBCore.Functions.Notify('You are not a member of the casino!', 'error', 3500)
---                     end
---                 end)
+--                 local netID = NetworkGetEntityIsNetworked(ClosestSlot) and NetworkGetNetworkIdFromEntity(ClosestSlot)
+--                 if not netID then
+--                     NetworkRegisterEntityAsNetworked(ClosestSlot)
+--                     netID = NetworkGetNetworkIdFromEntity(ClosestSlot)
+--                     NetworkUseHighPrecisionBlending(netID, false)
+--                     SetNetworkIdExistsOnAllMachines(netID, true)
+--                     SetNetworkIdCanMigrate(netID, true)
+--                 end
+--                 NetworkRequestControlOfEntity(ClosestSlot)
+--                 TriggerServerEvent('dc-casino:slots:server:enter', netID, ReelLocation1, ReelLocation2, ReelLocation3, ClosestSlotModel)
 --             end
---         -- elseif not NearbySlot then
---         --     exports["qb-core"]:HideText()
 --         end
 --         Wait(WaitTime)
 --     end
 -- end)
- 
-
 
 Citizen.CreateThread(function()
     local alreadyEnteredZone = false
-    local text = nil
     while true do
+        local sleep = 1000
         if NearbySlot and not EnteredSlot then
-            wait = 5
-            local pedCo = GetEntityCoords(PlayerPedId())
+            local pedCo = GetEntityCoords(cache.ped)
             local dist = #(pedCo - ClosestSlotCoord)
             local inZone = false
-            if dist <= 2.0 then
-                wait = 5
-                inZone  = true 
-                text = '<b>The Diamond Casino & Resort</p>Slot: '..SlotReferences[ClosestSlotModel].name..'</b></p>Press <b>E</b> to sit'
+            if dist <= 1.8 then
+                sleep = 5
+                inZone  = true
                 if IsControlJustPressed(0, 38) then
-                    local netID = NetworkGetEntityIsNetworked(ClosestSlot) and NetworkGetNetworkIdFromEntity(ClosestSlot)
-                    if not netID then
-                        NetworkRegisterEntityAsNetworked(ClosestSlot)
-                        netID = NetworkGetNetworkIdFromEntity(ClosestSlot)
-                        NetworkUseHighPrecisionBlending(netID, false)
-                        SetNetworkIdExistsOnAllMachines(netID, true)
-                        SetNetworkIdCanMigrate(netID, true)
+                    local HasItem = exports.ox_inventory:GetItemCount("casino_member")
+                    if HasItem >= 1 then
+                        local netID = NetworkGetEntityIsNetworked(ClosestSlot) and NetworkGetNetworkIdFromEntity(ClosestSlot)
+                        if not netID then
+                            NetworkRegisterEntityAsNetworked(ClosestSlot)
+                            netID = NetworkGetNetworkIdFromEntity(ClosestSlot)
+                            NetworkUseHighPrecisionBlending(netID, false)
+                            SetNetworkIdExistsOnAllMachines(netID, true) 
+                            SetNetworkIdCanMigrate(netID, true)
+                        end
+                        NetworkRequestControlOfEntity(ClosestSlot)
+                        TriggerServerEvent('dc-casino:slots:server:enter', netID, ReelLocation1, ReelLocation2, ReelLocation3, ClosestSlotModel)
+                    else
+                        lib.notify({title = 'You are not a member of the casino!', type = 'warning'})
                     end
-                    NetworkRequestControlOfEntity(ClosestSlot)
-                    TriggerServerEvent('dc-casino:slots:server:enter', netID, ReelLocation1, ReelLocation2, ReelLocation3)
                 end
-            else
-	            wait = 2000
             end
             if inZone and not alreadyEnteredZone then
                 alreadyEnteredZone = true
-                exports["qb-core"]:DrawText(text)  
+                lib.showTextUI('E - Play Slot  \n[\n '..SlotReferences[ClosestSlotModel].name..' ]')
             end
             if not inZone and alreadyEnteredZone then
                 alreadyEnteredZone = false
-                exports["qb-core"]:HideText()
+                lib.hideTextUI()
             end
         end
-        Wait(wait)
+        Wait(sleep)
     end
 end)
 
 RegisterNetEvent('dc-casino:slots:client:enter', function()
-    local Ped = PlayerPedId()
-    exports["qb-core"]:HideText()
+    while not RequestScriptAudioBank('dlc_vinewood/casino_slot_machines_01', false) do Wait(0) end
+    while not RequestScriptAudioBank('dlc_vinewood/casino_slot_machines_02', false) do Wait(0) end
+    while not RequestScriptAudioBank('dlc_vinewood/casino_slot_machines_03', false) do Wait(0) end
+    local Ped = cache.ped
     if GetEntityModel(Ped) == `mp_f_freemode_01` then AnimDict = 'anim_casino_a@amb@casino@games@slots@female' end
-    local EnterScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-    LoadAnimDict(AnimDict)
+    local EnterScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+    lib.requestAnimDict(AnimDict)
     local RandomAnimName = RandomEnter[math.random(1, #RandomEnter)]
     NetworkAddPedToSynchronisedScene(Ped, EnterScene, AnimDict, RandomAnimName, 2.0, -1.5, 13, 16, 2.0, 0)
     NetworkStartSynchronisedScene(EnterScene)
@@ -401,7 +307,7 @@ RegisterNetEvent('dc-casino:slots:client:enter', function()
     Wait(GetAnimDuration(AnimDict, RandomAnimName) * 1000)
     CallScaleformMethod('SET_MESSAGE', RandomEnterMessage[math.random(1, #RandomEnterMessage)])
     CallScaleformMethod('SET_BET', SlotReferences[ClosestSlotModel].betamounts[ChosenBetAmount])
-    Sounds[11]()
+    Sounds('welcome_stinger')
     SlotMachineHandler()
 end)
 
@@ -427,27 +333,27 @@ RegisterNetEvent('dc-casino:slots:client:spinreels', function(SpinTime, ReelRewa
     while not NetworkRequestControlOfEntity(Reel3) do Wait(0) end
 
     IsSpinning = true
-    SetEntityVisible(Reel1, false)
-    SetEntityVisible(Reel2, false)
-    SetEntityVisible(Reel3, false)
-    Sounds[7]()
+    SetEntityVisible(Reel1, false, false)
+    SetEntityVisible(Reel2, false, false)
+    SetEntityVisible(Reel3, false, false)
+    Sounds('spinning')
     while GetGameTimer() < EndTime do
         SetEntityRotation(BlurryReel1, math.random(0, 15) * 22.5 + math.random(1, 60), 0.0, SlotHeading, 2, true)
         if EndTime - GetGameTimer() > FirstReelStop then
             SetEntityRotation(BlurryReel2, math.random(0, 15) * 22.5 + math.random(1, 60), 0.0, SlotHeading, 2, true)
             if EndTime - GetGameTimer() < FirstReelStop + 15 then
-                if ReelRewards[2] == math.floor(ReelRewards[2]) then Sounds[9]() else Sounds[10]() end
+                if ReelRewards[2] == math.floor(ReelRewards[2]) then Sounds('wheel_stop_clunk') else Sounds('wheel_stop_on_prize') end
                 DeleteObject(BlurryReel2)
                 SetEntityRotation(Reel2, ReelReward2, 0.0, SlotHeading, 2, true)
-                SetEntityVisible(Reel2, true)
+                SetEntityVisible(Reel2, true, false)
             end
             if EndTime - GetGameTimer() > SecondReelStop then
                 SetEntityRotation(BlurryReel3, math.random(0, 15) * 22.5 + math.random(1, 60), 0.0, SlotHeading, 2, true)
                 if EndTime - GetGameTimer() < SecondReelStop + 15 then
-                    if ReelRewards[3] == math.floor(ReelRewards[3]) then Sounds[9]() else Sounds[10]() end
+                    if ReelRewards[3] == math.floor(ReelRewards[3]) then Sounds('wheel_stop_clunk') else Sounds('wheel_stop_on_prize') end
                     DeleteObject(BlurryReel3)
                     SetEntityRotation(Reel3, ReelReward3, 0.0, SlotHeading, 2, true)
-                    SetEntityVisible(Reel3, true)
+                    SetEntityVisible(Reel3, true, false)
                 end
             end
         end
@@ -455,33 +361,32 @@ RegisterNetEvent('dc-casino:slots:client:spinreels', function(SpinTime, ReelRewa
     end
     DeleteObject(BlurryReel1)
     SetEntityRotation(Reel1, ReelReward1, 0.0, SlotHeading, 2, true)
-    SetEntityVisible(Reel1, true)
+    SetEntityVisible(Reel1, true, false)
     CallScaleformMethod('SET_LAST_WIN', SlotReferences[ClosestSlotModel].betamounts[ChosenBetAmount] * RewardMultiplier)
-    if ReelRewards[1] == math.floor(ReelRewards[1]) then Sounds[9]() else Sounds[10]() end
+    if ReelRewards[1] == math.floor(ReelRewards[1]) then Sounds('wheel_stop_clunk') else Sounds('wheel_stop_on_prize') end
     if RewardMultiplier == 0 then
-        Sounds[1]()
-        QBCore.Functions.Notify('You Lose', 'error', 3500)
-        -- exports['qb-core']:DrawText('<b>You Lose</b>)
-        local LoseScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-        LoadAnimDict(AnimDict)
+        lib.notify({title = 'You Lost!', type = 'warning'})
+        Sounds('no_win')
+        local LoseScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+        lib.requestAnimDict(AnimDict)
         local RandomAnim = RandomLose[math.random(1, #RandomLose)]
-        NetworkAddPedToSynchronisedScene(PlayerPedId(), LoseScene, AnimDict, RandomLose[math.random(1, #RandomLose)], 2.0, -1.5, 13, 16, 2.0, 0)
+        NetworkAddPedToSynchronisedScene(cache.ped, LoseScene, AnimDict, RandomLose[math.random(1, #RandomLose)], 2.0, -1.5, 13, 16, 2.0, 0)
         NetworkStartSynchronisedScene(LoseScene)
         StartIdleScene(RandomAnim)
     elseif RewardMultiplier > 7 then
-        if ReelReward1 == 5 and ReelReward2 == 5 and ReelReward3 == 5 then Sounds[4]() else Sounds[3]() end
-        local BigWinScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-        LoadAnimDict(AnimDict)
+        if ReelReward1 == 5 and ReelReward2 == 5 and ReelReward3 == 5 then Sounds('jackpot') else Sounds('big_win') end
+        local BigWinScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+        lib.requestAnimDict(AnimDict)
         local RandomAnim = RandomBigWin[math.random(1, #RandomBigWin)]
-        NetworkAddPedToSynchronisedScene(PlayerPedId(), BigWinScene, AnimDict, RandomBigWin[math.random(1, #RandomBigWin)], 2.0, -1.5, 13, 16, 2.0, 0)
+        NetworkAddPedToSynchronisedScene(cache.ped, BigWinScene, AnimDict, RandomBigWin[math.random(1, #RandomBigWin)], 2.0, -1.5, 13, 16, 2.0, 0)
         NetworkStartSynchronisedScene(BigWinScene)
         StartIdleScene(RandomAnim)
     else
-        Sounds[2]()
-        local WinScene = NetworkCreateSynchronisedScene(ClosestSlotCoord, ClosestSlotRotation, 2, 2, 0, 1.0, 0, 1.0)
-        LoadAnimDict(AnimDict)
+        Sounds('small_win')
+        local WinScene = NetworkCreateSynchronisedScene(ClosestSlotCoord.x, ClosestSlotCoord.y, ClosestSlotCoord.z, ClosestSlotRotation.x, ClosestSlotRotation.y, ClosestSlotRotation.z, 2, true, false, 1.0, 0, 1.0)
+        lib.requestAnimDict(AnimDict)
         local RandomAnim = RandomWin[math.random(1, #RandomWin)]
-        NetworkAddPedToSynchronisedScene(PlayerPedId(), WinScene, AnimDict, RandomAnim, 2.0, -1.5, 13, 16, 2.0, 0)
+        NetworkAddPedToSynchronisedScene(cache.ped, WinScene, AnimDict, RandomAnim, 2.0, -1.5, 13, 16, 2.0, 0)
         NetworkStartSynchronisedScene(WinScene)
         StartIdleScene(RandomAnim)
     end
