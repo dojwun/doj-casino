@@ -80,7 +80,7 @@ cfg.blackjackTables = {
 --Use this command to get the coords you need for setting up new tables. 
 --Some maps use the prop vw_prop_casino_blckjack_01 some use vw_prop_casino_blckjack_01b, so change accordingly.
 RegisterCommand("getcasinotable",function()
-    local playerCoords = GetEntityCoords(PlayerPedId())
+    local playerCoords = GetEntityCoords(cache.ped)
     local blackjackTable = GetClosestObjectOfType(playerCoords.x,playerCoords.y,playerCoords.z,3.0,GetHashKey("vw_prop_casino_blckjack_01"),0,0,0)
     if DoesEntityExist(blackjackTable) then
         print("Found entity")
@@ -195,14 +195,14 @@ function resetDealerIdle(dealerPed)
         -- -- print("playing idle animation: " .. tostring(genderAnimString .. "idle"))
         TaskPlayAnim(dealerPed, dealerAnimDict, genderAnimString .. "idle", 1000.0, -2.0, -1, 2, 1148846080, 0) --anim_name is idle or female_idle depending on gender
         PlayFacialAnim(dealerPed, "idle_facial", dealerAnimDict)
-        TaskPlayAnim(PlayerPedId(),"anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 1.0, 1.0, -1, 0)
+        TaskPlayAnim(cache.ped,"anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 1.0, 1.0, -1, 0)
     end
 end
 
 CreateThread(function()
     while true do 
         if shouldForceIdleCardGames and sittingAtBlackjackTable then
-            TaskPlayAnim(PlayerPedId(),"anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 1.0, 1.0, -1, 0)
+            TaskPlayAnim(cache.ped,"anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 1.0, 1.0, -1, 0)
         end
         Wait(0)
     end
@@ -215,52 +215,49 @@ end)
 
 
 RegisterNetEvent('doj:client:openBetMenu', function() 
-    exports['qb-menu']:openMenu({
+    local options = {
         {
-            header = "The Diamond Casino & Resort Blackjack",
-            isMenuHeader = true,
+            title = 'Increase',
+            description = '+10',
+            event = 'doj:client:startingBets',
+            args = 1
         },
         {
-            header = "Increase Bet", 
-            txt = "+10",
-            params = {
-                event = "doj:client:startingBets",
-                args = 1
-            }
+            title = 'Decrease',
+            description = '-10',
+            event = 'doj:client:startingBets',
+            args = 2
         },
         {
-            header = "Decrease bet", 
-            txt = "-10",
-            params = {
-                event = "doj:client:startingBets",
-                args = 2
-            }
-        },
-        {
-            header = "Submit bet", 
-            txt = "",
-            params = {
-                event = "doj:client:startingBets",
-                args = 3
-            }
+            title = 'Submit',
+            description = 'Apply current bet',
+            event = 'doj:client:startingBets',
+            args = 3
         },
         -- {
-        --     header = "Custom Bet", 
-        --     txt = "",
-        --     params = {
-        --         event = "doj:client:startingBets",
-        --         args = 4
-        --     }
+        --     title = 'Custom Bet',
+        --     description = '',
+        --     -- metadata = {''},
+        --     event = 'doj:client:startingBets',
+        --     args = 4
         -- },
         {
-            header = "Exit", 
-            txt = "",
-            params = {
-                event = "doj:client:startingBets",
-                args = 5
-            }
-        },
+            title = 'Exit',
+            description = '',
+            event = 'doj:client:startingBets',
+            args = 5
+        }
+    }
+    lib.registerContext({
+        id = 'hit&standRT98',
+        title = 'Diamond Casino Blackjack',
+        options = options,
+        canClose = false,
+        -- onExit = function()
+        --     TriggerEvent('doj:client:startingBets', 5)
+        -- end,
     })
+    lib.showContext('hit&standRT98')
 end)
 
 RegisterNetEvent("doj:client:startingBets", function(args)
@@ -276,7 +273,7 @@ RegisterNetEvent("doj:client:startingBets", function(args)
             if currentBetAmount >= 10 then 
                 currentBetAmount = currentBetAmount - 10
             else
-                QBCore.Functions.Notify("Cannot bet below zero", "error", 3500)
+                lib.notify({title = "Cannot bet below zero", type = 'error'})
             end
         elseif args == 3 then 
             -- -- print("submitting bet")
@@ -287,7 +284,7 @@ RegisterNetEvent("doj:client:startingBets", function(args)
                 putBetOnTable()
                 Wait(1000)
             else
-                QBCore.Functions.Notify("Invalid amount.", "error", 3500)
+                lib.notify({title = "Invalid amount.", type = 'error'})
             end
         elseif args == 4 then 
             -- -- print("custom bet")
@@ -299,7 +296,7 @@ RegisterNetEvent("doj:client:startingBets", function(args)
                 end
             end
             TriggerEvent("doj:client:openBetMenu")
-        else
+        elseif args == 5 then 
             -- print('exit')
             shouldForceIdleCardGames = false
             blackjackAnimDictToLoad = "anim_casino_b@amb@casino@games@shared@player@"
@@ -308,11 +305,11 @@ RegisterNetEvent("doj:client:startingBets", function(args)
                 Wait(0)
             end
             NetworkStopSynchronisedScene(Local_198f_255)
-            TaskPlayAnim(PlayerPedId(), blackjackAnimDictToLoad, "sit_exit_left", 1.0, 1.0, 2500, 0)              
+            TaskPlayAnim(cache.ped, blackjackAnimDictToLoad, "sit_exit_left", 1.0, 1.0, 2500, 0)              
             sittingAtBlackjackTable = false
             drawTimerBar = false
             drawCurrentHand = false
-            exports['casinoUi']:HideCasinoUi('hide') 
+            exports['casino-ui']:HideCasinoUi('hide') 
             waitingForBetState = false
             TriggerServerEvent("Blackjack:leaveBlackjackTable")
             closestDealerPed, closestDealerPedDistance = getClosestDealer()
@@ -321,29 +318,28 @@ RegisterNetEvent("doj:client:startingBets", function(args)
     end
 end)
 
-RegisterNetEvent('doj:client:hit&standMenu', function() 
-    exports['qb-menu']:openMenu({
+RegisterNetEvent('doj:client:hit&standMenu', function()
+    local options = {
         {
-            header = "The Diamond Casino & Resort Blackjack",
-            isMenuHeader = true,
+            title = 'Hit',
+            description = 'Draw another card',
+            event = 'doj:client:hit&standActions',
+            args = 1
         },
         {
-            header = "Hit", 
-            txt = "Draw another card",
-            params = {
-                event = "doj:client:hit&standActions",
-                args = 1
-            }
+            title = 'Stand',
+            description = 'Be a pussy',
+            event = 'doj:client:hit&standActions',
+            args = 2
         },
-        {
-            header = "Stand", 
-            txt = "Be a pussy",
-            params = {
-                event = "doj:client:hit&standActions",
-                args = 2
-            }
-        },
+    }
+    lib.registerContext({
+        id = 'hit&standRT98',
+        title = 'Diamond Casino Blackjack',
+        canClose = false,
+        options = options,
     })
+    lib.showContext('hit&standRT98')
 end)
 
 RegisterNetEvent("doj:client:hit&standActions", function(args)
@@ -382,7 +378,7 @@ end)
 
 CreateThread(function()
     while true do 
-        local playerCoords = GetEntityCoords(PlayerPedId())
+        local playerCoords = GetEntityCoords(cache.ped)
         closeToCasino = false
         for k,v in pairs(cfg.blackjackTables) do
             cfg.blackjackTables[k].distance = #(playerCoords-cfg.blackjackTables[k].tablePos)
@@ -398,33 +394,37 @@ end)
 CreateThread(function()
 	while true do
         local sleep = 5
-        local playerPed = PlayerPedId()
         local inZone = false
         if not sittingAtBlackjackTable then
             if closestChair ~= nil and closestChairDist < 1.3 then
                 inZone  = true
-                text = "<b>The Diamond Casino & Resort</p>Blackjack RT98</b></p>Press <b>E</b> to sit" 
+                text = "Blackjack RT98  \n  E - Sit"
                 if not timeoutHowToBlackjack then
                     if IsControlJustPressed(0, 38) then
-                        if blackjackTableData[closestChair] == false then
-                            print("calling goToBlackjackSeat with chairID: " .. tostring(closestChair))
-                            TriggerServerEvent("Blackjack:requestSitAtBlackjackTable",closestChair) 
-                        else 
-                            QBCore.Functions.Notify("This seat is taken.", "error", 3500)
+                        local HasItem = exports.ox_inventory:GetItemCount("casino_member")
+                        if HasItem >= 1 then
+                            if blackjackTableData[closestChair] == false then
+                                -- print("calling goToBlackjackSeat with chairID: " .. tostring(closestChair))
+                                TriggerServerEvent("Blackjack:requestSitAtBlackjackTable",closestChair) 
+                            else
+                                lib.notify({title = "This seat is taken.", type = 'warning'})
+                            end
+                        else
+                            lib.notify({title = 'You are not a member of the casino!', type = 'warning'})
                         end
                     end
                 end
             end
             if inZone and not alreadyEnteredZone then
                 alreadyEnteredZone = true
-                exports['qb-core']:DrawText(text)   
+                lib.showTextUI(text)
             end
             if not inZone and alreadyEnteredZone then
                 alreadyEnteredZone = false
-                exports["qb-core"]:HideText()
+                lib.hideTextUI()
             end
         end
-        Wait(sleep)		
+        Wait(sleep)	
 	end
 end)
 
@@ -433,7 +433,7 @@ CreateThread(function()
         if closeToCasino then
             closestChairDist = 1000
             closestChair = -1
-            local playerCoords = GetEntityCoords(PlayerPedId())
+            local playerCoords = GetEntityCoords(cache.ped)
             for i=0,((#cfg.blackjackTables+1)*4)-1,1 do
                 local vectorOfBlackjackSeat = blackjack_func_348(i)
                 local distToBlackjackSeat = #(playerCoords - vectorOfBlackjackSeat)
@@ -451,15 +451,12 @@ end)
 CreateThread(function()
     while true do
         if drawTimerBar then
-            QBCore.Functions.TriggerCallback('BLACKJACKRT98:server:blackChipsAmount', function(result)
-                retval = result
-                exports['casinoUi']:DrawCasinoUi('show', "<b>The Diamond Casino & Resort Blackjack</b></p>Time Left: 0:"..timeLeft.."</p>Availble chips: "..math.floor(result).."</p>Current Bet: "..math.floor(currentBetAmount))   
-	        end) 
+            exports['casino-ui']:DrawCasinoUi('show', "<b>The Diamond Casino & Resort Blackjack</b></p>Time Left: 0:"..timeLeft.."</p>Availble chips: "..exports.ox_inventory:GetItemCount("casinochips").."</p>Current Bet: "..math.floor(currentBetAmount))   
         end
         if drawCurrentHand then
-            exports['qb-core']:DrawText("<b>Dealers Hand: </b>"..math.floor(dealersHand).."</p><b>Your hand: </b>"..math.floor(currentHand)) 
+            lib.showTextUI("Dealers Hand: "..math.floor(dealersHand).."  \n  Your hand: "..math.floor(currentHand))
         end
-        Wait(250) 
+        Wait(100)
     end
 end)
 
@@ -476,8 +473,8 @@ AddEventHandler("Blackjack:beginBetsBlackjack",function(gameID,tableId)
     -- blackjackInstructional = setupBlackjackInstructionalScaleform("instructional_buttons")
     -- exports["qb-core"]:HideText()
     TriggerEvent("doj:client:openBetMenu")
-    -- QBCore.Functions.Notify("Place your bets", 'primary', 3500)
-    exports['qb-core']:DrawText("Place your bets...")  
+    lib.showTextUI("Place your bets...")
+
 
     bettedThisRound = false
     drawTimerBar = true
@@ -501,8 +498,7 @@ AddEventHandler("Blackjack:beginBetsBlackjack",function(gameID,tableId)
         timeLeft = 20
         drawTimerBar = false
         -- if not bettedThisRound then
-                --QBCore.Functions.Notify("No bet placed, round skipped", 'primary', 3500)
-
+                -- lib.notify({title = "No bet placed, round skipped", type = 'primary'})
         -- end
     end)
 end)
@@ -511,7 +507,7 @@ RegisterNetEvent("Blackjack:beginCardGiveOut")
 AddEventHandler("Blackjack:beginCardGiveOut",function(gameId,cardData,chairId,cardIndex,gotCurrentHand,tableId)
     if closeToCasino then
         blackjackGameInProgress = true
-        exports['casinoUi']:HideCasinoUi('hide') 
+        exports['casino-ui']:HideCasinoUi('hide') 
         blackjackAnimsToLoad = {
             "anim_casino_b@amb@casino@games@blackjack@dealer",
             "anim_casino_b@amb@casino@games@shared@dealer@",
@@ -592,7 +588,8 @@ AddEventHandler("Blackjack:standOrHit",function(gameId,chairId,nextCardCount,tab
                     waitingForStandOrHitState = false
                     TriggerServerEvent("Blackjack:standBlackjack",globalGameId,globalNextCardCount)
                     declineCard()
-                    QBCore.Functions.Notify("Failed to stand/hit in time, standing.", 'error', 3500)
+                    lib.notify({title = "Failed to stand/hit in time, standing.", type = 'warning'})
+
                 end
             end)
         else 
@@ -604,7 +601,7 @@ end)
 function getClosestDealer()
     local tmpclosestDealerPed = nil
     local tmpclosestDealerPedDistance = 100000
-    local playerCoords = GetEntityCoords(PlayerPedId())
+    local playerCoords = GetEntityCoords(cache.ped)
     for k,v in pairs(dealerPeds) do 
         local dealerPed = v
         -- -- print("Entity ID of this dealer ped: " .. tostring(dealerPed))
@@ -645,7 +642,7 @@ function goToBlackjackSeat(blackjackSeatID)
 
     
     -- print("[CMG Casino] start sit at blackjack seat") 
-    exports['qb-core']:DrawText("Waiting for game to start...")
+    lib.showTextUI("Waiting for game to start...")
 
     blackjackAnimsToLoad = {
       "anim_casino_b@amb@casino@games@blackjack@dealer",
@@ -661,10 +658,10 @@ function goToBlackjackSeat(blackjackSeatID)
     end
     -- print("[CMG Casino] blackjack anims loaded") 
     Local_198f_247 = blackjackSeatID
-    print("blackjackSeatID: " .. blackjackSeatID)
-    fVar3 = blackjack_func_217(PlayerPedId(),blackjack_func_218(Local_198f_247, 0), 1)
-    fVar4 = blackjack_func_217(PlayerPedId(),blackjack_func_218(Local_198f_247, 1), 1)
-    fVar5 = blackjack_func_217(PlayerPedId(),blackjack_func_218(Local_198f_247, 2), 1)
+    -- print("blackjackSeatID: " .. blackjackSeatID)
+    fVar3 = blackjack_func_217(cache.ped,blackjack_func_218(Local_198f_247, 0), 1)
+    fVar4 = blackjack_func_217(cache.ped,blackjack_func_218(Local_198f_247, 1), 1)
+    fVar5 = blackjack_func_217(cache.ped,blackjack_func_218(Local_198f_247, 2), 1)
     -- print("[CMG Casino] fVars passed")
     if (fVar4 < fVar5 and fVar4 < fVar3) then 
       Local_198f_251 = 1
@@ -678,14 +675,14 @@ function goToBlackjackSeat(blackjackSeatID)
     local walkToVector = blackjack_func_218(Local_198f_247, Local_198f_251)
     local targetHeading = blackjack_func_216(Local_198f_247, Local_198f_251)
     -- -- print("[CMG Casino] walking to seat, x: " .. tostring(walkToVector.x) .. " y: " .. tostring(walkToVector.y) .. " z: " .. tostring(walkToVector.z))
-    TaskGoStraightToCoord(PlayerPedId(), walkToVector.x, walkToVector.y, walkToVector.z, 1.0, 5000, targetHeading, 0.01)
+    TaskGoStraightToCoord(cache.ped, walkToVector.x, walkToVector.y, walkToVector.z, 1.0, 5000, targetHeading, 0.01)
 
     local goToVector = blackjack_func_348(Local_198f_247)
     local xRot,yRot,zRot = blackjack_func_215(Local_198f_247)
     -- -- print("[CMG Casino] Blackjack sit at table net scene starting")
     -- -- print("[CMG Casino] creating Scene at, x: " .. tostring(goToVector.x) .. " y: " .. tostring(goToVector.y) .. " z: " .. tostring(goToVector.z))
     Local_198f_255 = NetworkCreateSynchronisedScene(goToVector.x, goToVector.y, goToVector.z, xRot, yRot, zRot, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), Local_198f_255, "anim_casino_b@amb@casino@games@shared@player@", blackjack_func_213(Local_198f_251), 2.0, -2.0, 13, 16, 2.0, 0) -- 8.0, -1.5, 157, 16, 1148846080, 0) ?
+    NetworkAddPedToSynchronisedScene(cache.ped, Local_198f_255, "anim_casino_b@amb@casino@games@shared@player@", blackjack_func_213(Local_198f_251), 2.0, -2.0, 13, 16, 2.0, 0) -- 8.0, -1.5, 157, 16, 1148846080, 0) ?
     NetworkStartSynchronisedScene(Local_198f_255)
     -- -- print("[CMG Casino] Blackjack sit at table net scene started")
     --Local_198.f_255 = NETWORK::NETWORK_CREATE_SYNCHRONISED_SCENE(func_348(Local_198.f_247), func_215(Local_198.f_247), 2, 1, 0, 1065353216, 0, 1065353216)
@@ -698,7 +695,7 @@ function goToBlackjackSeat(blackjackSeatID)
     -- -- print("STOP STITTING ")
     --Wait for sit down anim to end
     Locali98f_55 = NetworkCreateSynchronisedScene(goToVector.x, goToVector.y, goToVector.z, xRot, yRot, zRot, 2, 1, 1, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), Locali98f_55, "anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 2.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, Locali98f_55, "anim_casino_b@amb@casino@games@shared@player@", "idle_cardgames", 2.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(Locali98f_55)
     StartAudioScene("DLC_VW_Casino_Table_Games") --need to stream this
     Citizen.InvokeNative(0x79C0E43EB9B944E2, -2124244681)
@@ -1297,7 +1294,7 @@ function declineCard()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@blackjack@player", "decline_card_001", 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@blackjack@player", "decline_card_001", 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(2000,function()
         shouldForceIdleCardGames = true
@@ -1309,7 +1306,7 @@ function requestCard()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@blackjack@player", "request_card", 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@blackjack@player", "request_card", 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(2000,function()
         shouldForceIdleCardGames = true
@@ -1321,7 +1318,7 @@ function putBetOnTable()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@blackjack@player", getAnimNameFromBet(100), 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@blackjack@player", getAnimNameFromBet(100), 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(5000,function()
         shouldForceIdleCardGames = true
@@ -1333,7 +1330,7 @@ function angryIBust()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_terrible_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_terrible_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(5000,function()
         shouldForceIdleCardGames = true
@@ -1345,7 +1342,7 @@ function angryILost()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_bad_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_bad_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(5000,function()
         shouldForceIdleCardGames = true
@@ -1357,7 +1354,7 @@ function annoyedIPushed()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_impartial_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_impartial_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(5000,function()
         shouldForceIdleCardGames = true
@@ -1369,7 +1366,7 @@ function happyIWon()
     local chairPos = blackjack_func_348(closestChair)
     local chairRot = blackjack_func_215(closestChair)
     local currentScene = NetworkCreateSynchronisedScene(chairPos.x, chairPos.y, chairPos.z, chairRot.x, chairRot.y, chairRot.z, 2, 1, 0, 1065353216, 0, 1065353216)
-    NetworkAddPedToSynchronisedScene(PlayerPedId(), currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_good_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
+    NetworkAddPedToSynchronisedScene(cache.ped, currentScene, "anim_casino_b@amb@casino@games@shared@player@", "reaction_good_var_01", 4.0, -2.0, 13, 16, 1148846080, 0)
     NetworkStartSynchronisedScene(currentScene)
     SetTimeout(5000,function()
         shouldForceIdleCardGames = true
@@ -2985,7 +2982,7 @@ end
 
 RegisterNetEvent("blackjack:notify")
 AddEventHandler("blackjack:notify",function(msg)
-    QBCore.Functions.Notify(msg, 'success', 3500)
+    lib.notify({title = msg, type = 'success'})
 end)
 
 function getGenericTextInput(type)
@@ -3028,14 +3025,14 @@ end)
 -- end)
 
 -- RegisterCommand("testcasinoanim", function()
---     TaskPlayAnim(PlayerPedId(), "anim_casino_b@amb@casino@games@blackjack@dealer", "check_card", 3.0, 1.0, -1, 2, 0, 0, 0, 0 )
+--     TaskPlayAnim(cache.ped, "anim_casino_b@amb@casino@games@blackjack@dealer", "check_card", 3.0, 1.0, -1, 2, 0, 0, 0, 0 )
 --     -- print("animation started")
---     -- while not HasEntityAnimFinished(PlayerPedId(), "anim_casino_b@amb@casino@games@blackjack@dealer", "check_card",3) do 
+--     -- while not HasEntityAnimFinished(cache.ped, "anim_casino_b@amb@casino@games@blackjack@dealer", "check_card",3) do 
 --     --     -- print("waiting for check card animation to end")
 --     --     Wait(0)
 --     -- end
 --     while true do 
---         -- print("hasAnimEventFired: " .. tostring(HasAnimEventFired(PlayerPedId(),585557868)))
+--         -- print("hasAnimEventFired: " .. tostring(HasAnimEventFired(cache.ped,585557868)))
 --         Wait(0)
 --     end
 --     -- print("animation finished")
