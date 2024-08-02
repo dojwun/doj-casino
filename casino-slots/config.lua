@@ -8,11 +8,11 @@ SlotReferences = {
         scriptrt = '01a',
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500 
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [-1519644200] = {
@@ -25,11 +25,11 @@ SlotReferences = {
         theme = 2,
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [-430989390] = {
@@ -41,11 +41,11 @@ SlotReferences = {
         scriptrt = '03a',
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [654385216] = {
@@ -57,11 +57,11 @@ SlotReferences = {
         scriptrt = '04a',
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [161343630] = {
@@ -74,11 +74,11 @@ SlotReferences = {
         theme = 5,
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [1096374064] = {
@@ -91,11 +91,11 @@ SlotReferences = {
         theme = 6,
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [207578973] = {
@@ -108,11 +108,11 @@ SlotReferences = {
         theme = 7,
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
     [-487222358] = {
@@ -125,11 +125,11 @@ SlotReferences = {
         theme = 8,
         misschance = math.random(10, 40),
         betamounts = {
-            50,
-            100,
-            150,
-            250,
-            500
+            5,
+            10,
+            15,
+            25,
+            50
         }
     },
 }
@@ -231,4 +231,4 @@ SpecialReward = {
 UseCash = false
 UseBank = false
 UseItem = true
-ItemName = 'casino_goldchip'
+ItemName = 'casinochips' 
