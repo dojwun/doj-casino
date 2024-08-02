@@ -3,81 +3,87 @@ local inCasino              = false
 local videoWallRenderTarget = nil
 local showBigWin            = false
 local spinningObject = nil
-local spinningCar = nil
---
--- Threads
---
+local spinningCar
 
-function startCasinoThreads()
-    RequestStreamedTextureDict('Prop_Screen_Vinewood')
-    while not HasStreamedTextureDictLoaded('Prop_Screen_Vinewood') do
-        Wait(100)
-    end
-    RegisterNamedRendertarget('casinoscreen_01')
-    LinkNamedRendertarget(`vw_vwint01_video_overlay`)
-    videoWallRenderTarget = GetNamedRendertargetRenderId('casinoscreen_01')
-    CreateThread(function() 
-        local lastUpdatedTvChannel = 0
-        while true do
-            Wait(0)
-            if not inCasino then
-                ReleaseNamedRendertarget('casinoscreen_01')
-                videoWallRenderTarget = nil
-                showBigWin            = false
-                break
-            end
-            if videoWallRenderTarget then
-                local currentTime = GetGameTimer()
-                if showBigWin then
-                    setVideoWallTvChannelWin()
-                    lastUpdatedTvChannel = GetGameTimer() - 33666
-                    showBigWin           = false
-                else
-                    if (currentTime - lastUpdatedTvChannel) >= 42666 then
-                        setVideoWallTvChannel()
-                        lastUpdatedTvChannel = currentTime
-                    end
-                end
-                SetTextRenderId(videoWallRenderTarget)
-                SetScriptGfxDrawOrder(4)
-                SetScriptGfxDrawBehindPausemenu(true)
-                DrawInteractiveSprite('Prop_Screen_Vinewood', 'BG_Wall_Colour_4x4', 0.25, 0.5, 0.5, 1.0, 0.0, 255, 255, 255, 255)
-                DrawTvChannel(0.5, 0.5, 1.0, 1.0, 0.0, 255, 255, 255, 255)
-                SetTextRenderId(GetDefaultScriptRendertargetRenderId())
-            end
-        end
-    end)
+local function CasinoPeds(model, coords, heading, scenario)
+	lib.RequestModel(GetHashKey(model))
+	CasinoNpcs = CreatePed(0, GetHashKey(v.model), coords, heading, false, true)
+	FreezeEntityPosition(CasinoNpcs, true)
+	SetEntityInvincible(CasinoNpcs, true)
+	SetBlockingOfNonTemporaryEvents(CasinoNpcs, true)
+	TaskStartScenarioInPlace(CasinoNpcs, scenario, 0, true)
+  SetModelAsNoLongerNeeded(CasinoNpcs)
 end
 
-function setVideoWallTvChannel()
-    SetTvChannelPlaylist(0, Config.AnimatedWallNormal, true)
-    SetTvAudioFrontend(true)
-    SetTvVolume(-100.0)
-    SetTvChannel(0)
+function StartCasinoThreads()
+  RequestStreamedTextureDict('Prop_Screen_Vinewood', false)
+  while not HasStreamedTextureDictLoaded('Prop_Screen_Vinewood') do
+      Wait(100)
+  end
+  RegisterNamedRendertarget('casinoscreen_01', false)
+  LinkNamedRendertarget(`vw_vwint01_video_overlay`)
+  videoWallRenderTarget = GetNamedRendertargetRenderId('casinoscreen_01')
+  CreateThread(function()
+      local lastUpdatedTvChannel = 0
+      while true do
+          Wait(0)
+          if not inCasino then
+              ReleaseNamedRendertarget('casinoscreen_01')
+              videoWallRenderTarget = nil
+              showBigWin = false
+              break
+          end
+          if videoWallRenderTarget then
+              local currentTime = GetGameTimer()
+              if showBigWin then
+                  SetVideoWallTvChannelWin()
+                  lastUpdatedTvChannel = GetGameTimer() - 33666
+                  showBigWin = false
+              else
+                  if (currentTime - lastUpdatedTvChannel) >= 42666 then
+                      SetVideoWallTvChannel()
+                      lastUpdatedTvChannel = currentTime
+                  end
+              end
+              SetTextRenderId(videoWallRenderTarget)
+              SetScriptGfxDrawOrder(4)
+              SetScriptGfxDrawBehindPausemenu(true)
+              DrawInteractiveSprite('Prop_Screen_Vinewood', 'BG_Wall_Colour_4x4', 0.25, 0.5, 0.5, 1.0, 0.0, 255, 255, 255, 255)
+              DrawTvChannel(0.5, 0.5, 1.0, 1.0, 0.0, 255, 255, 255, 255)
+              SetTextRenderId(GetDefaultScriptRendertargetRenderId())
+          end
+      end
+  end)
 end
 
-function setVideoWallTvChannelWin()
-    SetTvChannelPlaylist(0, Config.AnimatedWallWin, true)
-    SetTvAudioFrontend(true)
-    SetTvVolume(-100.0)
-    SetTvChannel(-1)
-    SetTvChannel(0)
+function SetVideoWallTvChannel()
+  SetTvChannelPlaylist(0, Config.Casino.Animated.Normal, true)
+  SetTvAudioFrontend(true)
+  SetTvVolume(-100.0)
+  SetTvChannel(0)
 end
 
---
--- Events
---
+function SetVideoWallTvChannelWin()
+  SetTvChannelPlaylist(0, Config.Casino.Animated.Win, true)
+  SetTvAudioFrontend(true)
+  SetTvVolume(-100.0)
+  SetTvChannel(-1)
+  SetTvChannel(0)
+end
 
 AddEventHandler("chCasinoWall:enteredCasino", function()
   inCasino = true
-  if Config.SetAnimatedWalls then
-    startCasinoThreads()
+  if Config.Casino.Animated.Walls then
+    StartCasinoThreads()
   end
-  if Config.SetShowCarOnDisplay then
-    spinMeRightRoundBaby()
+  if Config.ShowCar.Display then
+    SpinMeRightRoundBaby()
   end
-  if Config.PlayCasinoAmbientNoise then
-    playSomeBackgroundAudioBaby()      
+  if Config.Casino.AmbientNoise then
+    PlaySomeBackgroundAudioBaby()
+  end
+  if Config.SecretGumball.Enable then
+    TriggerEvent('doj:client:GumballLocations')
   end
 end)
 
@@ -85,60 +91,31 @@ AddEventHandler("chCasinoWall:exitedCasino", function()
   inCasino = false
 end)
 
-RegisterNetEvent('chCasinoWall:bigWin')
-AddEventHandler('chCasinoWall:bigWin', function()
+RegisterNetEvent('chCasinoWall:bigWin', function()
   if not inCasino then
     return
   end
   showBigWin = true
 end)
 
-
-function enterCasino()
+function EnterCasino()
   InCasino = true
-  TriggerEvent("chCasinoWall:enteredCasino") 
-  print("Entered Casino area")
-  if Config.SendWelcomeMail then
-    TriggerServerEvent('qb-phone:server:sendNewMail', {
-      sender = Config.WelcomeMailsender,
-      subject = Config.WelcomeMailsubject,
-      message = Config.WelcomeMailmessage,
-      button = {}
-    })
-  end
+  TriggerEvent("chCasinoWall:enteredCasino")
 end
 
-function exitCasino()
-  TriggerEvent("chCasinoWall:exitedCasino")
-  print("Exited Casino area")
+function ExitCasino()
   InCasino = false
+  TriggerEvent("chCasinoWall:exitedCasino")
+  TriggerEvent("doj:client:KillGumballZones")
   StopAudioScene("DLC_VW_Casino_General")
-  Wait(5000)
-  startCasinoThreads()
 end
 
-CreateThread(function()
-  local CasinoZone = CircleZone:Create(vector3(945.85, 41.58, -170.50), 250.0, {
-    name="CasinoZone",
-    heading=0.0,
-    debugPoly=false,
-    useZ=true,
-  })
-  CasinoZone:onPlayerInOut(function(inCasino)
-    if inCasino then
-      enterCasino()
-    else
-      exitCasino()
-    end
-  end)
-end)
-
-function spinMeRightRoundBaby()
+function SpinMeRightRoundBaby()
 	CreateThread(function()
 	    while inCasino do
 		if not spinningObject or spinningObject == 0 or not DoesEntityExist(spinningObject) then
-		  spinningObject = GetClosestObjectOfType(935.432, 42.5611, 72.14, 10.0, -1561087446, 0, 0, 0)
-		  drawCarForWins()
+		  spinningObject = GetClosestObjectOfType(935.432, 42.5611, 72.14, 10.0, -1561087446, true, true, true)
+		  DrawCarForWins()
 		end
 		if spinningObject ~= nil and spinningObject ~= 0 then
 		  local curHeading = GetEntityHeading(spinningObject)
@@ -158,58 +135,104 @@ function spinMeRightRoundBaby()
 	end)
 end
 
-function drawCarForWins()
+function DrawCarForWins()
 	if DoesEntityExist(spinningCar) then
 	  DeleteEntity(spinningCar)
 	end
-	RequestModel(Config.VehicleOnDisplay)
-	while not HasModelLoaded(Config.VehicleOnDisplay) do
-		Wait(0)
-	end
-	SetModelAsNoLongerNeeded(Config.VehicleOnDisplay)
-	spinningCar = CreateVehicle(Config.VehicleOnDisplay, 935.432, 42.5611, 72.34, 0.0, 0, 0)
-	Wait(0)
-	SetVehicleDirtLevel(spinningCar, 0.0)
-	SetVehicleOnGroundProperly(spinningCar) 
-	Wait(0)
-	FreezeEntityPosition(spinningCar, 1)
+  for i = 1, #Config.ShowCar do
+    local v = Config.ShowCar[i]
+    lib.RequestModel(v.model)
+    SetModelAsNoLongerNeeded(v.model)
+    spinningCar = CreateVehicle(v.model, 935.432, 42.5611, 72.34, 0.0, true, true)
+    SetVehicleDirtLevel(spinningCar, 0.0)
+    SetVehicleOnGroundProperly(spinningCar)
+    FreezeEntityPosition(spinningCar, true)
+    SetVehicleModKit(spinningCar, 0)
+    SetVehicleColours(spinningCar, v.colors[1], v.colors[2])
+    SetVehicleExtraColours(spinningCar, v.extraColors[1], v.extraColors[2])
+    SetVehicleWindowTint(spinningCar, v.Tint)
+    SetVehicleLights(spinningCar, v.ToggleLights)
+    ToggleVehicleMod(spinningCar, 22, true)
+    SetVehicleXenonLightsColor(spinningCar, v.XenonColor)
+    SetVehicleInteriorColor(spinningCar, v.intColor)
+    SetVehicleExtra(spinningCar, v.extra)
+    SetVehicleExtra(spinningCar, v.extra2)
+    if v.neons then
+        SetVehicleNeonLightsColour(spinningCar, v.neons[1], v.neons[2], v.neons[3])
+        for i = 0, 3 do
+            SetVehicleNeonLightEnabled(spinningCar, i, true)
+        end
+    end
+    if v.livery then
+        SetVehicleMod(spinningCar, 48, v.livery, false)
+        SetVehicleLivery(spinningCar, v.livery)
+    end
+    for mod, id in pairs(v.modKits) do
+        SetVehicleMod(spinningCar, mod, id - 1, false)
+    end
+    SetVehicleNumberPlateText(spinningCar, "DIAMOND")
+  end
 end
 
-function playSomeBackgroundAudioBaby()
+
+function PlaySomeBackgroundAudioBaby()
 	CreateThread(function()
 	  local function audioBanks()
-		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_GENERAL", false, -1) do
-		  Wait(0)
-		end
-		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_01", false, -1) do
-		  Wait(0)
-		end
-		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_02", false, -1) do
-		  Wait(0)
-		end
-		while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_03", false, -1) do
-		  Wait(0)
-		end
+      while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_GENERAL", false) do
+        Wait(0)
+      end
+      while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_01", false) do
+        Wait(0)
+      end
+      while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_02", false) do
+        Wait(0)
+      end
+      while not RequestScriptAudioBank("DLC_VINEWOOD/CASINO_SLOT_MACHINES_03", false) do
+        Wait(0)
+      end
 	  end
 	  audioBanks()
 	  while inCasino do
-		if not IsStreamPlaying() and LoadStream("casino_walla", "DLC_VW_Casino_Interior_Sounds") then
-		  PlayStreamFromPosition(945.85, 41.58, 75.82)
-		end
-		if IsStreamPlaying() and not IsAudioSceneActive("DLC_VW_Casino_General") then
-		  StartAudioScene("DLC_VW_Casino_General")
-		end
-		Wait(1000)
+      if not IsStreamPlaying() and LoadStream("casino_walla", "DLC_VW_Casino_Interior_Sounds") then
+        PlayStreamFromPosition(945.85, 41.58, 75.82)
+      end
+      if IsStreamPlaying() and not IsAudioSceneActive("DLC_VW_Casino_General") then
+        StartAudioScene("DLC_VW_Casino_General")
+      end
+      Wait(1000)
 	  end
 	  if IsStreamPlaying() then
-		StopStream()
+		  StopStream()
 	  end
 	  if IsAudioSceneActive("DLC_VW_Casino_General") then
-		StopAudioScene("DLC_VW_Casino_General")
+		  StopAudioScene("DLC_VW_Casino_General")
 	  end
 	end)
 end
 
 
+
+RegisterNetEvent("doj:client:CreateCasinoZones", function()
+  if Peds.AmbientPeds then
+    for k = 1, #Peds.PedList, 1 do
+        v = Peds.PedList[k]
+        CasinoPeds(v.model, v.coords, v.heading, v.scenario)
+    end
+  end
+  CreateThread(function()
+      lib.zones.box({
+          coords = vec3(945.85, 41.58, 66.239),
+          size = vec3(125, 100, 15),
+          onEnter = function()
+            EnterCasino()
+          end,
+          onExit = function()
+            ExitCasino()
+          end,
+          inside = function()
+          end,
+      })
+  end)
+end)
 
 
