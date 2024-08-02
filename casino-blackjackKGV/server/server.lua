@@ -159,11 +159,11 @@ RegisterServerEvent("BLACKJACK:SetPlayerBet")
 AddEventHandler('BLACKJACK:SetPlayerBet', SetPlayerBet)
 
 function CheckPlayerBet(i, bet)
-	local Player = QBCore.Functions.GetPlayer(source)
+	local Player = exports.qbx_core:GetPlayer(source)
 	local ItemList = {
-		["casino_goldchip"] = 1,
+		["casinochips"] = 1,
 	}
-	local playerChips = Player.Functions.GetItemByName("casino_goldchip")
+	local playerChips = Player.Functions.GetItemByName("casinochips")
 	local canBet = false
     if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then
         for k, v in pairs(Player.PlayerData.items) do
@@ -897,58 +897,39 @@ exports("SetGiveChipsCallback", SetGiveChipsCallback)
 
 -- ==================================================================================== Added
 
-local ItemList = {
-    ["casino_goldchip"] = 1
-}
-QBCore.Functions.CreateCallback('BLACKJACKKGV:server:blackChipsAmount', function(source, cb)
-    local retval = 0
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
-        for k, v in pairs(Player.PlayerData.items) do 
-            if Player.PlayerData.items[k] ~= nil then 
-                if ItemList[Player.PlayerData.items[k].name] ~= nil then 
-                    retval = retval + (ItemList[Player.PlayerData.items[k].name] * Player.PlayerData.items[k].amount)
-                end
-            end
-        end 
-    end
-    cb(retval)
-end)
+
 
 function SetExports()
 	exports["casino-blackjackKGV"]:SetGetChipsCallback(function(source)
-		local src = source 
-		local Player = QBCore.Functions.GetPlayer(src)
-		local Chips = Player.Functions.GetItemByName("casino_goldchip")
+		local Player = exports.qbx_core:GetPlayer(source)
+		local Chips = Player.Functions.GetItemByName("casinochips")
 		local minAmount = 10
-		if Chips ~= nil then 
+		if Chips ~= nil then
 			if Chips.amount >= minAmount then
-				Chips = Chips 
+				Chips = Chips.amount
 			else
-				return TriggerClientEvent('QBCore:Notify', src, 'You dont have enough Casino Chips', 'error')
+				return TriggerClientEvent('ox_lib:notify', source, {type = 'error', description = "You dont have enough Casino Chips"})
 			end
 		else
-			return TriggerClientEvent('QBCore:Notify', src, 'You dont have any Casino Chips', 'error')
+			return TriggerClientEvent('ox_lib:notify', source, {type = 'error', description = "You dont have any Casino Chips"})
 		end
-    end) 
-	
+    end)
+
     exports["casino-blackjackKGV"]:SetTakeChipsCallback(function(source, amount)
-		local Player = QBCore.Functions.GetPlayer(source)
+		local Player = exports.qbx_core:GetPlayer(source)
         if Player ~= nil then
-            Player.Functions.RemoveItem("casino_goldchip", amount)
-            TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove", amount)
+            Player.Functions.RemoveItem("casinochips", amount)
         end
-    end) 
+    end)
 
     exports["casino-blackjackKGV"]:SetGiveChipsCallback(function(source, amount)
-		local src = source 
-        local Player = QBCore.Functions.GetPlayer(source)
+        local Player = exports.qbx_core:GetPlayer(source)
         if Player ~= nil then
-			if Player.Functions.AddItem('casino_goldchip', amount, nil, {["quality"] = 100}) then
-				TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["casino_goldchip"], "add", amount)
-				TriggerClientEvent('QBCore:Notify', src, "You Won "..math.floor(amount).." Casino Chips!")
+			if Player.Functions.AddItem('casinochips', amount) then
+				TriggerClientEvent('ox_lib:notify', source, {type = 'success', description = "You Won "..math.floor(amount).." Casino Chips!"})
 			else
-				TriggerClientEvent('QBCore:Notify', src, 'You have to much in your pockets', 'error')
+				TriggerClientEvent('ox_lib:notify', source, {type = 'error', description = "You have to much in your pockets"})
+
 			end
         end
     end)
