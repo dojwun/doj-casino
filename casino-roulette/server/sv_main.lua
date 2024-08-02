@@ -1,64 +1,33 @@
-
-local QBCore = exports['qb-core']:GetCoreObject()
-
 local aktivRulettek = {}
 
-
-function getPlayerChips(source)
-    -- local Player = QBCore.Functions.GetPlayer(source)
-    -- local Chips = Player.Functions.GetItemByName("casino_goldchip")
-    -- if Chips ~= nil then 
-    --     if Chips.amount >= 10 then
-    --         return Chips.amount 
-    --     else end
-    -- else end
-
-    local Player = QBCore.Functions.GetPlayer(source)
+local function getPlayerChips(source)
+    local Player = exports.qbx_core:GetPlayer(source)
     local retval = 0
-    local Item = Player.Functions.GetItemByName('casino_goldchip')
+    local Item = Player.Functions.GetItemByName('casinochips')
     if Item  then
         retval = Item.amount
     end
     return retval
 end
 
-function giveChips(source, amount)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.Functions.AddItem("casino_goldchip", amount, nil, nil, false, GetCurrentResourceName(), "", "", "")  then
-        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "add")
-        TriggerClientEvent('QBCore:Notify', source, "+ "..amount.." Chips")
-    end
+local function giveChips(source, amount)
+    exports.ox_inventory:AddItem('casinochips', amount)
+    TriggerClientEvent('ox_lib:notify', source, {type = 'success', description = "+ "..amount.." Chips"})
 end 
 
-function removeChips(source, amount)
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.Functions.RemoveItem("casino_goldchip", amount)  then
-        TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items['casino_goldchip'], "remove")
-        TriggerClientEvent('QBCore:Notify', source, "- "..amount.." Chips")
-    end 
+local function removeChips(source, amount)
+    local Player = exports.qbx_core:GetPlayer(source)
+    if Player ~= nil then
+        TriggerClientEvent('ox_lib:notify', source, {type = 'info', description = "- "..amount.." Chips"})
+        Player.Functions.RemoveItem("casinochips", amount)
+    end
 end
 
 
-local ItemList = {
-    ["casino_goldchip"] = 1 
-}
-QBCore.Functions.CreateCallback('roulette:server:ChipsAmount', function(source, cb)
-    local retval = 0
-    local Player = QBCore.Functions.GetPlayer(source)
-    if Player.PlayerData.items ~= nil and next(Player.PlayerData.items) ~= nil then 
-        for k, v in pairs(Player.PlayerData.items) do 
-            if Player.PlayerData.items[k] ~= nil then 
-                if ItemList[Player.PlayerData.items[k].name] ~= nil then 
-                    retval = retval + (ItemList[Player.PlayerData.items[k].name] * Player.PlayerData.items[k].amount)
-                end
-            end
-        end
-    end
-    cb(retval)
-end)
+
 --//////////////////////////--//////////////////////////--//////////////////////////
 
-function isPlayerExist(source)
+local function isPlayerExist(source)
     if GetPlayerName(source) ~= nil then
         return true
     else
