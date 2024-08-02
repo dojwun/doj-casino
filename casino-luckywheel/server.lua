@@ -1,48 +1,27 @@
-math.randomseed(os.time())
 
-local QBCore = exports['qb-core']:GetCoreObject()
-isRoll = false
--- local car = Config.Cars[math.random(#Config.Cars)] 
-
-if Config.LimitedSpins then
-	Citizen.CreateThread(function()
-		while true do
-			Wait(1000*60)
-			if os.date('%H:%M') == Config.LimitedSpins then
-				exports.oxmysql:execute('UPDATE players SET luckywheel_spins = 0')
-			end
-		end
-	end)
-end
+IsRoll = false
 
 RegisterNetEvent('luckywheel:getwheel', function()
-	local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-	if Config.LimitedSpins == true then 
-		local result = exports.oxmysql:scalarSync('SELECT luckywheel_spins FROM players where citizenid= ?', {Player.PlayerData.citizenid})
-		if result == '0' then
-			TriggerEvent("luckywheel:startwheel", Player, src)
-		else
-			TriggerClientEvent('QBCore:Notify', src, "You have already had a spin on the wheel today", "error")
-		end
-	elseif Config.LimitedSpins == false then
+    local Player = exports.qbx_core:GetPlayer(source)
 		if Player.PlayerData.money["bank"] >= Config.startingPrice then
+			TriggerClientEvent('doj:client:UpdateInteractSpeech', source, 'luckywheel-menu', 'Good Luck!', 500)
 			Player.Functions.RemoveMoney("bank", tonumber(Config.startingPrice), "lucky-wheel")
-			TriggerEvent("luckywheel:startwheel", Player, src)
+			TriggerEvent("luckywheel:startwheel", source)
 		else
-			-- return TriggerClientEvent('QBCore:Notify', src, "You have enough in the bank to spin", "error")
-			TriggerClientEvent('QBCore:Notify', src, "You have enough in the bank to spin", "error")
+			TriggerClientEvent('doj:client:UpdateInteractSpeech', source, 'luckywheel-menu', 'You dont have enough money to spin! Goodbye.', 1500)
 		end
-	end
 end)
 
-RegisterNetEvent('luckywheel:startwheel', function(Player, source)
+RegisterNetEvent('luckywheel:startwheel', function(source)
 	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
-    if not isRoll then
+	local Player = exports.qbx_core:GetPlayer(src)
+    if not IsRoll then
         if Player ~= nil then
-            exports.oxmysql:execute('UPDATE players SET luckywheel_spins = 1 where citizenid= ?', {Player.PlayerData.citizenid})
-			isRoll = true
+			-- MySQL.Sync.execute('UPDATE users SET wheel = @wheel WHERE identifier = @identifier', {
+			-- 	['@identifier'] = xPlayer.identifier,
+			-- 	['@wheel'] = '1'
+			-- })
+			IsRoll = true
 			local rnd = math.random(1, 1000)
 			local price = 0
 			local priceIndex = 0
@@ -54,67 +33,61 @@ RegisterNetEvent('luckywheel:startwheel', function(Player, source)
 				end
 			end
 			TriggerClientEvent("luckywheel:syncanim", src, priceIndex)
-			TriggerClientEvent("luckywheel:startroll", -1, src, priceIndex, price)
+			TriggerClientEvent("luckywheel:startroll", -1, src, priceIndex, price) 
 		end
 	end
 end)
 
 RegisterNetEvent('luckywheel:give', function(source, price)
-	local Player = QBCore.Functions.GetPlayer(source)
-	isRoll = false
+	local Player = exports.qbx_core:GetPlayer(source)
+	IsRoll = false
 	if price.type == 'car' then
-		TriggerClientEvent("dojLuckywheel:winCar", source)
+		TriggerClientEvent("doj:client:winCar", source)
 		TriggerClientEvent("chCasinoWall:bigWin", source)
 	elseif price.type == 'item' then
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-		Player.Functions.AddItem(price.name, price.count, slot) 
-		TriggerClientEvent('QBCore:Notify', source, "Congratulations! You won "..price.count.." "..price.name.."!", 'success')
-		TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[price.name], "add",price.count )
+		Player.Functions.AddItem(price.name, price.count)
+		TriggerClientEvent('ox_lib:notify', source, {type = 'success', description = "Congratulations! You won "..price.count.." "..price.name.."!"})
 	elseif price.type == 'money' then
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-		Player.Functions.AddMoney('bank', tonumber(price.count), 'banking-quick-depo')
-		TriggerClientEvent('QBCore:Notify', source, "Congratulations! You won $"..price.count, 'success')
+		Player.Functions.AddMoney('bank', tonumber(price.count), 'lucky-wheel')
+		TriggerClientEvent('ox_lib:notify', source, {type = 'success', description = "Congratulations! You won $"..price.count})
 	elseif price.type == 'weapon' then
 		TriggerClientEvent("chCasinoWall:bigWin", source)
-		Player.Functions.AddItem(price.name, 1, slot)
-		TriggerClientEvent('QBCore:Notify', source, "Congratulations! You won a Pistol!", 'success')
-		TriggerClientEvent('inventory:client:ItemBox', source, QBCore.Shared.Items[price.name], "add",1)
+		Player.Functions.AddItem(price.name, 1)
+		TriggerClientEvent('ox_lib:notify', source, {type = 'success', description = "Congratulations! You won a Pistol!"})
 	end
 	TriggerClientEvent("luckywheel:rollFinished", -1)
 end)
 
 RegisterNetEvent('luckywheel:stoproll', function()
-	isRoll = false
-end)
-
-RegisterNetEvent('luckywheel:server:setVehicleOwner', function()
-	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
-	local cid = Player.PlayerData.citizenid
-	local vehicle = Config.VehiclePrize
-	local plate = GeneratePlate()
-	exports.oxmysql:insert('INSERT INTO player_vehicles (license, citizenid, vehicle, hash, mods, plate, state) VALUES (?, ?, ?, ?, ?, ?, ?)', {
-		Player.PlayerData.license,
-		cid,
-		vehicle,
-		GetHashKey(vehicle),
-		'{}',
-		-- plate,
-		Config.VehiclePlateText,
-		0
-	})
-	TriggerClientEvent('QBCore:Notify', src, "YOU WON THE SHOW CAR! congratulations!", 'success')
+	IsRoll = false
 end)
 
 
-function GeneratePlate()
-    local plate = QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(2)
-    local result = exports.oxmysql:scalarSync('SELECT plate FROM player_vehicles WHERE plate = ?', {plate})
-    if result then
-        return GeneratePlate()
-    else
-        return plate:upper()
+function DoesVehicleEntityExist(plate)
+    local count = MySQL.scalar.await('SELECT COUNT(*) FROM player_vehicles WHERE plate = ?', {plate})
+    return count > 0
+end
+
+local function generateUniquePlate()
+    while true do
+        local plate = qbx.generateRandomPlate('11AAA111')
+        if not DoesVehicleEntityExist(plate) and not exports.qbx_vehicles:DoesPlayerVehiclePlateExist(plate) then return plate end
+        Wait(0)
     end
 end
 
-
+lib.callback.register('doj:server:spawnVehicle', function(source, plate, vehicleId)
+	for i = 1, #Config.Vehicle do
+        local v = Config.Vehicle[i]
+		local netId, veh = qbx.spawnVehicle({model = v.car, spawnSource = v.spawn, warp = GetPlayerPed(source)})
+		if not netId or netId == 0 then return end
+		if not veh or veh == 0 then return end
+		if vehicleId then Entity(veh).state:set('vehicleid', vehicleId, false) end
+		local plate = generateUniquePlate()
+		SetVehicleNumberPlateText(veh, plate)
+		TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
+		return netId
+	end
+end)
