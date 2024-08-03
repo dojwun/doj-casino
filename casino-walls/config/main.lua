@@ -21,9 +21,9 @@ Config.Vending = {
 }
 
 Config.ShowCar = {
-        Display = true,
+        Display = true, 
     {
-		model = 'roxanne',
+		model = 'fr36',
         colors = {0, 0},
 		extraColors = {0, 0},
 		livery = -1,
@@ -33,13 +33,13 @@ Config.ShowCar = {
         Tint = 1,
         ToggleLights = 2,
         modKits = {
-            [0] = 7, -- SPOILER
-            [1] = 18, -- BUMPER_F
-            [2] = 9, -- BUMPER_R
-            [3] = 5, -- SKIRT
-            [4] = 9, -- EXHAUST
+            [0] = 0, -- SPOILER
+            [1] = 0, -- BUMPER_F
+            [2] = 0, -- BUMPER_R
+            [3] = 0, -- SKIRT
+            [4] = 0, -- EXHAUST
             [15] = 4, -- SUSPENSION
-            [23] = 52, -- WHEELS
+            [23] = 0, -- WHEELS
         },
     },
 }
