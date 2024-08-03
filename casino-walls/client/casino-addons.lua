@@ -315,7 +315,10 @@ AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
     TriggerEvent('doj:client:CreateCasinoZones')
 end)
 
-
+RegisterNetEvent('doj:client:UpdateInteractSpeech', function(menu, text, time)
+    exports['envi-interact']:UpdateSpeech(menu, text, time)
+    exports['envi-interact']:CloseEverything()
+end)
 
 
 
