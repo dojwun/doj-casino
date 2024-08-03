@@ -41,9 +41,9 @@ end)
 RegisterNetEvent('doj:server:sellSelectedAmount', function(amount)
     local Player = qbx_core:GetPlayer(source)
     local item = ox_inventory:GetItem(source, Config.Casino.Item, nil, true)
-    local price = Config.Casino.ChipPrice
+    local price = amount * Config.Casino.ChipPrice
     if item >= amount then
-        Player.Functions.AddMoney(Config.Casino.Payment, amount * price , "casino")
+        Player.Functions.AddMoney(Config.Casino.Payment, price , "casino")
         ox_inventory:RemoveItem(source, Config.Casino.Item, amount)
         TriggerClientEvent('doj:client:UpdateInteractSpeech', source, "exchange-menu", 'You sold '..amount..' Casino Chip(s) for $'..price..'.', 1500)
     else
