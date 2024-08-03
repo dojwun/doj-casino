@@ -1,4 +1,4 @@
-# casinoUi
+# casino-ui
 
 edited version of dsheedes cd_drawtextui
 
