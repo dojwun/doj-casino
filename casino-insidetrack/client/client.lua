@@ -7,87 +7,22 @@ local checkRaceStatus = false
 local insideTrackActive = false
 local gameOpen = false
 
-
-
-CreateThread(function()
-    local insideTrackZone = CircleZone:Create(vector3(955.619, 70.179, 70.433), 2.5, {
-        name="insideTrack",
-        heading=328.0,
-        debugPoly=false,
-        useZ=true,
-    })
-    insideTrackZone:onPlayerInOut(function(isPointInside)
-        if isPointInside then
-            if Config.HorseBetPrompt == 'walk-up' then 
-                TriggerEvent('doj:casinoinsideTrackHeader') 
-            elseif Config.HorseBetPrompt == 'peek' then
-                text = '<b>The Diamond Casino & Resort Inside Track</b>'
-				exports['qb-core']:DrawText(text)
-                exports['qb-target']:AddCircleZone("Betting", vector3(956.121,70.185,70.433), 1.0, {
-                    name="Betting",
-                    heading=160,
-                    debugPoly=false,
-                    useZ=true,
-                }, {
-                    options = {
-                        {
-                            event = "QBCore:client:openInsideTrack", 
-                            icon = "fas fa-coins",
-                            label = "Start Betting",
-                        },
-                    },
-                    distance = 3.0 
-                })
-            end
-        else
-			exports['qb-menu']:closeMenu()
-            exports["qb-core"]:HideText()
-        end
-    end)
-end)
-
-RegisterNetEvent('doj:casinoinsideTrackHeader', function()
-    exports['qb-menu']:showHeader({
-        {
-            header = "The Diamond Casino & Resort Inside Track",
-            isMenuHeader = true,
-        },
-        {
-            header = "Start Horse Betting", 
-            txt = "100 casino chips",
-            params = {
-                event = "QBCore:client:openInsideTrack",
-            }
-        },
-        {
-            header = "Cancel",
-			txt = "",
-			params = {
-                event = "doj:casinoinsideTrackHeader"
-            }
-        },
-    })
-end)
-
 local function OpenInsideTrack()
+
+    exports['envi-interact']:UpdateSpeech("insideTrack-menu", 'Good Luck!', 500)
+
     QBCore.Functions.TriggerCallback("insidetrack:server:getbalance", function(balance)
         Utils.PlayerBalance = balance
     end)
-
     if insideTrackActive then
         return
     end
     insideTrackActive = true
     -- Scaleform
-    Utils.Scaleform = RequestScaleformMovie('HORSE_RACING_CONSOLE')
-    while not HasScaleformMovieLoaded(Utils.Scaleform) do
-        Wait(0)
-    end
+    Utils.Scaleform = lib.requestScaleformMovie('HORSE_RACING_CONSOLE')
     DisplayHud(false)
-    SetPlayerControl(PlayerId(), false, 0)
-    while not RequestScriptAudioBank('DLC_VINEWOOD/CASINO_GENERAL') do
-        Wait(0)
-    end
+    SetPlayerControl(cache.ped, false, 0)
+    lib.requestAudioBank('DLC_VINEWOOD\\CASINO_GENERAL')
     Utils:ShowMainScreen()
     Utils:SetMainScreenCooldown(cooldown)
     -- Add horses
@@ -96,9 +31,56 @@ local function OpenInsideTrack()
     Utils:HandleControls()
 end
 
-function closeHorseBets()
+RegisterNetEvent("doj:casinoInsideTrack", function()
+    lib.hideTextUI()
+    local HasItem = exports.ox_inventory:GetItemCount("casino_member")
+	if HasItem >= 1 then
+        exports['envi-interact']:OpenChoiceMenu({
+            title = 'Diamond Casino InsideTrack',
+            speech = 'Hi, Are you ready to place some bets?', 
+            duration = 1000,
+            menuID = 'insideTrack-menu',
+            position = 'right',
+            options = {
+                { 
+                    key = 'E',
+                    label = 'Place Bets',
+                    selected = function()
+                        OpenInsideTrack()
+                    end
+                },
+                {
+                    key = 'X',
+                    label = 'Leave',
+                    selected = function(data)
+                        exports['envi-interact']:CloseEverything()
+                    end
+                }
+            } 
+        })
+    else
+        exports['envi-interact']:OpenChoiceMenu({
+            title = 'Diamond Casino InsideTrack (unavailable)',
+            speech = 'You are not a member of the casino, Please go visit the front desk.',
+            duration = 2000,
+            menuID = 'insideTrack-menu-denied',
+            position = 'right',
+            options = {
+                {
+                    key = 'X',
+                    label = 'Leave',
+                    selected = function(data)
+                        exports['envi-interact']:CloseEverything()
+                    end
+                }
+            }
+        })
+    end
+end)
+
+function CloseHorseBets()
     insideTrackActive = false
-    SetPlayerControl(PlayerId(), true, 0)
+    SetPlayerControl(cache.ped, true, 0)
     SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
     Utils.Scaleform = -1
     StopSound(0)
@@ -106,36 +88,28 @@ end
 
 local function LeaveInsideTrack()
     insideTrackActive = false
-    SetPlayerControl(PlayerId(), true, 0)
+    SetPlayerControl(cache.ped, true, 0)
     SetScaleformMovieAsNoLongerNeeded(Utils.Scaleform)
     Utils.Scaleform = -1
     StopSound(0)
 end
 
+
+
 RegisterNetEvent('QBCore:client:closeBetsNotEnough')
 AddEventHandler('QBCore:client:closeBetsNotEnough', function()
-    closeHorseBets()
-    QBCore.Functions.Notify("Bets Closed! You dont have enough Casino Chips...", "error", 3500)
+    CloseHorseBets()
+    exports['envi-interact']:UpdateSpeech("insideTrack-menu", 'Bets Closed! You dont have enough Casino Chips...', 1500)
+    exports['envi-interact']:CloseEverything()
 end)
 
 RegisterNetEvent('QBCore:client:closeBetsZeroChips')
 AddEventHandler('QBCore:client:closeBetsZeroChips', function()
-    closeHorseBets()
-    QBCore.Functions.Notify("Bets Closed! You dont have any Casino Chips...", "error", 3500)
+    CloseHorseBets()
+    exports['envi-interact']:UpdateSpeech("insideTrack-menu", 'Bets Closed! You dont have any Casino Chips...', 1500)
+    exports['envi-interact']:CloseEverything()
 end)
 
-
-
-RegisterNetEvent('QBCore:client:openInsideTrack')
-AddEventHandler('QBCore:client:openInsideTrack', function()
-    -- QBCore.Functions.TriggerCallback('QBCore:HasItem', function(HasItem)
-    --     if HasItem then
-            OpenInsideTrack()
-    --     else
-    --         QBCore.Functions.Notify('You are not a member of the casino', 'error', 3500)
-    --     end
-    -- end, "casino_member")
-end) 
 
 
 
@@ -186,6 +160,9 @@ function Utils:HandleControls()
  
                 if Utils.ChooseHorseVisible then
                     if (clickedButton ~= 12) and (clickedButton ~= -1) then
+                        if Utils.PlayerBalance < Utils.CurrentBet then
+                            Utils.CurrentBet = math.floor(Utils.PlayerBalance / 100) * 100
+                        end
                         Utils.CurrentHorse = (clickedButton - 1)
                         Utils:ShowBetScreen(Utils.CurrentHorse)
                         Utils.ChooseHorseVisible = false
@@ -227,7 +204,7 @@ function Utils:HandleControls()
 
                 -- Change bet
                 if (clickedButton == 8) then
-                    if (Utils.CurrentBet < Utils.PlayerBalance) then
+                    if (Utils.CurrentBet < Utils.PlayerBalance - 100) then
                         Utils.CurrentBet = (Utils.CurrentBet + 100)
                         Utils.CurrentGain = (Utils.CurrentBet * 2)
                         Utils:UpdateBetValues(Utils.CurrentHorse, Utils.CurrentBet, Utils.PlayerBalance, Utils.CurrentGain)
