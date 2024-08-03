@@ -33,7 +33,7 @@ Config.Prices = {
 
 Config.Vehicle = {
     {
-		car = 'roxanne',
+		car = 'fr36',
 		spawn = vector4(933.29, -2.82, 78.76, 144.6),
         colors = {0, 0},
 		extraColors = {0, 0},
@@ -42,12 +42,12 @@ Config.Vehicle = {
         neons = {100, 0, 255},
         XenonColor = 11,
         modKits = {
-            [0] = 7, -- SPOILER
-            [1] = 18, -- BUMPER_F
-            [2] = 9, -- BUMPER_R
-            [3] = 5, -- SKIRT
-            [4] = 9, -- EXHAUST
-            [23] = 52, -- WHEELS
+            [0] = 0, -- SPOILER
+            [1] = 0, -- BUMPER_F
+            [2] = 0, -- BUMPER_R
+            [3] = 0, -- SKIRT
+            [4] = 0, -- EXHAUST
+            [23] = 0, -- WHEELS
         },
     },
 }
