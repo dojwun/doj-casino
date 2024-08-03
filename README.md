@@ -13,19 +13,18 @@
 
 # About
 - Mostly converted to qbx / ox
-> Still using a few qb-core callbacks will remove soon
+> Still using a few qb-core callbacks (removing)
 
+- New casino interactions
+> envi-interact
+> 
 - Lots of configs/additions to casino-walls
 
 - Added secret gumball item
 
-- New interaction menus
-
-
-
 - Customize luckywheel vehicle
 
-- Might be missing a few things but will try to fix or add if requested.
+- Might be missing a few things but will try to fix or add if requested. ENJOY!
 
 # Images
 ![casino_goldchip](https://i.imgur.com/7NPjx6H.png)
