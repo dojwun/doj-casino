@@ -19,8 +19,7 @@
 > envi-interact
 > 
 - Lots of configs/additions to casino-walls
-
-- Added secret gumball item
+> secret gumball item
 
 - Customize luckywheel vehicle
 
