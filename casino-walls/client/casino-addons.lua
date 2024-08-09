@@ -285,6 +285,7 @@ RegisterNetEvent("doj:client:casinoShopCatalog", function()
         VendingItems[#VendingItems + 1] =
         {
             title = exports.ox_inventory:Items(v.Items).label,
+            icon = "nui://ox_inventory/web/images/"..v.Items..".png",
             metadata = {'Price: $'..v.Price},
             onSelect = function()
                 TriggerServerEvent("doj:server:addVendingItems", v.Items, v.Price)
