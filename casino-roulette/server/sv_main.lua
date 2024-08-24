@@ -194,7 +194,7 @@ function CheckWinners(bets, WinningBetIndex)
                 if playersLoss[targetSrc] then
                     playersWon[targetSrc] = nil
                 end
-            elseif betData.betId <= '36' and WinningBetIndex == betData.betId then -- the numbers
+            elseif betData.betId >= '1' or betData.betId <= '36' and WinningBetIndex == betData.betId then
                 giveWinningChips(targetSrc, betData.betAmount, 35)
                 playersWon[targetSrc] = true
                 if playersLoss[targetSrc] then
