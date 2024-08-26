@@ -25,6 +25,9 @@
 
 - Might be missing a few things but will try to fix or add if requested. ENJOY!
 
+# About QBCore 
+**[OUTDATED](https://github.com/dojwun/doj-casino/tree/92a5d5e76f1c6c900ae41d61872fec5d10696d86)** 
+
 # Images
 ![casino_goldchip](https://i.imgur.com/7NPjx6H.png)
 ![casino_member](https://i.imgur.com/SOxFphs.png)
